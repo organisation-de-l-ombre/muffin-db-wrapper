@@ -67,7 +67,7 @@ class MuffinClient extends EventEmitter {
     collection(name) {
         this[_readyCheck]();
 
-        return new Collection(this[_db].collection(name));
+        return new Collection(this[_db].collection(name), this);
     }
 
 }
