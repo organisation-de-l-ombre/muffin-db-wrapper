@@ -32,7 +32,6 @@ class MuffinClient extends EventEmitter {
         this.dbName = options.dbName;
         this.isReady = false;
         this.closed = false;
-        this.destroyed = false;
 
         (async () => {
             try {
@@ -70,6 +69,12 @@ class MuffinClient extends EventEmitter {
         return new Collection(this[_db].collection(name), this);
     }
 
+    close() {
+        this[_readyCheck]();
+
+        this[_client].close();
+        this.closed = true;
+    }
 }
 
 module.exports = MuffinClient;
