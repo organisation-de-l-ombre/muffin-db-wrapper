@@ -45,7 +45,7 @@ class Collection {
 
             key = key.toString();
 
-            const data = this._cache.get(key) || (await this._base.findOne({ _id: key })).value;
+            const data = await this._cache.get(key) || (await this._base.findOne({ _id: key })).value;
 
             if (_.isNil(data)) return null;
 
@@ -64,19 +64,23 @@ class Collection {
     }
 
     async has(key, path = null) {
-        this[_readyCheck]();
+        try {
+            this[_readyCheck]();
 
-        key = key.toString();
+            key = key.toString();
 
-        const data = this._cache.get(key) || (await this._base.findOne({ _id: key })).value;
+            const data = await this._cache.get(key) || (await this._base.findOne({ _id: key })).value;
 
-        if (data == null) return false;
+            if (data == null) return false;
 
-        if (path) {
-            return _.has(data, path);
+            if (path) {
+                return _.has(data, path);
+            }
+
+            return true;
+        } catch (e) {
+            console.error(e);
         }
-
-        return true;
     }
 
     async ensure(key, val, path = null, cache = true) {
