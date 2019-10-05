@@ -60,7 +60,7 @@ class Collection {
 
             key = key.toString();
 
-            const data = await this._cache.get(key) || (await this._base.findOne({ _id: key })).value;
+            const data = (await this._base.findOne({ _id: key })).value;
 
             if (data == null) return false;
 
