@@ -7,7 +7,6 @@ class Collection {
 
     constructor(base, client) {
         this._base = base;
-        this._cache = new Map();
         this.client = client;
     }
 
@@ -15,7 +14,7 @@ class Collection {
         if (this.client.closed === true) throw new Err("the database has been closed", "MuffinClosedError");
     }
 
-    async set(key, val, path = null, cache = true) {
+    async set(key, val, path = null) {
         try {
             this[_readyCheck]();
 
@@ -27,17 +26,13 @@ class Collection {
                 val = _.set((await this._base.findOne({ _id: key })).value || {}, path, val);
             }
 
-            if (cache && val !== this._cache.get(key)) {
-                await this._cache.set(key, val);
-            }
-
             await this._base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
         } catch (e) {
             console.error(e);
         }
     }
 
-    async get(key, path = null, cache = true) {
+    async get(key, path = null) {
         try {
             this[_readyCheck]();
 
@@ -45,13 +40,9 @@ class Collection {
 
             key = key.toString();
 
-            const data = await this._cache.get(key) || (await this._base.findOne({ _id: key })).value;
+            const data = (await this._base.findOne({ _id: key })).value;
 
             if (_.isNil(data)) return null;
-
-            if (cache && data !== this._cache.get(key)) {
-                this._cache.set(key, data);
-            }
 
             if (path == null) {
                 return data;
@@ -83,36 +74,18 @@ class Collection {
         }
     }
 
-    async ensure(key, val, path = null, cache = true) {
+    async ensure(key, val, path = null) {
         this[_readyCheck]();
 
         try {
             if (this.has(key, path) === false) {
-                await this.set(key, val, path, cache);
+                await this.set(key, val, path);
             }
 
-            return this.get(key, path, cache);
+            return this.get(key, path);
         } catch (e) {
             console.error(e);
         }
-    }
-
-    uncacheOne(key) {
-        key = key.toString();
-
-        if (this._cache.has(key)) this._cache.delete(key);
-    }
-
-    uncacheMany(ArrayOfKeys) {
-        ArrayOfKeys.map(key => {
-            key = key.toString();
-
-            if (this._cache.has(key)) this._cache.delete(key);
-        });
-    }
-
-    uncacheAll() {
-        return this._cache.clear();
     }
 
 }
