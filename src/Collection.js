@@ -22,7 +22,7 @@ class Collection {
 
             key = key.toString();
 
-            if (path != null) {
+            if (path) {
                 val = _.set((await this._base.findOne({ _id: key })).value || {}, path, val);
             }
 
@@ -44,10 +44,10 @@ class Collection {
 
             if (_.isNil(data)) return null;
 
-            if (path == null) {
-                return data;
-            } else {
+            if (path) {
                 return _.get(data, path);
+            } else {
+                return data;
             }
         } catch (e) {
             console.error(e);
@@ -62,7 +62,7 @@ class Collection {
 
             const data = (await this._base.findOne({ _id: key })).value;
 
-            if (data == null) return false;
+            if (_.isNil(data)) return false;
 
             if (path) {
                 return _.has(data, path);
@@ -78,11 +78,50 @@ class Collection {
         this[_readyCheck]();
 
         try {
-            if (this.has(key, path) === false) {
+            if (await this.has(key, path) === false) {
                 await this.set(key, val, path);
             }
 
             return this.get(key, path);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    /* This method was taken from Enmap : https://www.npmjs.com/package/enmap
+       I modified it, now it's not exactly the same method */
+
+    async delete(key, path = null) {
+        try {
+            this[_readyCheck]();
+
+            if (_.isNil(key)) throw new Err("key is null or undefined");
+
+            key = key.toString();
+
+            if (path) {
+                let data = (await this._base.findOne({ _id: key })).value;
+
+                path = _.toPath(path);
+                const last = path.pop();
+                const propValue = path.length ? _.get(data, path) : data;
+
+                if (_.isArray(propValue)) {
+                    propValue.splice(last, 1);
+                } else {
+                    delete propValue[last];
+                }
+
+                if (path.length) {
+                    _.set(data, path, propValue);
+                } else {
+                    data = propValue;
+                }
+
+                await this._base.updateOne({ _id: key }, { $set: { _id: key, value: data } }, { upsert: true });
+            } else {
+                await this._base.remove({ _id: key }, { single: true });
+            }
         } catch (e) {
             console.error(e);
         }
