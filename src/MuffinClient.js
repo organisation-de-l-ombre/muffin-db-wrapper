@@ -12,7 +12,13 @@ const _ready = Symbol("ready");
 
 class MuffinClient extends EventEmitter {
 
-    constructor(options) {
+    constructor(options = {
+        username: "",
+        password: "",
+        port: 27017,
+        host: "localhost",
+        dbName: "muffin"
+    }) {
         super();
 
         // eslint-disable-next-line no-unused-vars
@@ -20,15 +26,11 @@ class MuffinClient extends EventEmitter {
             this[_ready] = res;
         });
 
-        if (!options.url) {
-            throw new Err("You must provide options.url");
-        }
-
         if (!options.dbName) {
             throw new Err("You must provide options.dbName");
         }
 
-        this[_url] = options.url;
+        this[_url] = options.url || `mongodb://${options.username}:${options.password}@${options.host}:${options.port}/${options.dbName}`;
         this.dbName = options.dbName;
         this.isReady = false;
         this.closed = false;
@@ -40,6 +42,22 @@ class MuffinClient extends EventEmitter {
 
                 this.isReady = true;
                 this[_ready]();
+
+                this[_db].on("close", () => {
+                    this.emit("close");
+                });
+
+                this[_db].on("reconnect", object => {
+                    this.emit("reconnect", object);
+                });
+
+                this[_db].on("timeout", err => {
+                    this.emit("timeout", err);
+                });
+
+                this[_db].on("parseError", err => {
+                    this.emit("parseError", err);
+                });
             } catch (e) {
                 console.error(e);
             }
@@ -75,6 +93,7 @@ class MuffinClient extends EventEmitter {
         this[_client].close();
         this.closed = true;
     }
+
 }
 
 module.exports = MuffinClient;

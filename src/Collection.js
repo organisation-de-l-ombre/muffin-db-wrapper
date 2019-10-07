@@ -26,7 +26,7 @@ class Collection {
                 val = _.set((await this._base.findOne({ _id: key })).value || {}, path, val);
             }
 
-            await this._base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
+            return await this._base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
         } catch (e) {
             console.error(e);
         }
@@ -40,8 +40,10 @@ class Collection {
 
             key = key.toString();
 
-            const data = (await this._base.findOne({ _id: key })).value;
+            const find = await this._base.findOne({ _id: key });
+            if (_.isNil(find)) return null;
 
+            const data = find.value;
             if (_.isNil(data)) return null;
 
             if (path) {
@@ -60,8 +62,10 @@ class Collection {
 
             key = key.toString();
 
-            const data = (await this._base.findOne({ _id: key })).value;
+            const find = await this._base.findOne({ _id: key });
+            if (_.isNil(find)) return false;
 
+            const data = find.value;
             if (_.isNil(data)) return false;
 
             if (path) {
@@ -75,22 +79,20 @@ class Collection {
     }
 
     async ensure(key, val, path = null) {
-        this[_readyCheck]();
-
         try {
+            this[_readyCheck]();
+
             if (await this.has(key, path) === false) {
                 await this.set(key, val, path);
             }
 
-            return this.get(key, path);
+            return await this.get(key, path);
         } catch (e) {
             console.error(e);
         }
     }
 
-    /* This method was taken from Enmap : https://www.npmjs.com/package/enmap
-       I modified it, now it's not exactly the same method */
-
+    // This method was mostly taken from Enmap... Licence : https://github.com/eslachance/enmap/blob/master/LICENSE
     async delete(key, path = null) {
         try {
             this[_readyCheck]();
@@ -118,10 +120,20 @@ class Collection {
                     data = propValue;
                 }
 
-                await this._base.updateOne({ _id: key }, { $set: { _id: key, value: data } }, { upsert: true });
+                return await this._base.updateOne({ _id: key }, { $set: { _id: key, value: data } }, { upsert: true });
             } else {
-                await this._base.remove({ _id: key }, { single: true });
+                return await this._base.deleteOne({ _id: key }, { single: true });
             }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async deleteAll() {
+        try {
+            this[_readyCheck]();
+
+            return await this._base.deleteMany({});
         } catch (e) {
             console.error(e);
         }
