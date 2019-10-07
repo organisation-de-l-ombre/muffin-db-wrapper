@@ -76,7 +76,7 @@ class MuffinClient extends EventEmitter {
         const colls = {};
 
         names.map(val => {
-            colls[val] = this.collection(val);
+            colls[val] = this.muffin(val);
         });
 
         return colls;
