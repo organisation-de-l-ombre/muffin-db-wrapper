@@ -2,7 +2,7 @@ const Err = require("./MuffinError");
 const { MongoClient } = require("mongodb");
 const EventEmitter = require("events");
 
-const Collection = require("./Muffin");
+const Muffin = require("./Muffin");
 
 const _url = Symbol("url");
 const _client = Symbol("client");
@@ -85,7 +85,7 @@ class MuffinClient extends EventEmitter {
     muffin(name) {
         this[_readyCheck]();
 
-        return new Collection(this[_db].collection(name), this);
+        return new Muffin(this[_db].collection(name), this);
     }
 
     close() {
