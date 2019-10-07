@@ -41,10 +41,8 @@ class Collection {
             key = key.toString();
 
             const find = await this._base.findOne({ _id: key });
-            if (_.isNil(find)) return null;
-
             const data = find.value;
-            if (_.isNil(data)) return null;
+            if (_.isNil(find) || _.isNil(data)) return null;
 
             if (path) {
                 return _.get(data, path);
@@ -129,7 +127,7 @@ class Collection {
         }
     }
 
-    async deleteAll() {
+    async clear() {
         try {
             this[_readyCheck]();
 
@@ -138,6 +136,12 @@ class Collection {
             console.error(e);
         }
     }
+
+    async valueArray() { return await this._base.find({}).map(d => d.value).toArray(); }
+
+    async keyArray() { return await this._base.find({}).map(d => d._id).toArray(); }
+
+    get size() { return this._base.countDocuments(); }
 
 }
 

@@ -17,7 +17,8 @@ class MuffinClient extends EventEmitter {
         password: "",
         port: 27017,
         host: "localhost",
-        dbName: "muffin"
+        dbName: "muffin",
+        url: null
     }) {
         super();
 
@@ -81,7 +82,7 @@ class MuffinClient extends EventEmitter {
         return colls;
     }
 
-    collection(name) {
+    muffin(name) {
         this[_readyCheck]();
 
         return new Collection(this[_db].collection(name), this);
