@@ -2,7 +2,7 @@ const Err = require("./MuffinError");
 const { MongoClient } = require("mongodb");
 const EventEmitter = require("events");
 
-const Collection = require("./Collection");
+const Collection = require("./Muffin");
 
 const _url = Symbol("url");
 const _client = Symbol("client");
