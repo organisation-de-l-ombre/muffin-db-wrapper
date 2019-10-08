@@ -2,6 +2,7 @@ const _ = require("lodash");
 const Err = require("./MuffinError");
 
 const _readyCheck = Symbol("readyCheck");
+const _typeCheck = Symbol("typeCheck");
 
 class Muffin {
 
@@ -32,17 +33,19 @@ class Muffin {
         }
     }
 
-    async get(key, path = null) {
+    async get(key, path = null, raw = false) {
         try {
             this[_readyCheck]();
 
             if (_.isNil(key)) return null;
 
-            key = key.toString();
-
             const find = await this._base.findOne({ _id: key });
             const data = find.value;
             if (_.isNil(find) || _.isNil(data)) return null;
+
+            if (raw === true) {
+                return find;
+            }
 
             if (path) {
                 return _.get(data, path);
@@ -140,6 +143,8 @@ class Muffin {
     async valueArray() { return await this._base.find({}).map(d => d.value).toArray(); }
 
     async keyArray() { return await this._base.find({}).map(d => d._id).toArray(); }
+
+    async rawArray() { return await this._base.find({}).toArray(); }
 
     get size() { return this._base.countDocuments(); }
 
