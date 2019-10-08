@@ -15,13 +15,18 @@ class Muffin {
         if (this.client.closed === true) throw new Err("the database has been closed", "MuffinClosedError");
     }
 
+    [_typeCheck](key) {
+        return !["number", "string"].includes(key.constructor.name);
+    }
+
     async set(key, val, path = null) {
         try {
             this[_readyCheck]();
 
             if (_.isNil(key)) throw new Err("key is null or undefined");
 
-            key = key.toString();
+            if (!this[_typeCheck]) key = key.toString();
+            console.log(key);
 
             if (path) {
                 val = _.set((await this._base.findOne({ _id: key })).value || {}, path, val);
@@ -39,11 +44,14 @@ class Muffin {
 
             if (_.isNil(key)) return null;
 
+            if (!this[_typeCheck]) key = key.toString();
+            console.log(key);
+
             const find = await this._base.findOne({ _id: key });
             const data = find.value;
             if (_.isNil(find) || _.isNil(data)) return null;
 
-            if (raw === true) {
+            if (raw) {
                 return find;
             }
 
@@ -61,13 +69,11 @@ class Muffin {
         try {
             this[_readyCheck]();
 
-            key = key.toString();
+            if (!this[_typeCheck]) key = key.toString();
 
             const find = await this._base.findOne({ _id: key });
-            if (_.isNil(find)) return false;
-
             const data = find.value;
-            if (_.isNil(data)) return false;
+            if (_.isNil(find) || _.isNil(data)) return false;
 
             if (path) {
                 return _.has(data, path);
@@ -100,10 +106,12 @@ class Muffin {
 
             if (_.isNil(key)) throw new Err("key is null or undefined");
 
-            key = key.toString();
+            if (!this[_typeCheck]) key = key.toString();
 
             if (path) {
-                let data = (await this._base.findOne({ _id: key })).value;
+                const find = await this._base.findOne({ _id: key });
+                let data = find.value;
+                if (_.isNil(find) || _.isNil(data)) return;
 
                 path = _.toPath(path);
                 const last = path.pop();
@@ -140,11 +148,11 @@ class Muffin {
         }
     }
 
-    async valueArray() { return await this._base.find({}).map(d => d.value).toArray(); }
+    valueArray() { return this._base.find({}).map(d => d.value).toArray(); }
 
-    async keyArray() { return await this._base.find({}).map(d => d._id).toArray(); }
+    keyArray() { return this._base.find({}).map(d => d._id).toArray(); }
 
-    async rawArray() { return await this._base.find({}).toArray(); }
+    rawArray() { return this._base.find({}).toArray(); }
 
     get size() { return this._base.countDocuments(); }
 
