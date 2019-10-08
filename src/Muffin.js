@@ -3,7 +3,7 @@ const Err = require("./MuffinError");
 
 const _readyCheck = Symbol("readyCheck");
 
-class Collection {
+class Muffin {
 
     constructor(base, client) {
         this._base = base;
@@ -145,4 +145,4 @@ class Collection {
 
 }
 
-module.exports = Collection;
+module.exports = Muffin;
