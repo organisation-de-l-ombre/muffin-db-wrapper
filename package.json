@@ -7,13 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Cat66000",
+  "license": "AGPL",
   "dependencies": {
     "lodash": "^4.17.15",
     "mongodb": "^3.3.2"
   },
   "devDependencies": {
+    "better-docs": "^1.3.3",
     "eslint": "^6.2.2"
   }
 }
