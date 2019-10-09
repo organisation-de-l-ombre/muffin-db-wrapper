@@ -6,6 +6,14 @@ const _typeCheck = Symbol("typeCheck");
 
 class Muffin {
 
+    /**
+     * @constructor
+     * @protected
+     * @param {Collection} base - The Collection from MongoDB
+     * @param {MuffinClient} client - The client that instantiated the Muffin
+     * @description - Initialize a new Muffin.
+     * @classdesc - 
+     */
     constructor(base, client) {
         this._base = base;
         this.client = client;
@@ -16,36 +24,50 @@ class Muffin {
     }
 
     [_typeCheck](key) {
-        return !["number", "string"].includes(key.constructor.name);
+        return ["Number", "String", "Object"].includes(key.constructor.name);
     }
 
-    async set(key, val, path = null) {
+    /**
+     * @async
+     * @param {*} key - The key of the element to set
+     * @param {*} val - The value of the element to set in the database
+     * @param {string} [path=null] - (Optional) The path to the property to modify inside the value. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
+     * @returns {boolean} - True, or false if an error was threw
+     */
+    async set(key, val, path) {
         try {
             this[_readyCheck]();
 
             if (_.isNil(key)) throw new Err("key is null or undefined");
 
-            if (!this[_typeCheck]) key = key.toString();
-            console.log(key);
+            if (!this[_typeCheck](key)) key = key.toString();
 
             if (path) {
                 val = _.set((await this._base.findOne({ _id: key })).value || {}, path, val);
             }
 
-            return await this._base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
+            await this._base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
+            return true;
         } catch (e) {
             console.error(e);
+            return false;
         }
     }
 
-    async get(key, path = null, raw = false) {
+    /**
+     * @async
+     * @param {*} key - The key of the element to get
+     * @param {string} [path=null] - (Optional) The path to the property to modify inside the value. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
+     * @param {boolean} [raw=false] - If set to true, affects the return value
+     * @returns {(*|Object)} - The value found in the database for this key. If raw is true, it returns the full object instead, i.e. : { _id: "foo", value: "bar" }
+     */
+    async get(key, path, raw = false) {
         try {
             this[_readyCheck]();
 
             if (_.isNil(key)) return null;
 
-            if (!this[_typeCheck]) key = key.toString();
-            console.log(key);
+            if (!this[_typeCheck](key)) key = key.toString();
 
             const find = await this._base.findOne({ _id: key });
             const data = find.value;
@@ -65,11 +87,17 @@ class Muffin {
         }
     }
 
-    async has(key, path = null) {
+    /**
+     * @async
+     * @param {*} key - The key of the element to check
+     * @param {string} [path=null] - (Optionnal) The path to the property to check
+     * @returns {boolean} - True if the element exists, false if it doesn't
+     */
+    async has(key, path) {
         try {
             this[_readyCheck]();
 
-            if (!this[_typeCheck]) key = key.toString();
+            if (!this[_typeCheck](key)) key = key.toString();
 
             const find = await this._base.findOne({ _id: key });
             const data = find.value;
@@ -85,7 +113,7 @@ class Muffin {
         }
     }
 
-    async ensure(key, val, path = null) {
+    async ensure(key, val, path) {
         try {
             this[_readyCheck]();
 
@@ -100,13 +128,13 @@ class Muffin {
     }
 
     // This method was mostly taken from Enmap... Licence : https://github.com/eslachance/enmap/blob/master/LICENSE
-    async delete(key, path = null) {
+    async delete(key, path) {
         try {
             this[_readyCheck]();
 
             if (_.isNil(key)) throw new Err("key is null or undefined");
 
-            if (!this[_typeCheck]) key = key.toString();
+            if (!this[_typeCheck](key)) key = key.toString();
 
             if (path) {
                 const find = await this._base.findOne({ _id: key });
@@ -129,12 +157,14 @@ class Muffin {
                     data = propValue;
                 }
 
-                return await this._base.updateOne({ _id: key }, { $set: { _id: key, value: data } }, { upsert: true });
+                await this._base.updateOne({ _id: key }, { $set: { _id: key, value: data } }, { upsert: true });
             } else {
-                return await this._base.deleteOne({ _id: key }, { single: true });
+                await this._base.deleteOne({ _id: key }, { single: true });
             }
+            return true;
         } catch (e) {
             console.error(e);
+            return false;
         }
     }
 
