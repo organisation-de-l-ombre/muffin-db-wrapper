@@ -9,10 +9,10 @@ class Muffin {
     /**
      * @constructor
      * @protected
+     * @classdesc - A wrapper for a MongoDB Collection, its goal is to provide map-like methods but for a database like Mongo.
+     * @description - Initialize a new Muffin.
      * @param {Collection} base - The Collection from MongoDB
      * @param {MuffinClient} client - The client that instantiated the Muffin
-     * @description - Initialize a new Muffin.
-     * @classdesc - 
      */
     constructor(base, client) {
         this._base = base;
@@ -29,8 +29,9 @@ class Muffin {
 
     /**
      * @async
+     * @description - Set a element into the database
      * @param {*} key - The key of the element to set
-     * @param {*} val - The value of the element to set in the database
+     * @param {*} val - The value of the element to set into the database
      * @param {string} [path=null] - (Optional) The path to the property to modify inside the value. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
      * @returns {boolean} - True, or false if an error was threw
      */
@@ -56,6 +57,7 @@ class Muffin {
 
     /**
      * @async
+     * @description - Find a element in the database
      * @param {*} key - The key of the element to get
      * @param {string} [path=null] - (Optional) The path to the property to modify inside the value. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
      * @param {boolean} [raw=false] - If set to true, affects the return value
@@ -89,8 +91,9 @@ class Muffin {
 
     /**
      * @async
+     * @description - Check if an element exists
      * @param {*} key - The key of the element to check
-     * @param {string} [path=null] - (Optionnal) The path to the property to check
+     * @param {string} [path=null] - (Optionnal) The path to the property to check. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
      * @returns {boolean} - True if the element exists, false if it doesn't
      */
     async has(key, path) {
@@ -113,7 +116,16 @@ class Muffin {
         }
     }
 
-    async ensure(key, val, path) {
+    /**
+     * @async
+     * @description - Check if an element exists, otherwise, 
+     * @param {*} key - The key to check if it exists or to set an element or a property inside the value
+     * @param {*} val - The value
+     * @param {string} [path=null] - The path to the property to check. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
+     * @param {boolean} [raw=false] - If set to true, affects the return value
+     * @returns {(*|Object)} - The value found in the database for this key. If raw is true, it returns the full object instead, i.e. : { _id: "foo", value: "bar" }
+     */
+    async ensure(key, val, path, raw = false) {
         try {
             this[_readyCheck]();
 
@@ -121,7 +133,7 @@ class Muffin {
                 await this.set(key, val, path);
             }
 
-            return await this.get(key, path);
+            return await this.get(key, path, raw);
         } catch (e) {
             console.error(e);
         }
