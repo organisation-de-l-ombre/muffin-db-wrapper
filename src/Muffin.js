@@ -9,8 +9,8 @@ class Muffin {
     /**
      * @constructor
      * @protected
-     * @classdesc - A wrapper for a MongoDB Collection, its goal is to provide map-like methods but for a database like Mongo.
-     * @description - Initialize a new Muffin.
+     * @classdesc A wrapper for a MongoDB Collection. Its goal is to provide map-like methods but for a database like Mongo.
+     * @description Initialize a new Muffin.
      * @param {Collection} base - The Collection from MongoDB
      * @param {MuffinClient} client - The client that instantiated the Muffin
      */
@@ -29,11 +29,11 @@ class Muffin {
 
     /**
      * @async
-     * @description - Set a element into the database
-     * @param {*} key - The key of the element to set
-     * @param {*} val - The value of the element to set into the database
+     * @description Set a document into the database
+     * @param {*} key - The key of the document to set
+     * @param {*} val - The value of the document to set into the database
      * @param {string} [path=null] - (Optional) The path to the property to modify inside the value. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
-     * @returns {boolean} - True, or false if an error was threw
+     * @returns {boolean} True, or false if an error was threw
      */
     async set(key, val, path) {
         try {
@@ -57,11 +57,11 @@ class Muffin {
 
     /**
      * @async
-     * @description - Find a element in the database
-     * @param {*} key - The key of the element to get
+     * @description Find a document in the database
+     * @param {*} key - The key of the document to get
      * @param {string} [path=null] - (Optional) The path to the property to modify inside the value. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
      * @param {boolean} [raw=false] - If set to true, affects the return value
-     * @returns {(*|Object)} - The value found in the database for this key. If raw is true, it returns the full object instead, i.e. : { _id: "foo", value: "bar" }
+     * @returns {Promise<(*|Object)>} The value found in the database for this key. If raw is true, it returns the full object instead, i.e. : { _id: "foo", value: "bar" }
      */
     async get(key, path, raw = false) {
         try {
@@ -91,10 +91,10 @@ class Muffin {
 
     /**
      * @async
-     * @description - Check if an element exists
-     * @param {*} key - The key of the element to check
+     * @description Check if a document exists
+     * @param {*} key - The key of the document to check
      * @param {string} [path=null] - (Optionnal) The path to the property to check. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
-     * @returns {boolean} - True if the element exists, false if it doesn't
+     * @returns {boolean} True if the document exists, false if it doesn't
      */
     async has(key, path) {
         try {
@@ -118,12 +118,12 @@ class Muffin {
 
     /**
      * @async
-     * @description - Check if an element exists, otherwise, 
-     * @param {*} key - The key to check if it exists or to set an element or a property inside the value
-     * @param {*} val - The value
+     * @description Check if a document exists, otherwise, set a document
+     * @param {*} key - The key to check if it exists or to set a document or a property inside the value
+     * @param {*} val - The value to set if the key doesn't exist
      * @param {string} [path=null] - The path to the property to check. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
      * @param {boolean} [raw=false] - If set to true, affects the return value
-     * @returns {(*|Object)} - The value found in the database for this key. If raw is true, it returns the full object instead, i.e. : { _id: "foo", value: "bar" }
+     * @returns {(*|Object)} The value found in the database for this key. If raw is true, it returns the full object instead, i.e. : { _id: "foo", value: "bar" }
      */
     async ensure(key, val, path, raw = false) {
         try {
@@ -140,6 +140,13 @@ class Muffin {
     }
 
     // This method was mostly taken from Enmap... Licence : https://github.com/eslachance/enmap/blob/master/LICENSE
+    /**
+     * @async
+     * @description Delete a document in the database
+     * @param {*} key - The key
+     * @param {string} [path=null] - The path to the property to delete. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
+     * @returns {boolean} True, or false if an error was threw
+     */
     async delete(key, path) {
         try {
             this[_readyCheck]();
@@ -180,13 +187,20 @@ class Muffin {
         }
     }
 
+    /* **
+     * @async
+     * @description Delete all the documents
+     * @returns
+     */
     async clear() {
         try {
             this[_readyCheck]();
 
-            return await this._base.deleteMany({});
+            await this._base.deleteMany({});
+            return true;
         } catch (e) {
             console.error(e);
+            return false;
         }
     }
 
