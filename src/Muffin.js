@@ -1,7 +1,3 @@
-/**
- * @typedef {Object<key, value>} Document
- */
-
 /* eslint-disable max-len */
 const _ = require("lodash");
 const Err = require("./MuffinError");
@@ -14,7 +10,7 @@ class Muffin {
     /**
      * @class
      * @protected
-     * @classdesc Use MongoDB collections to provide map-like methods but for a database like Mongo.
+     * @classdesc Use MongoDB collections to provide methods similar to Map but for Mongo
      * @description Initialize a new Muffin.
      * @param {Collection} base - The Collection from MongoDB
      * @param {MuffinClient} client - The client that instantiated the Muffin
@@ -60,7 +56,7 @@ class Muffin {
      * @param {*} key - The key of the document to get
      * @param {string} [path=null] - (optional) The path to the property to modify inside the value. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
      * @param {boolean} [raw=false] - (optional) If set to true, affects the return value
-     * @returns {Promise<*|Document>} A promise containing the value found in the database for this key. If raw is true, it returns a promise containing the full object instead, i.e. : { _id: "foo", value: "bar" }
+     * @returns {Promise<*|Object>} A promise containing the value found in the database for this key. If raw is true, it returns a promise containing the full object instead, i.e. : { _id: "foo", value: "bar" }
      */
     async get(key, path, raw = false) {
         this[_readyCheck]();
@@ -114,7 +110,7 @@ class Muffin {
      * @param {*} val - The value to set if the key doesn't exist
      * @param {string} [path=null] - (optional) The path to the property to check. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
      * @param {boolean} [raw=false] - (optional) If set to true, affects the return value
-     * @returns {Promise<*|Document>} A promise containing the value found in the database for this key. If raw is true, it returns a promise containing the full object instead, i.e. : { _id: "foo", value: "bar" }
+     * @returns {Promise<*|Object>} A promise containing the value found in the database for this key. If raw is true, it returns a promise containing the full object instead, i.e. : { _id: "foo", value: "bar" }
      */
     async ensure(key, val, path, raw = false) {
         this[_readyCheck]();
@@ -190,7 +186,7 @@ class Muffin {
     keyArray() { return this._base.find({}).map(d => d._id).toArray(); }
 
     /**
-     * @returns {Array<Document>} An array with all the documents of the database
+     * @returns {Array<Object>} An array with all the documents of the database
      */
     rawArray() { return this._base.find({}).toArray(); }
 

@@ -1,3 +1,13 @@
+/**
+ * @typedef {Object} MuffinOptions
+ * @property {string} [username]
+ * @property {string} [password]
+ * @property {number} [port=27017]
+ * @property {string} [host="localhost"]
+ * @property {string} [dbName="muffin"]
+ * @property {string} [url]
+ */
+
 const Err = require("./MuffinError");
 const { MongoClient } = require("mongodb");
 const EventEmitter = require("events");
@@ -9,27 +19,29 @@ const _client = Symbol("client");
 const _db = Symbol("db");
 const _readyCheck = Symbol("readyCheck");
 const _ready = Symbol("ready");
+const _readyFailed = Symbol("readyFailed");
 
 class MuffinClient extends EventEmitter {
 
+    /**
+     * @class
+     * @public
+     * @classdesc Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} to provide muffins, they are map-like objects
+     * @param {MuffinOptions} options - If you use url you don't need to use username, password, port and host
+     */
     constructor(options = {
         username: "",
         password: "",
         port: 27017,
         host: "localhost",
-        dbName: "muffin",
-        url: null
+        dbName: "muffin"
     }) {
         super();
 
-        // eslint-disable-next-line no-unused-vars
         this.defer = new Promise((res, rej) => {
             this[_ready] = res;
+            this[_readyFailed] = rej;
         });
-
-        if (!options.dbName) {
-            throw new Err("You must provide options.dbName");
-        }
 
         this[_url] = options.url || `mongodb://${options.username}:${options.password}@${options.host}:${options.port}/${options.dbName}`;
         this.dbName = options.dbName;
@@ -60,7 +72,7 @@ class MuffinClient extends EventEmitter {
                     this.emit("parseError", err);
                 });
             } catch (e) {
-                console.error(e);
+                this[_readyFailed](e);
             }
         })();
     }
