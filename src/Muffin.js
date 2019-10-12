@@ -14,7 +14,7 @@ class Muffin {
     /**
      * @class
      * @protected
-     * @classdesc A wrapper for a MongoDB Collection. Its goal is to provide map-like methods but for a database like Mongo.
+     * @classdesc Use MongoDB collections to provide map-like methods but for a database like Mongo.
      * @description Initialize a new Muffin.
      * @param {Collection} base - The Collection from MongoDB
      * @param {MuffinClient} client - The client that instantiated the Muffin
