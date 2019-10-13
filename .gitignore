@@ -63,3 +63,6 @@ typings/
 # JSDoc config
 jsdoc.json
 out/
+
+# Tests
+test/
