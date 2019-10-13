@@ -17,19 +17,20 @@ class MuffinClient extends EventEmitter {
 
     /**
      * @typedef {Object} MuffinOptions
-     * @property {string} [username]
-     * @property {string} [password]
-     * @property {number} [port=27017]
-     * @property {string} [host="localhost"]
-     * @property {string} [dbName="muffin"]
+     * @description If you use url you don't need to use username, password, port and host
+     * @property {string} [username]            - Not used if an url is provided
+     * @property {string} [password]            - Not used if an url is provided
+     * @property {number} [port=27017]          - Not used if an url is provided
+     * @property {string} [host="localhost"]    - Not used if an url is provided
+     * @property {string} [dbName="muffin"]     - The name of the database on the Mongo server
      * @property {string} [url]
      */
     /**
      *
      * @class
      * @public
-     * @classdesc Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} to provide pieces, they are map-like objects
-     * @param {MuffinOptions} options - If you use url you don't need to use username, password, port and host
+     * @classdesc Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} to provide pieces, which are map-like objects
+     * @param {MuffinOptions} options - Options for the client
      */
     constructor(options = {}) {
         super();
@@ -79,9 +80,9 @@ class MuffinClient extends EventEmitter {
     }
 
     /**
-     * @description Create many pieces
+     * @description Creates multiple pieces
      * @param {Array<string>} names - Names of the pieces
-     * @returns {Object<Piece>} An object with the pieces you created. [Destructuring]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment} can be useful !
+     * @returns {Object<Piece>} An object with the pieces. [Destructuring]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment} can be useful !
      */
     multi(names = []) {
         this[_readyCheck]();
@@ -96,9 +97,9 @@ class MuffinClient extends EventEmitter {
     }
 
     /**
-     * @description Create a {@link Piece} to interact with MongoDB
+     * @description Creates a {@link Piece} to interact with MongoDB
      * @param {string} name - The piece's name
-     * @returns {Piece} A {@link Piece}
+     * @returns {Piece} A {@link Piece} with the given name
      */
     piece(name) {
         this[_readyCheck]();

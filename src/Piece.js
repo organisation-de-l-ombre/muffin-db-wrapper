@@ -10,9 +10,9 @@ class Piece {
     /**
      * @class
      * @protected
-     * @classdesc Use MongoDB collections to provide methods similar to Map but to interact with MongoDB
+     * @classdesc An object similar to Map used to interact with the database
      * @description Initialize a new Piece.
-     * @param {Collection} base - The Collection from MongoDB
+     * @param {Collection} base - The [Collection]{@link https://mongodb.github.io/node-mongodb-native/3.3/api/Collection.html} from MongoDB
      * @param {MuffinClient} client - The client that instantiated the Piece
      */
     constructor(base, client) {
@@ -30,10 +30,10 @@ class Piece {
 
     /**
      * @async
-     * @description Set a document into the database
+     * @description Sets a document into the database
      * @param {*} key - The key of the document to set
      * @param {*} val - The value of the document to set into the database
-     * @param {string} [path=null] - (optional) The path to the property to modify inside the value. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
+     * @param {string} [path=null] - (optional) The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @returns {Promise<void>} A promise
      */
     async set(key, val, path) {
@@ -55,11 +55,11 @@ class Piece {
 
     /**
      * @async
-     * @description Find a document in the database
+     * @description Finds a document in the database
      * @param {*} key - The key of the document to get
-     * @param {string} [path=null] - (optional) The path to the property to modify inside the value. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
-     * @param {boolean} [raw=false] - (optional) If set to true, affects the return value
-     * @returns {Promise<*|Object<*>>} A promise containing the value found in the database for this key. If raw is true, it returns a promise containing the full object instead, i.e. : { _id: "foo", value: "bar" }
+     * @param {string} [path=null] - (optional) The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {boolean} [raw=false] - (optional)
+     * @returns {Promise<*>} A promise containing the value found in the database for this key. If raw is true, it returns a promise containing the full object instead, i.e. : { _id: "foo", value: "bar" }
      */
     async get(key, path, raw = false) {
         this[_readyCheck]();
@@ -87,9 +87,9 @@ class Piece {
 
     /**
      * @async
-     * @description Check if a document exists
+     * @description Checks if a document exists
      * @param {*} key - The key of the document to check
-     * @param {string} [path=null] - (optional) The path to the property to check. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
+     * @param {string} [path=null] - (optional) The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @returns {Promise<boolean>} A promise
      */
     async has(key, path) {
@@ -112,10 +112,10 @@ class Piece {
 
     /**
      * @async
-     * @description Check if a document exists, otherwise, set a document
+     * @description Checks if a document exists, otherwise, set a document
      * @param {*} key - The key to check if it exists or to set a document or a property inside the value
      * @param {*} val - The value to set if the key doesn't exist
-     * @param {string} [path=null] - (optional) The path to the property to check. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
+     * @param {string} [path=null] - (optional) The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @param {boolean} [raw=false] - (optional) If set to true, affects the return value
      * @returns {Promise<*|Object<*>>} A promise containing the value found in the database for this key. If raw is true, it returns a promise containing the full object instead, i.e. : { _id: "foo", value: "bar" }
      */
@@ -132,9 +132,9 @@ class Piece {
     // This method was mostly taken from Enmap... Licence : https://github.com/eslachance/enmap/blob/master/LICENSE
     /**
      * @async
-     * @description Delete a document in the database
+     * @description Deletes a document in the database
      * @param {*} key - The key
-     * @param {string} [path=null] - (optional) The path to the property to delete. Can be a path with dot notation, such as "prop1.subprop2.subprop3"
+     * @param {string} [path=null] - (optional) The path to the property to delete. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @returns {Promise<void>} A promise
      */
     async delete(key, path) {
@@ -173,7 +173,7 @@ class Piece {
 
     /**
      * @async
-     * @description Delete all the documents
+     * @description Deletes all the documents
      * @returns {Promise<void>} A promise
      */
     async clear() {
