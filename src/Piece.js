@@ -198,9 +198,9 @@ class Piece {
     rawArray() { return this._base.find({}).toArray(); }
 
     /**
-     * @description The size of the database
+     * @returns {number} The size of the database
      */
-    get size() { return this._base.countDocuments(); }
+    async size() { return await this._base.countDocuments(); }
 
 }
 

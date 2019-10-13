@@ -1,15 +1,5 @@
 /* eslint-disable max-len */
 
-/**
- * @typedef {Object} MuffinOptions
- * @property {string} [username]
- * @property {string} [password]
- * @property {number} [port=27017]
- * @property {string} [host="localhost"]
- * @property {string} [dbName="muffin"]
- * @property {string} [url]
- */
-
 const Err = require("./MuffinError");
 const { MongoClient } = require("mongodb");
 const EventEmitter = require("events");
@@ -26,18 +16,22 @@ const _readyFailed = Symbol("readyFailed");
 class MuffinClient extends EventEmitter {
 
     /**
+     * @typedef {Object} MuffinOptions
+     * @property {string} [username]
+     * @property {string} [password]
+     * @property {number} [port=27017]
+     * @property {string} [host="localhost"]
+     * @property {string} [dbName="muffin"]
+     * @property {string} [url]
+     */
+    /**
+     *
      * @class
      * @public
      * @classdesc Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} to provide pieces, they are map-like objects
      * @param {MuffinOptions} options - If you use url you don't need to use username, password, port and host
      */
-    constructor(options = {
-        username: "",
-        password: "",
-        port: 27017,
-        host: "localhost",
-        dbName: "muffin"
-    }) {
+    constructor(options = {}) {
         super();
 
         this.defer = new Promise((res, rej) => {
