@@ -14,7 +14,7 @@ const Err = require("./MuffinError");
 const { MongoClient } = require("mongodb");
 const EventEmitter = require("events");
 
-const Muffin = require("./Muffin");
+const Piece = require("./Piece");
 
 const _url = Symbol("url");
 const _client = Symbol("client");
@@ -28,7 +28,7 @@ class MuffinClient extends EventEmitter {
     /**
      * @class
      * @public
-     * @classdesc Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} to provide muffins, they are map-like objects
+     * @classdesc Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} to provide pieces, they are map-like objects
      * @param {MuffinOptions} options - If you use url you don't need to use username, password, port and host
      */
     constructor(options = {
@@ -45,8 +45,8 @@ class MuffinClient extends EventEmitter {
             this[_readyFailed] = rej;
         });
 
-        this[_url] = options.url || `mongodb://${options.username}:${options.password}@${options.host}:${options.port}/${options.dbName}`;
-        this.dbName = options.dbName;
+        this.dbName = options.dbName || "muffin";
+        this[_url] = options.url || `mongodb://${options.username}:${options.password}@${options.host || "localhost"}:${options.port || 27017}/${this.dbName}`;
         this.isReady = false;
         this.closed = false;
 
@@ -85,9 +85,9 @@ class MuffinClient extends EventEmitter {
     }
 
     /**
-     * @description Create many muffins
-     * @param {Array<string>} names - Names of the muffins
-     * @returns {Object<Muffin>} An object with the muffins you created. [Destructuring]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment} can be useful !
+     * @description Create many pieces
+     * @param {Array<string>} names - Names of the pieces
+     * @returns {Object<Piece>} An object with the pieces you created. [Destructuring]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment} can be useful !
      */
     multi(names = []) {
         this[_readyCheck]();
@@ -95,21 +95,21 @@ class MuffinClient extends EventEmitter {
         const colls = {};
 
         names.map(val => {
-            colls[val] = this.muffin(val);
+            colls[val] = this.piece(val);
         });
 
         return colls;
     }
 
     /**
-     * @description Create a {@link Muffin} to interact with MongoDB
-     * @param {string} name - The muffin's name
-     * @returns {Muffin} A {@link Muffin}
+     * @description Create a {@link Piece} to interact with MongoDB
+     * @param {string} name - The piece's name
+     * @returns {Piece} A {@link Piece}
      */
-    muffin(name) {
+    piece(name) {
         this[_readyCheck]();
 
-        return new Muffin(this[_db].collection(name), this);
+        return new Piece(this[_db].collection(name), this);
     }
 
     /**
