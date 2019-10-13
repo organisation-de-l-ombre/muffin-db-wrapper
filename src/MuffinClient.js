@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+
 /**
  * @typedef {Object} MuffinOptions
  * @property {string} [username]
@@ -82,6 +84,11 @@ class MuffinClient extends EventEmitter {
         if (this.closed === true) throw new Err("the database has been closed", "MuffinClosedError");
     }
 
+    /**
+     * @description Create many muffins
+     * @param {Array<string>} names - Names of the muffins
+     * @returns {Object<Muffin>} An object with the muffins you created. [Destructuring]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment} can be useful !
+     */
     multi(names = []) {
         this[_readyCheck]();
 
@@ -94,12 +101,21 @@ class MuffinClient extends EventEmitter {
         return colls;
     }
 
+    /**
+     * @description Create a {@link Muffin} to interact with MongoDB
+     * @param {string} name - The muffin's name
+     * @returns {Muffin} A {@link Muffin}
+     */
     muffin(name) {
         this[_readyCheck]();
 
         return new Muffin(this[_db].collection(name), this);
     }
 
+    /**
+     * @description Close the database
+     * @returns {void} Nothing
+     */
     close() {
         this[_readyCheck]();
 
