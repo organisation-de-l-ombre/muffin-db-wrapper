@@ -1,12 +1,15 @@
 {
   "name": "muffin",
   "version": "1.0.0",
-  "description": "uses mongo and allows you to create muffins, which allows you to interact with the database as if you were using a Map",
+  "description": "Uses mongo and allows you to create pieces of muffin, which allows you to interact with the database as if you were using a Map",
+  "homepage": "https://github.com/Cat66000/Muffin",
+  "bugs": "https://github.com/Cat66000/Muffin/issues",
   "main": "index.js",
+  "repository": "github:Cat66000/Muffin",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["muffin", "Muffin", "database", "db","Mongo", "mongodb"],
   "author": "cat66",
   "license": "AGPL-3.0",
   "dependencies": {
