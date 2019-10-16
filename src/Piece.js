@@ -116,8 +116,8 @@ class Piece {
      * @param {*} key - The key to check if it exists or to set a document or a property inside the value
      * @param {*} val - The value to set if the key doesn't exist
      * @param {string} [path=null] - The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @param {boolean} [raw=false] - If set to true, affects the return value
-     * @returns {Promise<*>} A promise containing the value found in the database for this key. If raw is true, it returns a promise containing the full object instead, i.e. : { _id: "foo", value: "bar" }
+     * @param {boolean} [raw=false] - If true, the method returns a promise containing the full object, i.e. : { _id: "foo", value: "bar" }
+     * @returns {Promise<*>} If raw is false : a promise containing the value found in the database for this key.
      */
     async ensure(key, val, path, raw = false) {
         this[_readyCheck]();
