@@ -33,7 +33,7 @@ class Piece {
      * @description Sets a document into the database
      * @param {*} key - The key of the document to set
      * @param {*} val - The value of the document to set into the database
-     * @param {string} [path=null] - (optional) The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {string} [path=null] - The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @returns {Promise<void>} A promise
      */
     async set(key, val, path) {
@@ -57,9 +57,9 @@ class Piece {
      * @async
      * @description Finds a document in the database
      * @param {*} key - The key of the document to get
-     * @param {string} [path=null] - (optional) The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @param {boolean} [raw=false] - (optional)
-     * @returns {Promise<*>} A promise containing the value found in the database for this key. If raw is true, it returns a promise containing the full object instead, i.e. : { _id: "foo", value: "bar" }
+     * @param {string} [path=null] - The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {boolean} [raw=false] - If true, the method returns a promise containing the full object, i.e. : { _id: "foo", value: "bar" }
+     * @returns {Promise<*>} If raw is false : a promise containing the value found in the database for this key.
      */
     async get(key, path, raw = false) {
         this[_readyCheck]();
@@ -89,7 +89,7 @@ class Piece {
      * @async
      * @description Checks if a document exists
      * @param {*} key - The key of the document to check
-     * @param {string} [path=null] - (optional) The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {string} [path=null] - The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @returns {Promise<boolean>} A promise
      */
     async has(key, path) {
@@ -115,9 +115,9 @@ class Piece {
      * @description Checks if a document exists, otherwise, set a document
      * @param {*} key - The key to check if it exists or to set a document or a property inside the value
      * @param {*} val - The value to set if the key doesn't exist
-     * @param {string} [path=null] - (optional) The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @param {boolean} [raw=false] - (optional) If set to true, affects the return value
-     * @returns {Promise<*|Object<*>>} A promise containing the value found in the database for this key. If raw is true, it returns a promise containing the full object instead, i.e. : { _id: "foo", value: "bar" }
+     * @param {string} [path=null] - The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {boolean} [raw=false] - If set to true, affects the return value
+     * @returns {Promise<*>} A promise containing the value found in the database for this key. If raw is true, it returns a promise containing the full object instead, i.e. : { _id: "foo", value: "bar" }
      */
     async ensure(key, val, path, raw = false) {
         this[_readyCheck]();
@@ -134,7 +134,7 @@ class Piece {
      * @async
      * @description Deletes a document in the database
      * @param {*} key - The key
-     * @param {string} [path=null] - (optional) The path to the property to delete. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {string} [path=null] - The path to the property to delete. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @returns {Promise<void>} A promise
      */
     async delete(key, path) {
