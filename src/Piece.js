@@ -112,7 +112,7 @@ class Piece {
 
     /**
      * @async
-     * @description Checks if a document exists, otherwise, set a document
+     * @description If the document doesn't exist : creates and returns it, else returns it
      * @param {*} key - The key to check if it exists or to set a document or a property inside the value
      * @param {*} val - The value to set if the key doesn't exist
      * @param {string} [path=null] - The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
