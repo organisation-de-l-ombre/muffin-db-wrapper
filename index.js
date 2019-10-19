@@ -1,5 +1,3 @@
-const Client = require("./src/MuffinClient");
-
 module.exports = {
-    Client
+    Client: require("./src/MuffinClient")
 };
