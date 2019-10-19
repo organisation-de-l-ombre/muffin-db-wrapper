@@ -9,7 +9,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["muffin", "Muffin", "database", "db","Mongo", "mongodb"],
+  "keywords": [
+    "muffin",
+    "Muffin",
+    "database",
+    "db",
+    "Mongo",
+    "mongodb"
+  ],
   "author": "cat66",
   "license": "AGPL-3.0",
   "dependencies": {
