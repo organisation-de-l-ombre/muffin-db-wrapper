@@ -10,7 +10,7 @@ class Piece {
     /**
      * @class
      * @protected
-     * @classdesc An object similar to Map used to interact with the database
+     * @classdesc An object similar to Map but without cache, used to interact with the database
      * @description Initialize a new Piece.
      * @param {Collection} base - The [Collection]{@link https://mongodb.github.io/node-mongodb-native/3.3/api/Collection.html} from MongoDB
      * @param {MuffinClient} client - The client that instantiated the Piece

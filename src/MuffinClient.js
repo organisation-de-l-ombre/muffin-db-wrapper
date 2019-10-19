@@ -29,7 +29,7 @@ class MuffinClient extends EventEmitter {
      *
      * @class
      * @public
-     * @classdesc Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} and allows you to create pieces, which are map-like objects
+     * @classdesc Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} and allows you to create pieces, which are map-like objects (without cache)
      * @param {MuffinOptions} options - Options for the client
      */
     constructor(options = {}) {
