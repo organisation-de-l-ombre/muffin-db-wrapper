@@ -1,7 +1,7 @@
 {
   "name": "muffin",
   "version": "1.0.0",
-  "description": "Uses mongo and allows you to create pieces of muffin, which allows you to interact with the database as if you were using a Map",
+  "description": "Uses Mongo and allows you to create pieces of muffin, which allows you to interact with the database as if you were using a Map",
   "homepage": "https://github.com/Cat66000/Muffin",
   "bugs": "https://github.com/Cat66000/Muffin/issues",
   "main": "index.js",
