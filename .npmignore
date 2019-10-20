@@ -68,3 +68,6 @@ README_JSDoc.md
 
 # Tests
 test/
+
+# VSCode
+.vscode/

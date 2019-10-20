@@ -42,7 +42,7 @@ typings/
 # Optional npm cache directory
 .npm
 
-# Optional eslint cache
+# Eslint
 .eslintcache
 
 # Optional REPL history
@@ -67,3 +67,6 @@ README_JSDoc.md
 
 # Tests
 test/
+
+# VSCode
+.vscode/
