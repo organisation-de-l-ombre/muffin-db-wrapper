@@ -4,5 +4,5 @@
 
 **[Documentation](https://muffindb.glitch.me/)**
 
-**Contact :** My Discord username is Cat66#9597  
+**Contact : My Discord username is Cat66#9597  
 I have also a [Discord server](https://discord.gg/VgasTNY) but only french, I will maybe transform the server to be both english & french**
