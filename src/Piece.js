@@ -16,12 +16,19 @@ class Piece {
      * @param {MuffinClient} client - The client that instantiated the Piece
      */
     constructor(base, client) {
-        this._base = base;
+        /**
+         * @member {Collection} - The collection wrapped by the piece
+         */
+        this.base = base;
+
+        /**
+         * @member {MuffinClient} - The client that instantiated the Piece
+         */
         this.client = client;
     }
 
     [_readyCheck]() {
-        if (this.client.isClosed === true) throw new Err("the database has been closed", "MuffinClosedError");
+        if (this.client.isClosed) throw new Err("the database has been closed", "MuffinClosedError");
     }
 
     [_typeCheck](key) {
@@ -44,13 +51,13 @@ class Piece {
         if (!this[_typeCheck](key)) key = key.toString();
 
         if (path) {
-            const find = await this._base.findOne({ _id: key });
+            const find = await this.base.findOne({ _id: key });
 
             console.log(find);
             val = _.set(find.value || {}, path, val);
         }
 
-        await this._base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
+        await this.base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
     }
 
     /**
@@ -68,7 +75,7 @@ class Piece {
 
         if (!this[_typeCheck](key)) key = key.toString();
 
-        const find = await this._base.findOne({ _id: key });
+        const find = await this.base.findOne({ _id: key });
         if (_.isNil(find)) return null;
 
         const data = find.value;
@@ -97,7 +104,7 @@ class Piece {
 
         if (!this[_typeCheck](key)) key = key.toString();
 
-        const find = await this._base.findOne({ _id: key });
+        const find = await this.base.findOne({ _id: key });
         if (_.isNil(find)) return false;
 
         const data = find.value;
@@ -145,7 +152,7 @@ class Piece {
         if (!this[_typeCheck](key)) key = key.toString();
 
         if (path) {
-            const find = await this._base.findOne({ _id: key });
+            const find = await this.base.findOne({ _id: key });
             let data = find.value;
             if (_.isNil(find) || _.isNil(data)) return;
 
@@ -165,9 +172,9 @@ class Piece {
                 data = propValue;
             }
 
-            await this._base.updateOne({ _id: key }, { $set: { _id: key, value: data } }, { upsert: true });
+            await this.base.updateOne({ _id: key }, { $set: { _id: key, value: data } }, { upsert: true });
         } else {
-            await this._base.deleteOne({ _id: key }, { single: true });
+            await this.base.deleteOne({ _id: key }, { single: true });
         }
     }
 
@@ -179,28 +186,28 @@ class Piece {
     async clear() {
         this[_readyCheck]();
 
-        await this._base.deleteMany({});
+        await this.base.deleteMany({});
     }
 
     /**
      * @returns {Array<*>} An array with the values of all the documents
      */
-    valueArray() { return this._base.find({}).map(d => d.value).toArray(); }
+    valueArray() { return this.base.find({}).map(d => d.value).toArray(); }
 
     /**
      * @returns {Array<*>} An array with the keys of all the documents
      */
-    keyArray() { return this._base.find({}).map(d => d._id).toArray(); }
+    keyArray() { return this.base.find({}).map(d => d._id).toArray(); }
 
     /**
      * @returns {Array<Object<*>>} An array with all the documents of the database
      */
-    rawArray() { return this._base.find({}).toArray(); }
+    rawArray() { return this.base.find({}).toArray(); }
 
     /**
      * @returns {number} The size of the database
      */
-    async size() { return await this._base.countDocuments(); }
+    async size() { return await this.base.countDocuments(); }
 
 }
 

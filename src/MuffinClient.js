@@ -9,6 +9,11 @@
  * @property {string} [dbName="muffin"]     - The name of the database on the Mongo server
  * @property {string} [url]
 */
+
+/**
+ * @typedef {Object} MongoError {@link https://mongodb.github.io/node-mongodb-native/3.3/api/MongoError.html}
+ */
+
 const Err = require("./MuffinError");
 const { MongoClient } = require("mongodb");
 const EventEmitter = require("events");
@@ -35,14 +40,28 @@ class MuffinClient extends EventEmitter {
     constructor(options = {}) {
         super();
 
+        /**
+         * @member {Promise} - Resolved when the database is ready
+         */
         this.defer = new Promise((res, rej) => {
             this[_ready] = res;
             this[_readyFailed] = rej;
         });
 
+        /**
+         * @member {string} - Name of the database, Muffin by default
+         */
         this.dbName = options.dbName || "muffin";
         this[_url] = options.url || `mongodb://${options.username}:${options.password}@${options.host || "localhost"}:${options.port || 27017}/${this.dbName}`;
+
+        /**
+         * @member {boolean} - True when the database is ready
+         */
         this.isReady = false;
+
+        /**
+         * @member {boolean} - True if the database is closed
+         */
         this.closed = false;
 
         (async () => {
@@ -54,25 +73,38 @@ class MuffinClient extends EventEmitter {
                 this[_ready]();
 
                 /**
-                 * @event close
+                 * @event MuffinClient#close
+                 * @description Emitted after a socket closed against a single server or mongos proxy.
+                 * @type {MongoError}
                  */
                 this[_db].on("close", () => {
                     this.emit("close");
                 });
 
                 /**
-                 * @event reconnect
+                 * @event MuffinClient#reconnect
+                 * @type {Object}
                  */
                 this[_db].on("reconnect", object => {
                     this.emit("reconnect", object);
                 });
 
                 /**
-                 * @event timeout
+                 * @event MuffinClient#timeout
+                 * @description Emitted after a socket timeout occurred against a single server or mongos proxy.
+                 * @type {MongoError}
                  */
                 this[_db].on("timeout", err => {
                     this.emit("timeout", err);
                 });
+
+                /**
+                 * @event MuffinClient#change
+                 * @description Emit when a change occurs on the database
+                 * @type {Object}
+                 */
+                this[_db].watch().on("change", obj =>
+                    this.emit("change", obj));
             } catch (e) {
                 this[_readyFailed](e);
             }
