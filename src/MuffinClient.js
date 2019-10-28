@@ -1,5 +1,14 @@
 /* eslint-disable max-len */
-
+/**
+ * @typedef {Object} MuffinOptions
+ * @description If you use url you don't need to use username, password, port and host
+ * @property {string} [username]            - Not used if an url is provided
+ * @property {string} [password]            - Not used if an url is provided
+ * @property {number} [port=27017]          - Not used if an url is provided
+ * @property {string} [host="localhost"]    - Not used if an url is provided
+ * @property {string} [dbName="muffin"]     - The name of the database on the Mongo server
+ * @property {string} [url]
+*/
 const Err = require("./MuffinError");
 const { MongoClient } = require("mongodb");
 const EventEmitter = require("events");
@@ -16,22 +25,13 @@ const _readyFailed = Symbol("readyFailed");
 class MuffinClient extends EventEmitter {
 
     /**
-     * @typedef {Object} MuffinOptions
-     * @description If you use url you don't need to use username, password, port and host
-     * @property {string} [username]            - Not used if an url is provided
-     * @property {string} [password]            - Not used if an url is provided
-     * @property {number} [port=27017]          - Not used if an url is provided
-     * @property {string} [host="localhost"]    - Not used if an url is provided
-     * @property {string} [dbName="muffin"]     - The name of the database on the Mongo server
-     * @property {string} [url]
-     */
-    /**
-     *
      * @class
      * @public
+     * @extends EventEmitter
      * @classdesc Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} and allows you to create pieces, which are map-like objects (without cache)
      * @param {MuffinOptions} options - Options for the client
-     */
+    */
+
     constructor(options = {}) {
         super();
 
@@ -53,20 +53,25 @@ class MuffinClient extends EventEmitter {
                 this.isReady = true;
                 this[_ready]();
 
+                /**
+                 * @event close
+                 */
                 this[_db].on("close", () => {
                     this.emit("close");
                 });
 
+                /**
+                 * @event reconnect
+                 */
                 this[_db].on("reconnect", object => {
                     this.emit("reconnect", object);
                 });
 
+                /**
+                 * @event timeout
+                 */
                 this[_db].on("timeout", err => {
                     this.emit("timeout", err);
-                });
-
-                this[_db].on("parseError", err => {
-                    this.emit("parseError", err);
                 });
             } catch (e) {
                 this[_readyFailed](e);
@@ -87,13 +92,13 @@ class MuffinClient extends EventEmitter {
     multi(names = []) {
         this[_readyCheck]();
 
-        const colls = {};
+        const pieces = {};
 
         names.map(val => {
-            colls[val] = this.piece(val);
+            pieces[val] = this.piece(val);
         });
 
-        return colls;
+        return pieces;
     }
 
     /**
