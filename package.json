@@ -1,6 +1,6 @@
 {
   "name": "muffindb",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Uses Mongo and allows you to create pieces of muffin, which allows you to interact with the database as if you were using a Map (without cache)",
   "homepage": "https://github.com/Cat66000/Muffin",
   "bugs": "https://github.com/Cat66000/Muffin/issues",
