@@ -11,17 +11,20 @@ class Piece {
      * @class
      * @protected
      * @classdesc An object similar to Map but without cache, used to interact with the database
+     * @since 1.0.0
      * @description Initialize a new Piece.
      * @param {Collection} base - The [Collection]{@link https://mongodb.github.io/node-mongodb-native/3.3/api/Collection.html} from MongoDB
      * @param {MuffinClient} client - The client that instantiated the Piece
      */
     constructor(base, client) {
         /**
+         * @since 1.0.0
          * @member {Collection} - The collection wrapped by the piece
          */
         this.base = base;
 
         /**
+         * @since 1.0.0
          * @member {MuffinClient} - The client that instantiated the Piece
          */
         this.client = client;
@@ -37,6 +40,7 @@ class Piece {
 
     /**
      * @async
+     * @since 1.0.0
      * @description Sets a document into the database
      * @param {*} key - The key of the document to set
      * @param {*} val - The value of the document to set into the database
@@ -50,6 +54,8 @@ class Piece {
 
         if (!this[_typeCheck](key)) key = key.toString();
 
+        if (_.isNil(val)) throw new Err("val is null or undefined");
+
         if (path) {
             const find = await this.base.findOne({ _id: key });
 
@@ -61,6 +67,7 @@ class Piece {
 
     /**
      * @async
+     * @since 1.0.0
      * @description Finds a document in the database
      * @param {*} key - The key of the document to get
      * @param {string} [path=null] - The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
@@ -93,6 +100,7 @@ class Piece {
 
     /**
      * @async
+     * @since 1.0.0
      * @description Checks if a document exists
      * @param {*} key - The key of the document to check
      * @param {string} [path=null] - The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
@@ -118,6 +126,7 @@ class Piece {
 
     /**
      * @async
+     * @since 1.0.0
      * @description If the document doesn't exist : creates and returns it, else returns it
      * @param {*} key - The key to check if it exists or to set a document or a property inside the value
      * @param {*} val - The value to set if the key doesn't exist
@@ -127,6 +136,9 @@ class Piece {
      */
     async ensure(key, val, path, raw = false) {
         this[_readyCheck]();
+
+        if (_.isNil(key)) throw new Err("key is null or undefined");
+        if (_.isNil(val)) throw new Err("val is null or undefined");
 
         if (await this.has(key, path) === false) {
             await this.set(key, val, path);
@@ -138,6 +150,7 @@ class Piece {
     // This method was mostly taken from Enmap... Licence : https://github.com/eslachance/enmap/blob/master/LICENSE
     /**
      * @async
+     * @since 1.0.0
      * @description Deletes a document in the database
      * @param {*} key - The key
      * @param {string} [path=null] - The path to the property to delete. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
@@ -149,6 +162,8 @@ class Piece {
         if (_.isNil(key)) throw new Err("key is null or undefined");
 
         if (!this[_typeCheck](key)) key = key.toString();
+
+        if (_.isNil(val)) throw new Err("val is null or undefined");
 
         if (path) {
             const find = await this.base.findOne({ _id: key });
@@ -179,6 +194,7 @@ class Piece {
 
     /**
      * @async
+     * @since 1.0.0
      * @description Deletes all the documents
      * @returns {Promise<void>} A promise
      */
@@ -189,22 +205,26 @@ class Piece {
     }
 
     /**
+     * @since 1.0.0
      * @returns {Array<*>} An array with the values of all the documents
      */
     valueArray() { return this.base.find({}).map(d => d.value).toArray(); }
 
     /**
+     * @since 1.0.0
      * @returns {Array<*>} An array with the keys of all the documents
      */
     keyArray() { return this.base.find({}).map(d => d._id).toArray(); }
 
     /**
+     * @since 1.0.0
      * @returns {Array<Object<*>>} An array with all the documents of the database
      */
     rawArray() { return this.base.find({}).toArray(); }
 
     /**
     * @async
+    * @since 1.0.0
     * @param {boolean} [fast=false] - Set to true if you don't need precise size & if your database is very big
     * @returns {Promise<number>} A promise containing the size of the database
     */
