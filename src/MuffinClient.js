@@ -44,8 +44,12 @@ class MuffinClient extends EventEmitter {
          * @member {Promise} - Resolved when the database is ready
          */
         this.defer = new Promise((res, rej) => {
-            this[_ready] = res;
-            this[_readyFailed] = rej;
+            try {
+                this[_ready] = res;
+                this[_readyFailed] = rej;
+            } catch (error) {
+                throw new Error(error);
+            }
         });
 
         /**
