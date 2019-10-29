@@ -41,7 +41,7 @@ class Piece {
      * @param {*} key - The key of the document to set
      * @param {*} val - The value of the document to set into the database
      * @param {string} [path=null] - The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @returns {Promise<Piece>} A promise containing the piece itself
+     * @returns {Promise<void>} A promise
      */
     async set(key, val, path) {
         this[_readyCheck]();
@@ -53,12 +53,11 @@ class Piece {
         if (path) {
             const find = await this.base.findOne({ _id: key });
 
+            console.log(find);
             val = _.set(find.value || {}, path, val);
         }
 
         await this.base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
-
-        return this;
     }
 
     /**
@@ -206,17 +205,9 @@ class Piece {
     rawArray() { return this.base.find({}).toArray(); }
 
     /**
-     * @async
-     * @param {boolean} [fast=false] - Set to true if you don't need precise size & if your database is very big
-     * @returns {Promise<number>} A promise containing the size of the database
+     * @returns {number} The size of the database
      */
-    async size(fast = false) {
-        if (fast) {
-            return this.base.estimatedDocumentCount();
-        } else {
-            return this.base.countDocuments();
-        }
-    }
+    async size() { return await this.base.countDocuments(); }
 
 }
 
