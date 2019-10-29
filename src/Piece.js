@@ -67,6 +67,46 @@ class Piece {
 
     /**
      * @async
+     * @description Push to an array value
+     * @since 1.2.0
+     * @param {*} key - The key of the array element
+     * @param {*} val - The value to push
+     * @param {string} [path=null] - The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {boolean} [force=false] - If true and if the element you try to modify is NOT an array, throw an error
+     * @returns {Promise<void>} A promise
+     */
+    async push(key, val, path, force = false) {
+        this[_readyCheck]();
+
+        if (_.isNil(key)) throw new Err("key is null or undefined");
+
+        if (!this[_typeCheck](key)) key = key.toString();
+
+        if (_.isNil(val)) throw new Err("val is null or undefined");
+
+        const find = await this.base.findOne({ _id: key }) || { value: null };
+
+        if (path) {
+            if (!_.isArray(_.get(find.value, path, [])) && force) throw new Err("The element you tried to modify is not an array");
+            const data = _.get(find.value, path, []);
+
+            data.push(val);
+
+            val = _.set(find.value, path, data);
+        } else {
+            if (!_.isArray(find.value) && force) throw new Err("The element you tried to modify is not an array");
+            const data = _.isArray(find.value) ? find.value : [];
+
+            data.push(val);
+
+            val = data;
+        }
+
+        await this.base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
+    }
+
+    /**
+     * @async
      * @since 1.0.0
      * @description Finds a document in the database
      * @param {*} key - The key of the document to get
