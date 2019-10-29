@@ -53,7 +53,6 @@ class Piece {
         if (path) {
             const find = await this.base.findOne({ _id: key });
 
-            console.log(find);
             val = _.set(find.value || {}, path, val);
         }
 
