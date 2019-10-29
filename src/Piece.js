@@ -204,9 +204,17 @@ class Piece {
     rawArray() { return this.base.find({}).toArray(); }
 
     /**
-     * @returns {number} The size of the database
-     */
-    async size() { return await this.base.countDocuments(); }
+    * @async
+    * @param {boolean} [fast=false] - Set to true if you don't need precise size & if your database is very big
+    * @returns {Promise<number>} A promise containing the size of the database
+    */
+    async size(fast = false) {
+        if (fast) {
+            return this.base.estimatedDocumentCount();
+        } else {
+            return this.base.countDocuments();
+        }
+    }
 
 }
 
