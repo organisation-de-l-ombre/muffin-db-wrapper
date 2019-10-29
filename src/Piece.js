@@ -203,8 +203,6 @@ class Piece {
 
         if (!this[_typeCheck](key)) key = key.toString();
 
-        if (_.isNil(val)) throw new Err("val is null or undefined");
-
         if (path) {
             const find = await this.base.findOne({ _id: key });
             let data = find.value;
