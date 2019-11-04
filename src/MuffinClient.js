@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable max-len */
 /**
  * @typedef {Object} MuffinOptions
@@ -30,18 +31,19 @@ const _readyFailed = Symbol("readyFailed");
 class MuffinClient extends EventEmitter {
 
     /**
-     * @class
+     * @constructor
      * @public
+     * @since 1.0
      * @extends EventEmitter
      * @classdesc Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} and allows you to create pieces, which are map-like objects (without cache)
      * @param {MuffinOptions} options - Options for the client
     */
-
     constructor(options = {}) {
         super();
 
         /**
          * @member {Promise} - Resolved when the database is ready
+         * @since 1.0
          */
         this.defer = new Promise((res, rej) => {
             try {
@@ -54,17 +56,20 @@ class MuffinClient extends EventEmitter {
 
         /**
          * @member {string} - Name of the database, Muffin by default
+         * @since 1.0
          */
         this.dbName = options.dbName || "muffin";
         this[_url] = options.url || `mongodb://${options.username}:${options.password}@${options.host || "localhost"}:${options.port || 27017}/${this.dbName}`;
 
         /**
          * @member {boolean} - True when the database is ready
+         * @since 1.0
          */
         this.isReady = false;
 
         /**
          * @member {boolean} - True if the database is closed
+         * @since 1.0
          */
         this.closed = false;
 
@@ -79,6 +84,7 @@ class MuffinClient extends EventEmitter {
                 /**
                  * @event MuffinClient#close
                  * @description Emitted after a socket closed against a single server or mongos proxy.
+                 * @since 1.0
                  * @type {MongoError}
                  */
                 this[_db].on("close", () => {
@@ -87,6 +93,7 @@ class MuffinClient extends EventEmitter {
 
                 /**
                  * @event MuffinClient#reconnect
+                 * @since 1.0
                  * @type {Object}
                  */
                 this[_db].on("reconnect", object => {
@@ -95,6 +102,7 @@ class MuffinClient extends EventEmitter {
 
                 /**
                  * @event MuffinClient#timeout
+                 * @since 1.0
                  * @description Emitted after a socket timeout occurred against a single server or mongos proxy.
                  * @type {MongoError}
                  */
@@ -104,6 +112,7 @@ class MuffinClient extends EventEmitter {
 
                 /**
                  * @event MuffinClient#change
+                 * @since 1.1
                  * @description Emit when a change occurs on the database
                  * @type {Object}
                  */
@@ -122,6 +131,7 @@ class MuffinClient extends EventEmitter {
 
     /**
      * @description Creates multiple pieces
+     * @since 1.0
      * @param {Array<string>} names - Names of the pieces
      * @returns {Object<Piece>} An object with the pieces. [Destructuring]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment} can be useful !
      */
@@ -133,6 +143,7 @@ class MuffinClient extends EventEmitter {
 
     /**
      * @description Creates a {@link Piece} to interact with MongoDB
+     * @since 1.0
      * @param {string} name - The piece's name
      * @returns {Piece} A {@link Piece} with the given name
      */
@@ -144,6 +155,7 @@ class MuffinClient extends EventEmitter {
 
     /**
      * @description Close the database
+     * @since 1.0
      * @returns {void} Nothing
      */
     close() {

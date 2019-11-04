@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable max-len */
 const _ = require("lodash");
 const Err = require("./MuffinError");
@@ -11,20 +12,20 @@ class Piece {
      * @class
      * @protected
      * @classdesc An object similar to Map but without cache, used to interact with the database
-     * @since 1.0.0
      * @description Initialize a new Piece.
+     * @since 1.0
      * @param {Collection} base - The [Collection]{@link https://mongodb.github.io/node-mongodb-native/3.3/api/Collection.html} from MongoDB
      * @param {MuffinClient} client - The client that instantiated the Piece
      */
     constructor(base, client) {
         /**
-         * @since 1.0.0
+         * @since 1.0
          * @member {Collection} - The collection wrapped by the piece
          */
         this.base = base;
 
         /**
-         * @since 1.0.0
+         * @since 1.0
          * @member {MuffinClient} - The client that instantiated the Piece
          */
         this.client = client;
@@ -40,8 +41,8 @@ class Piece {
 
     /**
      * @async
-     * @since 1.0.0
      * @description Sets a document into the database
+     * @since 1.0
      * @param {*} key - The key of the document to set
      * @param {*} val - The value of the document to set into the database
      * @param {string} [path=null] - The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
@@ -68,14 +69,14 @@ class Piece {
     /**
      * @async
      * @description Push to an array value
-     * @since 1.2.0
-     * @param {*} key - The key of the array element
+     * @since 1.2
+     * @param {*} key - The key of the document
      * @param {*} val - The value to push
-     * @param {string} [path=null] - The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @param {boolean} [force=false] - If true and if the element you try to modify is NOT an array, throw an error
+     * @param {string} [path=null] - The path to the property to modify inside the element. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {boolean} [allowDupes=false] - Allow duplicate values in the array
      * @returns {Promise<void>} A promise
      */
-    async push(key, val, path, force = false) {
+    async push(key, val, path, allowDupes = false) {
         this[_readyCheck]();
 
         if (_.isNil(key)) throw new Err("key is null or undefined");
@@ -84,18 +85,24 @@ class Piece {
 
         if (_.isNil(val)) throw new Err("val is null or undefined");
 
-        const find = await this.base.findOne({ _id: key }) || { value: null };
+        let rawData;
+        rawData = await this.base.findOne({ _id: key });
+        if (_.isNil(rawData)) rawData = { value: [] };
 
         if (path) {
-            if (!_.isArray(_.get(find.value, path, [])) && force) throw new Err("The element you tried to modify is not an array");
-            const data = _.get(find.value, path, []);
+            if (!_.isArray(_.get(rawData.value, path))) throw new Err("The element you tried to modify is not an array");
+            const data = _.isArray(_.get(rawData.value, path)) ? rawData.value : [];
+
+            if (!allowDupes && data.indexOf(val) > -1) return;
 
             data.push(val);
 
-            val = _.set(find.value, path, data);
+            val = _.set(rawData.value, path, data);
         } else {
-            if (!_.isArray(find.value) && force) throw new Err("The element you tried to modify is not an array");
-            const data = _.isArray(find.value) ? find.value : [];
+            if (!_.isArray(rawData.value)) throw new Err("The element you tried to modify is not an array");
+            const data = _.isArray(rawData.value) ? rawData.value : [];
+
+            if (!allowDupes && data.indexOf(val) > -1) return;
 
             data.push(val);
 
@@ -107,8 +114,8 @@ class Piece {
 
     /**
      * @async
-     * @since 1.0.0
-     * @description Finds a document in the database
+     * @description Gets a document in the database
+     * @since 1.0
      * @param {*} key - The key of the document to get
      * @param {string} [path=null] - The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @param {boolean} [raw=false] - If true, the method returns a promise containing the full object, i.e. : { _id: "foo", value: "bar" }
@@ -121,14 +128,20 @@ class Piece {
 
         if (!this[_typeCheck](key)) key = key.toString();
 
-        const find = await this.base.findOne({ _id: key });
-        if (_.isNil(find)) return null;
+        let data;
+        let rawData;
 
-        const data = find.value;
+        try {
+            rawData = await this.base.findOne({ _id: key });
+            data = rawData.value;
+        } catch (e) {
+            return null;
+        }
+
         if (_.isNil(data)) return null;
 
         if (raw) {
-            return find;
+            return rawData;
         }
 
         if (path) {
@@ -140,8 +153,8 @@ class Piece {
 
     /**
      * @async
-     * @since 1.0.0
      * @description Checks if a document exists
+     * @since 1.0
      * @param {*} key - The key of the document to check
      * @param {string} [path=null] - The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @returns {Promise<boolean>} A promise
@@ -166,8 +179,8 @@ class Piece {
 
     /**
      * @async
-     * @since 1.0.0
      * @description If the document doesn't exist : creates and returns it, else returns it
+     * @since 1.0
      * @param {*} key - The key to check if it exists or to set a document or a property inside the value
      * @param {*} val - The value to set if the key doesn't exist
      * @param {string} [path=null] - The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
@@ -180,7 +193,7 @@ class Piece {
         if (_.isNil(key)) throw new Err("key is null or undefined");
         if (_.isNil(val)) throw new Err("val is null or undefined");
 
-        if (await this.has(key, path) === false) {
+        if (!await this.has(key, path)) {
             await this.set(key, val, path);
         }
 
@@ -190,8 +203,8 @@ class Piece {
     // This method was mostly taken from Enmap... Licence : https://github.com/eslachance/enmap/blob/master/LICENSE
     /**
      * @async
-     * @since 1.0.0
      * @description Deletes a document in the database
+     * @since 1.0
      * @param {*} key - The key
      * @param {string} [path=null] - The path to the property to delete. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @returns {Promise<void>} A promise
@@ -204,9 +217,9 @@ class Piece {
         if (!this[_typeCheck](key)) key = key.toString();
 
         if (path) {
-            const find = await this.base.findOne({ _id: key });
-            let data = find.value;
-            if (_.isNil(find) || _.isNil(data)) return;
+            const rawData = await this.base.findOne({ _id: key });
+            let data = rawData.value;
+            if (_.isNil(rawData) || _.isNil(data)) return;
 
             path = _.toPath(path);
             const last = path.pop();
@@ -232,8 +245,8 @@ class Piece {
 
     /**
      * @async
-     * @since 1.0.0
      * @description Deletes all the documents
+     * @since 1.0
      * @returns {Promise<void>} A promise
      */
     async clear() {
@@ -243,26 +256,26 @@ class Piece {
     }
 
     /**
-     * @since 1.0.0
+     * @since 1.0
      * @returns {Array<*>} An array with the values of all the documents
      */
     valueArray() { return this.base.find({}).map(d => d.value).toArray(); }
 
     /**
-     * @since 1.0.0
+     * @since 1.0
      * @returns {Array<*>} An array with the keys of all the documents
      */
     keyArray() { return this.base.find({}).map(d => d._id).toArray(); }
 
     /**
-     * @since 1.0.0
+     * @since 1.0
      * @returns {Array<Object<*>>} An array with all the documents of the database
      */
     rawArray() { return this.base.find({}).toArray(); }
 
     /**
     * @async
-    * @since 1.0.0
+    * @since 1.0
     * @param {boolean} [fast=false] - Set to true if you don't need precise size & if your database is very big
     * @returns {Promise<number>} A promise containing the size of the database
     */
