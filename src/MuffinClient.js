@@ -138,7 +138,13 @@ class MuffinClient extends EventEmitter {
     multi(names = []) {
         this[_readyCheck]();
 
-        return names.map(val => this.piece(val));
+        const pieces = {};
+
+        names.map(val => {
+            pieces[val] = this.piece(val);
+        });
+
+        return pieces;
     }
 
     /**

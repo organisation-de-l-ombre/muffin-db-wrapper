@@ -13,9 +13,14 @@
     "muffin",
     "Muffin",
     "database",
+    "Database",
     "db",
     "Mongo",
-    "mongodb"
+    "mongodb",
+    "client",
+    "Client",
+    "promise",
+    "Promise"
   ],
   "author": "cat66",
   "license": "AGPL-3.0",
