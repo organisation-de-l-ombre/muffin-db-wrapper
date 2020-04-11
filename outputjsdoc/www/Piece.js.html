@@ -1,4 +1,70 @@
-// @ts-nocheck
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>JSDoc: Piece.js</title>
+
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="./build/entry.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link href="https://fonts.googleapis.com/css?family=Muli:100,400,700|Oswald:300|Inconsolata,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+</head>
+
+<body>
+    <div id="stickyNavbarOverlay"></div>
+    <div class="top-navbar">
+        <div class="container">
+            <nav class="navbar" role="navigation" aria-label="main navigation">
+                <div class="navbar-brand">
+                    
+                    
+                        <h1 class="navbar-item">Documentation</h1>
+                    
+                    <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                    </a>
+                </div>
+                
+            </nav>
+        </div>
+    </div>
+    <div class="container">
+        <div class="columns">
+            <div class="column is-3" id="sidebarNav">
+                <div class="sidebar">
+                    <nav>
+                        <h2><a href="index.html">Home</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="MuffinClient.html">MuffinClient</a></li><li><a href="Piece.html">Piece</a></li></ul><h3>Events</h3><ul><li><a href="MuffinClient.html#event:change">change</a></li><li><a href="MuffinClient.html#event:close">close</a></li><li><a href="MuffinClient.html#event:reconnect">reconnect</a></li><li><a href="MuffinClient.html#event:timeout">timeout</a></li></ul><h3><a href="global.html">Global</a></h3></div>
+                    </nav>
+                </div>
+            </div>
+            <div class="column is-9-desktop">
+                <div class="content" id="main-content-wrapper">
+                    <header class="page-title">
+                        <p>Source</p>
+                        <h1>Piece.js</h1>
+                    </header>
+                    
+                    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// @ts-nocheck
 /* eslint-disable max-len */
 const _ = require("lodash");
 const Err = require("./MuffinError");
@@ -58,7 +124,7 @@ class Piece {
      * @param {*} key - The key of the document to set
      * @param {*} val - The value of the document to set into the database
      * @param {string} [path=null] - The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @returns {Promise<void>} A promise
+     * @returns {Promise&lt;void>} A promise
      */
     async set(key, val, path) {
         this[_readyCheck]();
@@ -96,7 +162,7 @@ class Piece {
      * @param {*} key - The key of the document
      * @param {*} val - The value to push
      * @param {string} [path=null] - The path to the property to modify inside the element. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @returns {Promise<void>} A promise
+     * @returns {Promise&lt;void>} A promise
      */
     async push(key, val, path) {
         this[_readyCheck]();
@@ -154,7 +220,7 @@ class Piece {
      * @param {*} key - The key of the document to get
      * @param {string} [path=null] - The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @param {boolean} [raw=false] - If raw is set to true and if there is no [cache]{@link Piece#cache}, returns the full object, i.e. : { _id: "foo", value: "bar" }
-     * @returns {Promise<*>} If raw is set to false and if there is no [cache]{@link Piece#cache}, returns the value found in the database for this key.
+     * @returns {Promise&lt;*>} If raw is set to false and if there is no [cache]{@link Piece#cache}, returns the value found in the database for this key.
      */
     async get(key, path, raw = false) {
         this[_readyCheck]();
@@ -185,7 +251,7 @@ class Piece {
 
         if (_.isNil(data)) return null;
 
-        if (raw && !this.hasCache) {
+        if (raw &amp;&amp; !this.hasCache) {
             return rawData;
         }
 
@@ -202,7 +268,7 @@ class Piece {
      * @since 1.0
      * @param {*} key - The key of the document to check
      * @param {string} [path=null] - The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @returns {Promise<boolean>} A promise
+     * @returns {Promise&lt;boolean>} A promise
      */
     async has(key, path) {
         this[_readyCheck]();
@@ -242,7 +308,7 @@ class Piece {
      * @param {*} val - The value to set if the key doesn't exist
      * @param {string} [path=null] - The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @param {boolean} [raw=false] - If set to true, returns the full object, i.e. : { _id: "foo", value: "bar" }
-     * @returns {Promise<*>} If raw is set to false and if there is no [cache]{@link Piece#cache}, returns the value found in the database for this key.
+     * @returns {Promise&lt;*>} If raw is set to false and if there is no [cache]{@link Piece#cache}, returns the value found in the database for this key.
      */
     async ensure(key, val, path, raw = false) {
         this[_readyCheck]();
@@ -264,7 +330,7 @@ class Piece {
      * @since 1.0
      * @param {*} key - The key
      * @param {string} [path=null] - The path to the property to delete. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @returns {Promise<void>} A promise
+     * @returns {Promise&lt;void>} A promise
      */
     async delete(key, path) {
         this[_readyCheck]();
@@ -317,7 +383,7 @@ class Piece {
      * @async
      * @description Deletes all the documents
      * @since 1.0
-     * @returns {Promise<void>} A promise
+     * @returns {Promise&lt;void>} A promise
      */
     async clear() {
         this[_readyCheck]();
@@ -329,11 +395,11 @@ class Piece {
     /**
      * @since 1.0
      * @param {boolean} [cache=false] - If set to true and if there is a [cache]{@link Piece#cache}, fetch all the database and put it inside.
-     * @returns {Array<*>} An array with the values of all the documents
+     * @returns {Array&lt;*>} An array with the values of all the documents
      */
     valueArray(cache = false) {
         return this.base.find({}).map(d => {
-            if (this.hasCache && cache) this.cache.set(d._id, d.value);
+            if (this.hasCache &amp;&amp; cache) this.cache.set(d._id, d.value);
             return d.value;
         }).toArray();
     }
@@ -341,11 +407,11 @@ class Piece {
     /**
      * @since 1.0
      * @param {boolean} [cache=false] - If set to true and if there is a [cache]{@link Piece#cache}, fetch all the database and put it inside.
-     * @returns {Array<*>} An array with the keys of all the documents
+     * @returns {Array&lt;*>} An array with the keys of all the documents
      */
     keyArray(cache = false) {
         return this.base.find({}).map(d => {
-            if (this.hasCache && cache) this.cache.set(d._id, d.value);
+            if (this.hasCache &amp;&amp; cache) this.cache.set(d._id, d.value);
             return d._id;
         }).toArray();
     }
@@ -353,11 +419,11 @@ class Piece {
     /**
      * @since 1.0
      * @param {boolean} [cache=false] - If set to true and if there is a [cache]{@link Piece#cache}, fetch all the database and put it inside.
-     * @returns {Array<Object<*>>} An array with all the documents of the database
+     * @returns {Array&lt;Object&lt;*>>} An array with all the documents of the database
      */
     rawArray(cache) {
         const rawData = this.base.find({});
-        if (this.hasCache && cache) rawData.map(d => this.cache.set(d._id, d.value));
+        if (this.hasCache &amp;&amp; cache) rawData.map(d => this.cache.set(d._id, d.value));
         return rawData.toArray();
     }
 
@@ -365,7 +431,7 @@ class Piece {
     * @async
     * @since 1.0
     * @param {boolean} [fast=false] - Set to true if your database is very big (the size will be less precise but it will be faster)
-    * @returns {Promise<number>} A promise containing the size of the database
+    * @returns {Promise&lt;number>} A promise containing the size of the database
     */
     async size(fast = false) {
         if (fast) {
@@ -378,3 +444,31 @@ class Piece {
 }
 
 module.exports = Piece;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Sat Apr 11 2020 20:44:26 GMT+0200 (GMT+02:00)</p>
+        <p class="sidebar-created-by">
+            <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+            <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+        </p>
+    </div>
+</footer>
+
+
+<script src="scripts/app.min.js"></script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

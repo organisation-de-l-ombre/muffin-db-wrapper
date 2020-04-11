@@ -62,12 +62,12 @@ typings/
 .next
 
 # JSDoc config
-jsdoc.json
-out/
+JSDoc.json
+outputjsdoc/
 README_JSDoc.md
 
 # Tests
-test/
+tests/
 
 # VSCode
 .vscode/
