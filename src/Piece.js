@@ -16,8 +16,9 @@ class Piece {
      * @since 1.0
      * @param {Collection} base - The [Collection]{@link https://mongodb.github.io/node-mongodb-native/3.3/api/Collection.html} from MongoDB
      * @param {MuffinClient} client - The client that instantiated the Piece
+     * @param {boolean} cache - If set to true, a [cache]{@link Piece#cache} will be created
      */
-    constructor(base, client) {
+    constructor(base, client, cache) {
         /**
          * @since 1.0
          * @member {Collection} - The collection wrapped by the piece
@@ -29,6 +30,17 @@ class Piece {
          * @member {MuffinClient} - The client that instantiated the Piece
          */
         this.client = client;
+
+        /**
+         * @since 1.2
+         * @member {Map} - A cache, it can be useful but it can also uses a lot of ram
+         */
+        if (cache) {
+            this.hasCache = true;
+            this.cache = new Map();
+        } else {
+            this.hasCache = false;
+        }
     }
 
     [_readyCheck]() {
@@ -58,11 +70,22 @@ class Piece {
         if (_.isNil(val)) throw new Err("val is null or undefined");
 
         if (path) {
-            const find = await this.base.findOne({ _id: key });
+            let rawData;
 
-            val = _.set(find.value || {}, path, val);
+            if (this.hasCache) {
+                if (this.cache.has(key)) {
+                    rawData = { value: this.cache.get(key) };
+                } else {
+                    rawData = await this.base.findOne({ _id: key });
+                }
+            } else {
+                rawData = await this.base.findOne({ _id: key });
+            }
+
+            val = _.set(rawData.value || {}, path, val);
         }
 
+        if (this.hasCache) this.cache.set(key, val);
         await this.base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
     }
 
@@ -73,10 +96,9 @@ class Piece {
      * @param {*} key - The key of the document
      * @param {*} val - The value to push
      * @param {string} [path=null] - The path to the property to modify inside the element. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @param {boolean} [allowDupes=false] - Allow duplicate values in the array
      * @returns {Promise<void>} A promise
      */
-    async push(key, val, path, allowDupes = false) {
+    async push(key, val, path) {
         this[_readyCheck]();
 
         if (_.isNil(key)) throw new Err("key is null or undefined");
@@ -86,29 +108,42 @@ class Piece {
         if (_.isNil(val)) throw new Err("val is null or undefined");
 
         let rawData;
-        rawData = await this.base.findOne({ _id: key });
-        if (_.isNil(rawData)) rawData = { value: [] };
+
+        if (this.hasCache) {
+            if (this.cache.has(key)) {
+                rawData = { value: this.cache.get(key) };
+            } else {
+                rawData = await this.base.findOne({ _id: key });
+            }
+        } else {
+            rawData = await this.base.findOne({ _id: key });
+        }
+
+        if (_.isNil(rawData) || _.isNil(rawData.value)) rawData = { value: [] };
+
+        let data;
 
         if (path) {
             if (!_.isArray(_.get(rawData.value, path))) throw new Err("The element you tried to modify is not an array");
-            const data = _.isArray(_.get(rawData.value, path)) ? rawData.value : [];
+            data = _.isArray(_.get(rawData.value, path)) ? rawData.value : [];
 
-            if (!allowDupes && data.indexOf(val) > -1) return;
+            if (data.indexOf(val) > -1) return;
 
             data.push(val);
 
             val = _.set(rawData.value, path, data);
         } else {
             if (!_.isArray(rawData.value)) throw new Err("The element you tried to modify is not an array");
-            const data = _.isArray(rawData.value) ? rawData.value : [];
+            data = _.isArray(rawData.value) ? rawData.value : [];
 
-            if (!allowDupes && data.indexOf(val) > -1) return;
+            if (data.indexOf(val) > -1) return;
 
             data.push(val);
 
             val = data;
         }
 
+        if (this.hasCache) this.cache.set(key, val);
         await this.base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
     }
 
@@ -118,8 +153,8 @@ class Piece {
      * @since 1.0
      * @param {*} key - The key of the document to get
      * @param {string} [path=null] - The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @param {boolean} [raw=false] - If true, the method returns a promise containing the full object, i.e. : { _id: "foo", value: "bar" }
-     * @returns {Promise<*>} If raw is false : a promise containing the value found in the database for this key.
+     * @param {boolean} [raw=false] - If raw is set to true and if there is no cache, returns the full object, i.e. : { _id: "foo", value: "bar" }
+     * @returns {Promise<*>} If raw is set to false and if there is no cache, returns the value found in the database for this key.
      */
     async get(key, path, raw = false) {
         this[_readyCheck]();
@@ -132,7 +167,17 @@ class Piece {
         let rawData;
 
         try {
-            rawData = await this.base.findOne({ _id: key });
+            if (this.hasCache) {
+                if (this.cache.has(key)) {
+                    rawData = { _id: key, value: this.cache.get(key) };
+                } else {
+                    rawData = await this.base.findOne({ _id: key });
+                    this.cache.set(key, rawData.value);
+                }
+            } else {
+                rawData = await this.base.findOne({ _id: key });
+            }
+
             data = rawData.value;
         } catch (e) {
             return null;
@@ -140,7 +185,7 @@ class Piece {
 
         if (_.isNil(data)) return null;
 
-        if (raw) {
+        if (raw && !this.hasCache) {
             return rawData;
         }
 
@@ -164,11 +209,23 @@ class Piece {
 
         if (!this[_typeCheck](key)) key = key.toString();
 
-        const find = await this.base.findOne({ _id: key });
-        if (_.isNil(find)) return false;
+        let rawData;
 
-        const data = find.value;
+        if (this.hasCache) {
+            if (this.cache.has(key)) {
+                rawData = { value: this.cache.get(key) };
+            } else {
+                rawData = await this.base.findOne({ _id: key });
+            }
+        } else {
+            rawData = await this.base.findOne({ _id: key });
+        }
+        if (_.isNil(rawData)) return false;
+
+        const data = rawData.value;
         if (_.isNil(data)) return false;
+
+        if (this.hasCache) this.cache.set(key, data);
 
         if (path) {
             return _.has(data, path);
@@ -184,8 +241,8 @@ class Piece {
      * @param {*} key - The key to check if it exists or to set a document or a property inside the value
      * @param {*} val - The value to set if the key doesn't exist
      * @param {string} [path=null] - The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @param {boolean} [raw=false] - If true, the method returns a promise containing the full object, i.e. : { _id: "foo", value: "bar" }
-     * @returns {Promise<*>} If raw is false : a promise containing the value found in the database for this key.
+     * @param {boolean} [raw=false] - If set to true, returns the full object, i.e. : { _id: "foo", value: "bar" }
+     * @returns {Promise<*>} If raw is set to false and there is no cache, returns the value found in the database for this key.
      */
     async ensure(key, val, path, raw = false) {
         this[_readyCheck]();
@@ -217,7 +274,18 @@ class Piece {
         if (!this[_typeCheck](key)) key = key.toString();
 
         if (path) {
-            const rawData = await this.base.findOne({ _id: key });
+            let rawData;
+
+            if (this.hasCache) {
+                if (this.cache.has(key)) {
+                    rawData = { value: this.cache.get(key) };
+                } else {
+                    rawData = await this.base.findOne({ _id: key });
+                }
+            } else {
+                rawData = await this.base.findOne({ _id: key });
+            }
+
             let data = rawData.value;
             if (_.isNil(rawData) || _.isNil(data)) return;
 
@@ -237,8 +305,10 @@ class Piece {
                 data = propValue;
             }
 
+            if (this.hasCache) this.cache.set(key, data);
             await this.base.updateOne({ _id: key }, { $set: { _id: key, value: data } }, { upsert: true });
         } else {
+            if (this.hasCache) this.cache.delete(key);
             await this.base.deleteOne({ _id: key }, { single: true });
         }
     }
@@ -276,7 +346,7 @@ class Piece {
     /**
     * @async
     * @since 1.0
-    * @param {boolean} [fast=false] - Set to true if you don't need precise size & if your database is very big
+    * @param {boolean} [fast=false] - Set to true if your database is very big
     * @returns {Promise<number>} A promise containing the size of the database
     */
     async size(fast = false) {

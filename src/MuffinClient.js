@@ -133,15 +133,16 @@ class MuffinClient extends EventEmitter {
      * @description Creates multiple pieces
      * @since 1.0
      * @param {Array<string>} names - Names of the pieces
+     * @param {boolean} [cache=false] - If set to true, the pieces will have a [cache]{@link Piece#cache}
      * @returns {Object<Piece>} An object with the pieces. [Destructuring]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment} can be useful !
      */
-    multi(names = []) {
+    multi(names = [], cache) {
         this[_readyCheck]();
 
         const pieces = {};
 
         names.map(val => {
-            pieces[val] = this.piece(val);
+            pieces[val] = this.piece(val, cache);
         });
 
         return pieces;
@@ -151,12 +152,13 @@ class MuffinClient extends EventEmitter {
      * @description Creates a {@link Piece} to interact with MongoDB
      * @since 1.0
      * @param {string} name - The piece's name
+     * @param {boolean} [cache=false] - If set to true, a [cache]{@link Piece#cache} will be created
      * @returns {Piece} A {@link Piece} with the given name
      */
-    piece(name) {
+    piece(name, cache = false) {
         this[_readyCheck]();
 
-        return new Piece(this[_db].collection(name), this);
+        return new Piece(this[_db].collection(name), this, cache);
     }
 
     /**
