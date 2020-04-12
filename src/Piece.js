@@ -9,6 +9,7 @@ const _typeCheck = Symbol("typeCheck");
 class Piece {
 
     /**
+     * @namespace
      * @class
      * @protected
      * @classdesc An object similar to Map that has an optional cache, used to interact with the database
@@ -16,9 +17,9 @@ class Piece {
      * @since 1.0
      * @param {Collection} base - The [Collection]{@link https://mongodb.github.io/node-mongodb-native/3.3/api/Collection.html} from MongoDB
      * @param {MuffinClient} client - The client that instantiated the Piece
-     * @param {boolean} cache - If set to true, a [cache]{@link Piece#cache} will be created
+     * @param {boolean} cache - If set to true, a [cache]{@link cache} will be created
      */
-    constructor(base, client, cache) {
+    constructor(base, client, { cache, fetchAll }) {
         /**
          * @since 1.0
          * @member {Collection} - The collection wrapped by the piece
@@ -31,13 +32,22 @@ class Piece {
          */
         this.client = client;
 
-        /**
-         * @since 1.2
-         * @member {Map} - A cache, it can be useful but it can also uses a lot of ram
-         */
         if (cache) {
+            /**
+             * @since 1.2
+             * @member {boolean} - If set to true, the cache is available
+             */
             this.hasCache = true;
+
+            /**
+             * @since 1.2
+             * @member {Map} - An optional cache, it can be useful but it can also uses a lot of ram
+             */
             this.cache = new Map();
+
+            if (fetchAll) {
+                this.base.find({}).map(d => this.cache.set(d._id, d.value));
+            }
         } else {
             this.hasCache = false;
         }
@@ -95,10 +105,11 @@ class Piece {
      * @since 1.2
      * @param {*} key - The key of the document
      * @param {*} val - The value to push
-     * @param {string} [path=null] - The path to the property to modify inside the element. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {string} [path=null] - Optional. The path to the property to modify inside the element. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {boolean} [allowDupes=false] - Optional. Allow duplicate values in the array
      * @returns {Promise<void>} A promise
      */
-    async push(key, val, path) {
+    async push(key, val, path, allowDupes = false) {
         this[_readyCheck]();
 
         if (_.isNil(key)) throw new Err("key is null or undefined");
@@ -122,29 +133,29 @@ class Piece {
         if (_.isNil(rawData) || _.isNil(rawData.value)) rawData = { value: [] };
 
         let data;
+        let finalData;
 
         if (path) {
             if (!_.isArray(_.get(rawData.value, path))) throw new Err("The element you tried to modify is not an array");
             data = _.isArray(_.get(rawData.value, path)) ? rawData.value : [];
 
-            if (data.indexOf(val) > -1) return;
-
             data.push(val);
 
-            val = _.set(rawData.value, path, data);
+            finalData = _.set(rawData.value, path, data);
         } else {
             if (!_.isArray(rawData.value)) throw new Err("The element you tried to modify is not an array");
             data = _.isArray(rawData.value) ? rawData.value : [];
 
-            if (data.indexOf(val) > -1) return;
-
             data.push(val);
 
-            val = data;
+            finalData = data;
         }
 
-        if (this.hasCache) this.cache.set(key, val);
-        await this.base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
+        if (this.hasCache) this.cache.set(key, finalData);
+
+        if (data.indexOf(val) > -1 && !allowDupes) return;
+
+        await this.base.updateOne({ _id: key }, { $set: { _id: key, value: finalData } }, { upsert: true });
     }
 
     /**
@@ -152,9 +163,9 @@ class Piece {
      * @description Gets a document in the database
      * @since 1.0
      * @param {*} key - The key of the document to get
-     * @param {string} [path=null] - The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @param {boolean} [raw=false] - If raw is set to true and if there is no [cache]{@link Piece#cache}, returns the full object, i.e. : { _id: "foo", value: "bar" }
-     * @returns {Promise<*>} If raw is set to false and if there is no [cache]{@link Piece#cache}, returns the value found in the database for this key.
+     * @param {string} [path=null] - Optional. The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {boolean} [raw=false] - Optional. Returns the full object, i.e. : { _id: "foo", value: "bar" }
+     * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
      */
     async get(key, path, raw = false) {
         this[_readyCheck]();
@@ -201,7 +212,7 @@ class Piece {
      * @description Checks if a document exists
      * @since 1.0
      * @param {*} key - The key of the document to check
-     * @param {string} [path=null] - The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {string} [path=null] - Optional. The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @returns {Promise<boolean>} A promise
      */
     async has(key, path) {
@@ -240,9 +251,9 @@ class Piece {
      * @since 1.0
      * @param {*} key - The key to check if it exists or to set a document or a property inside the value
      * @param {*} val - The value to set if the key doesn't exist
-     * @param {string} [path=null] - The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @param {boolean} [raw=false] - If set to true, returns the full object, i.e. : { _id: "foo", value: "bar" }
-     * @returns {Promise<*>} If raw is set to false and if there is no [cache]{@link Piece#cache}, returns the value found in the database for this key.
+     * @param {string} [path=null] - Optional. The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {boolean} [raw=false] - Optional. Returns the full object, i.e. : { _id: "foo", value: "bar" }
+     * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
      */
     async ensure(key, val, path, raw = false) {
         this[_readyCheck]();
@@ -263,7 +274,7 @@ class Piece {
      * @description Deletes a document in the database
      * @since 1.0
      * @param {*} key - The key
-     * @param {string} [path=null] - The path to the property to delete. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @param {string} [path=null] - Optional. The path to the property to delete. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
      * @returns {Promise<void>} A promise
      */
     async delete(key, path) {
@@ -328,7 +339,7 @@ class Piece {
 
     /**
      * @since 1.0
-     * @param {boolean} [cache=false] - If set to true and if there is a [cache]{@link Piece#cache}, fetch all the database and put it inside.
+     * @param {boolean} [cache=false] - Optional. If there is a [cache]{@link Piece~cache}, fetch all the database and caches it all.
      * @returns {Array<*>} An array with the values of all the documents
      */
     valueArray(cache = false) {
@@ -340,7 +351,7 @@ class Piece {
 
     /**
      * @since 1.0
-     * @param {boolean} [cache=false] - If set to true and if there is a [cache]{@link Piece#cache}, fetch all the database and put it inside.
+     * @param {boolean} [cache=false] - Optional. If there is a [cache]{@link Piece~cache}, fetch all the database and caches it all.
      * @returns {Array<*>} An array with the keys of all the documents
      */
     keyArray(cache = false) {
@@ -352,19 +363,25 @@ class Piece {
 
     /**
      * @since 1.0
-     * @param {boolean} [cache=false] - If set to true and if there is a [cache]{@link Piece#cache}, fetch all the database and put it inside.
+     * @param {boolean} [cache=false] - Optional. If there is a [cache]{@link Piece~cache}, fetch all the database and caches it all.
      * @returns {Array<Object<*>>} An array with all the documents of the database
      */
-    rawArray(cache) {
+    rawArray(cache = false) {
         const rawData = this.base.find({});
-        if (this.hasCache && cache) rawData.map(d => this.cache.set(d._id, d.value));
+        if (this.hasCache && cache) {
+            rawData.map(d => {
+                this.cache.set(d._id, d.value);
+                return d;
+            });
+        }
+
         return rawData.toArray();
     }
 
     /**
     * @async
     * @since 1.0
-    * @param {boolean} [fast=false] - Set to true if your database is very big (the size will be less precise but it will be faster)
+    * @param {boolean} [fast=false] - Optional. Set to true if your database is very big (the size will be less precise but it will be faster)
     * @returns {Promise<number>} A promise containing the size of the database
     */
     async size(fast = false) {

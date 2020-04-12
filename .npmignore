@@ -61,10 +61,11 @@ typings/
 # next.js build output
 .next
 
-# JSDoc config
+# JSDoc
 JSDoc.json
-outputjsdoc/
 README_JSDoc.md
+outputjsdoc/
+better-docs/
 
 # Tests
 tests/

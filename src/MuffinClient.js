@@ -1,5 +1,5 @@
 // @ts-nocheck
-/* eslint-disable max-len */
+
 /**
  * @typedef {Object} MuffinOptions
  * @description If you use url you don't need to use username, password, port and host
@@ -9,6 +9,13 @@
  * @property {string} [host="localhost"]    - Not used if an url is provided
  * @property {string} [dbName="muffin"]     - The name of the database on the Mongo server
  * @property {string} [url]
+*/
+
+/**
+ * @typedef {Object} PieceOptions
+ * @description If you use url you don't need to use username, password, port and host
+ * @property {boolean} [cache=false] - If set to true, a [cache]{@link Piece#cache} will be created
+ * @property {boolean} [fetchAll=false] - If set to true, the piece will caches all the database
 */
 
 /**
@@ -133,16 +140,16 @@ class MuffinClient extends EventEmitter {
      * @description Creates multiple pieces
      * @since 1.0
      * @param {Array<string>} names - Names of the pieces
-     * @param {boolean} [cache=false] - If set to true, the pieces will have a [cache]{@link Piece#cache}
+     * @param {PieceOptions} options - Options like cache or fetchAll
      * @returns {Object<Piece>} An object with the pieces. [Destructuring]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment} can be useful !
      */
-    multi(names = [], cache) {
+    multi(names = [], options) {
         this[_readyCheck]();
 
         const pieces = {};
 
         names.map(val => {
-            pieces[val] = this.piece(val, cache);
+            pieces[val] = this.piece(val, options);
         });
 
         return pieces;
@@ -152,13 +159,13 @@ class MuffinClient extends EventEmitter {
      * @description Creates a {@link Piece} to interact with MongoDB
      * @since 1.0
      * @param {string} name - The piece's name
-     * @param {boolean} [cache=false] - If set to true, a [cache]{@link Piece#cache} will be created
+     * @param {PieceOptions} options - Options like cache or fetchAll
      * @returns {Piece} A {@link Piece} with the given name
      */
-    piece(name, cache = false) {
+    piece(name, options) {
         this[_readyCheck]();
 
-        return new Piece(this[_db].collection(name), this, cache);
+        return new Piece(this[_db].collection(name), this, options);
     }
 
     /**

@@ -5,10 +5,17 @@ const Muffin = require("../index.js");
         url: "mongodb+srv://cookie3:nKlcVr4tSlgXaALi@cookiedb-yge5g.gcp.mongodb.net/muffin?retryWrites=true&w=majority"
     });
     await client.defer;
-    const hi = client.piece("hi", true);
-    const hi2 = client.piece("hi");
+    const hi = client.piece("hi", { cache: true, fetchAll: false });
 
-    console.log(await hi.set("issou", "yolo"));
-    console.log(await hi.get("issou"));
-    console.log(hi, hi2);
+    console.log(hi.cache);
+
+    setTimeout(async () => {
+        hi.push("testarray", "yolo").then(() => console.log(hi.cache));
+
+        // console.log(await hi.get("testarray"), await hi.rawArray(true));
+
+        // await hi.delete("testarray", "tg");
+
+        // console.log(await hi.get("testarray"));
+    }, 5000);
 })();

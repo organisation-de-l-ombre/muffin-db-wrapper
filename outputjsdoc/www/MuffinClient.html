@@ -196,7 +196,7 @@
         <p class="tag-source">
             <a href="MuffinClient.js.html" class="button">View Source</a>
             <span>
-                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line41">line 41</a>
+                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line48">line 48</a>
             </span>
         </p>
     
@@ -325,7 +325,7 @@
         <p class="tag-source">
             <a href="MuffinClient.js.html" class="button">View Source</a>
             <span>
-                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line74">line 74</a>
+                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line81">line 81</a>
             </span>
         </p>
     
@@ -405,7 +405,7 @@
         <p class="tag-source">
             <a href="MuffinClient.js.html" class="button">View Source</a>
             <span>
-                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line61">line 61</a>
+                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line68">line 68</a>
             </span>
         </p>
     
@@ -485,7 +485,7 @@
         <p class="tag-source">
             <a href="MuffinClient.js.html" class="button">View Source</a>
             <span>
-                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line48">line 48</a>
+                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line55">line 55</a>
             </span>
         </p>
     
@@ -565,7 +565,7 @@
         <p class="tag-source">
             <a href="MuffinClient.js.html" class="button">View Source</a>
             <span>
-                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line68">line 68</a>
+                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line75">line 75</a>
             </span>
         </p>
     
@@ -658,7 +658,7 @@
         <p class="tag-source">
             <a href="MuffinClient.js.html" class="button">View Source</a>
             <span>
-                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line169">line 169</a>
+                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line176">line 176</a>
             </span>
         </p>
     
@@ -720,7 +720,7 @@
         
         <span class="code-name">
             
-                multi<span class="signature">(names, cache<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object.&lt;<a href="Piece.html">Piece</a>>}</span>
+                multi<span class="signature">(names, options)</span><span class="type-signature"> &rarr; {Object.&lt;<a href="Piece.html">Piece</a>>}</span>
             
         </span>
     </h4>
@@ -754,11 +754,7 @@
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -784,19 +780,7 @@
   </td>
 
   
-      <td class="attributes">
-      
 
-      
-
-      
-      </td>
-  
-
-  
-      <td class="default">
-      
-      </td>
   
 
   <td class="description last">Names of the pieces</td>
@@ -808,39 +792,23 @@
         
 <tr class="deep-level-0">
   
-      <td class="name"><code>cache</code></td>
+      <td class="name"><code>options</code></td>
   
 
   <td class="type">
   
       
-<span class="param-type">boolean</span>
+<span class="param-type"><a href="global.html#PieceOptions">PieceOptions</a></span>
 
 
   
   </td>
 
   
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
 
   
-      <td class="default">
-      
-          false
-      
-      </td>
-  
 
-  <td class="description last">If set to true, the pieces will have a <code>cache</code></td>
+  <td class="description last">Options like cache or fetchAll</td>
 </tr>
 
 
@@ -890,7 +858,7 @@
         <p class="tag-source">
             <a href="MuffinClient.js.html" class="button">View Source</a>
             <span>
-                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line139">line 139</a>
+                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line146">line 146</a>
             </span>
         </p>
     
@@ -952,7 +920,7 @@
         
         <span class="code-name">
             
-                piece<span class="signature">(name, cache<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Piece.html">Piece</a>}</span>
+                piece<span class="signature">(name, options)</span><span class="type-signature"> &rarr; {<a href="Piece.html">Piece</a>}</span>
             
         </span>
     </h4>
@@ -986,11 +954,7 @@
         <th>Type</th>
 
         
-        <th>Attributes</th>
-        
 
-        
-        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -1016,19 +980,7 @@
   </td>
 
   
-      <td class="attributes">
-      
 
-      
-
-      
-      </td>
-  
-
-  
-      <td class="default">
-      
-      </td>
   
 
   <td class="description last">The piece's name</td>
@@ -1040,39 +992,23 @@
         
 <tr class="deep-level-0">
   
-      <td class="name"><code>cache</code></td>
+      <td class="name"><code>options</code></td>
   
 
   <td class="type">
   
       
-<span class="param-type">boolean</span>
+<span class="param-type"><a href="global.html#PieceOptions">PieceOptions</a></span>
 
 
   
   </td>
 
   
-      <td class="attributes">
-      
-          &lt;optional><br>
-      
-
-      
-
-      
-      </td>
-  
 
   
-      <td class="default">
-      
-          false
-      
-      </td>
-  
 
-  <td class="description last">If set to true, a <code>cache</code> will be created</td>
+  <td class="description last">Options like cache or fetchAll</td>
 </tr>
 
 
@@ -1122,7 +1058,7 @@
         <p class="tag-source">
             <a href="MuffinClient.js.html" class="button">View Source</a>
             <span>
-                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line158">line 158</a>
+                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line165">line 165</a>
             </span>
         </p>
     
@@ -1267,7 +1203,7 @@
         <p class="tag-source">
             <a href="MuffinClient.js.html" class="button">View Source</a>
             <span>
-                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line113">line 113</a>
+                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line120">line 120</a>
             </span>
         </p>
     
@@ -1377,7 +1313,7 @@
         <p class="tag-source">
             <a href="MuffinClient.js.html" class="button">View Source</a>
             <span>
-                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line84">line 84</a>
+                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line91">line 91</a>
             </span>
         </p>
     
@@ -1483,7 +1419,7 @@
         <p class="tag-source">
             <a href="MuffinClient.js.html" class="button">View Source</a>
             <span>
-                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line94">line 94</a>
+                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line101">line 101</a>
             </span>
         </p>
     
@@ -1593,7 +1529,7 @@
         <p class="tag-source">
             <a href="MuffinClient.js.html" class="button">View Source</a>
             <span>
-                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line103">line 103</a>
+                <a href="MuffinClient.js.html">MuffinClient.js</a>, <a href="MuffinClient.js.html#line110">line 110</a>
             </span>
         </p>
     
@@ -1640,7 +1576,7 @@
 
 <footer class="footer">
     <div class="content has-text-centered">
-        <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Sat Apr 11 2020 20:44:26 GMT+0200 (GMT+02:00)</p>
+        <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Sun Apr 12 2020 15:25:02 GMT+0200 (GMT+02:00)</p>
         <p class="sidebar-created-by">
             <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
             <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
