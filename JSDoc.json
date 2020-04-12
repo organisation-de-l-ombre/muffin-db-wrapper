@@ -15,9 +15,13 @@
     },
     "templates": {
         "cleverLinks": true,
-        "monospaceLinks": true
+        "monospaceLinks": false,
+        "better-docs": {
+            "name": "MuffinDB Documentation"
+        }
     },
     "opts": {
-        "template": "node_modules/better-docs"
+        "template": "./node_modules/better-docs",
+        "readme": "./README_JSDoc.md"
     }
 }

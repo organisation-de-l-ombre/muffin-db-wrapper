@@ -1,9 +1,10 @@
 <h1>Muffin</h1>
 
-**The muffin connects to a MongoDB server and allows you to create pieces, which allows you to interact with databases as if you were using a Map !**
+**The muffin connects to a MongoDB server and allows you to create pieces, which can be used almost like a map !**
 **It also has an optional cache.**
 
 **[NPM](https://www.npmjs.com/package/muffindb)**
+**[GitHub](https://github.com/Cat66000/Muffin)**
 
 **Contact : My Discord username is Cat66#9597  
-I have also a [Discord server](https://discord.gg/VgasTNY) but it is only in french, I will maybe adapt the server to be also in english**
+I have also a [Discord server](https://discord.gg/ZXtEVJm)**

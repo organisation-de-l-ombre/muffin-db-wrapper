@@ -14,8 +14,10 @@ const Muffin = require("../index.js");
 
         await hi.push("testarray", "yolo", null, true).then(() => console.log(hi.cache));
 
-        await hi.clear();
+        hi.evictAll();
+        console.log(await hi.valueArray());
 
+        await hi.clear();
         // console.log(await hi.get("testarray"), await hi.rawArray(true));
 
         // await hi.delete("testarray", "tg");
