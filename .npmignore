@@ -68,7 +68,7 @@ outputjsdoc/
 better-docs/
 
 # Tests
-tests/
+_tests/
 
 # VSCode
 .vscode/

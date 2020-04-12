@@ -10,10 +10,10 @@ const Muffin = require("../index.js");
     console.log(hi.cache);
 
     setTimeout(async () => {
-        await hi.push("testarray", "yolo");
+        await hi.push("testarray", "yolo", null, true);
         console.log(hi.cache);
 
-        await hi.push("testarray", "yolo");
+        await hi.push("testarray", "yolo", null, true);
         console.log(hi.cache);
 
         // console.log(await hi.get("testarray"), await hi.rawArray(true));
