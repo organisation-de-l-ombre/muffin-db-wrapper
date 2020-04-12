@@ -10,12 +10,16 @@ const Muffin = require("../index.js");
     console.log(hi.cache);
 
     setTimeout(async () => {
-        hi.push("testarray", "yolo").then(() => console.log(hi.cache));
+        await hi.push("testarray", "yolo");
+        console.log(hi.cache);
+
+        await hi.push("testarray", "yolo");
+        console.log(hi.cache);
 
         // console.log(await hi.get("testarray"), await hi.rawArray(true));
 
         // await hi.delete("testarray", "tg");
 
         // console.log(await hi.get("testarray"));
-    }, 5000);
+    }, 3000);
 })();

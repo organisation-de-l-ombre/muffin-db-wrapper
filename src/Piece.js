@@ -106,7 +106,7 @@ class Piece {
      * @param {*} key - The key of the document
      * @param {*} val - The value to push
      * @param {string} [path=null] - Optional. The path to the property to modify inside the element. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
-     * @param {boolean} [allowDupes=false] - Optional. Allow duplicate values in the array
+     * @param {boolean} [allowDupes=false] - Optional. Allow duplicate values in the array.
      * @returns {Promise<void>} A promise
      */
     async push(key, val, path, allowDupes = false) {
@@ -139,6 +139,12 @@ class Piece {
             if (!_.isArray(_.get(rawData.value, path))) throw new Err("The element you tried to modify is not an array");
             data = _.isArray(_.get(rawData.value, path)) ? rawData.value : [];
 
+            if (data.indexOf(val) > -1 && !allowDupes) {
+                if (!this.cache.has(key)) this.cache.set(key, finalData);
+
+                return;
+            }
+
             data.push(val);
 
             finalData = _.set(rawData.value, path, data);
@@ -146,14 +152,18 @@ class Piece {
             if (!_.isArray(rawData.value)) throw new Err("The element you tried to modify is not an array");
             data = _.isArray(rawData.value) ? rawData.value : [];
 
+            if (data.indexOf(val) > -1 && !allowDupes) {
+                if (!this.cache.has(key)) this.cache.set(key, finalData);
+
+                return;
+            }
+
             data.push(val);
 
             finalData = data;
         }
 
         if (this.hasCache) this.cache.set(key, finalData);
-
-        if (data.indexOf(val) > -1 && !allowDupes) return;
 
         await this.base.updateOne({ _id: key }, { $set: { _id: key, value: finalData } }, { upsert: true });
     }
@@ -268,7 +278,7 @@ class Piece {
         return await this.get(key, path, raw);
     }
 
-    // This method was mostly taken from Enmap... Licence : https://github.com/eslachance/enmap/blob/master/LICENSE
+    // This method was mostly taken from Enmap (but it was modified)... Licence : https://github.com/eslachance/enmap/blob/master/LICENSE
     /**
      * @async
      * @description Deletes a document in the database
