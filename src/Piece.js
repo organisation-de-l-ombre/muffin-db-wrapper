@@ -335,6 +335,54 @@ class Piece {
     }
 
     /**
+     * @description Remove a cached element, it does not touch the real database
+     * @since 1.2
+     * @param {*} key - The key
+     * @param {string} [path=null] - Optional. The path to the property to delete. Can be a dot-separated path, such as "prop1.subprop2.subprop3"
+     * @returns {void} - Nothing
+     */
+    evict(key, path) {
+        this[_readyCheck]();
+
+        if (!this.hasCache) throw new Err("The cache is not activated, you can't use this method");
+        if (_.isNil(key)) throw new Err("key is null or undefined");
+
+        if (!this[_typeCheck](key)) key = key.toString();
+
+        if (path) {
+            let data;
+
+            if (this.cache.has(key)) {
+                data = this.cache.get(key);
+            } else {
+                return;
+            }
+
+            if (_.isNil(data)) return;
+
+            path = _.toPath(path);
+            const last = path.pop();
+            const propValue = path.length ? _.get(data, path) : data;
+
+            if (_.isArray(propValue)) {
+                propValue.splice(last, 1);
+            } else {
+                delete propValue[last];
+            }
+
+            if (path.length) {
+                _.set(data, path, propValue);
+            } else {
+                data = propValue;
+            }
+
+            this.cache.set(key, data);
+        } else {
+            this.cache.delete(key);
+        }
+    }
+
+    /**
      * @async
      * @description Deletes all the documents
      * @since 1.0
@@ -345,6 +393,19 @@ class Piece {
 
         if (this.hasCache) this.cache.clear();
         await this.base.deleteMany({});
+    }
+
+    /**
+     * @description Deletes all the documents
+     * @since 1.2
+     * @returns {void} - Nothing
+     */
+    evictAll() {
+        this[_readyCheck]();
+
+        if (!this.hasCache) throw new Err("The cache is not activated, you can't use this method");
+
+        this.cache.clear();
     }
 
     /**
