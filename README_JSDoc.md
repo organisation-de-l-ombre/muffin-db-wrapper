@@ -6,5 +6,4 @@
 **[NPM](https://www.npmjs.com/package/muffindb)**
 **[GitHub](https://github.com/Cat66000/Muffin)**
 
-**Contact : My Discord username is Cat66#9597  
-I have also a [Discord server](https://discord.gg/ZXtEVJm)**
+**My personnal [Discord server](https://discord.gg/ZXtEVJm)**

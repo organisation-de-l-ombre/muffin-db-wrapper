@@ -13,9 +13,9 @@
 
 /**
  * @typedef {Object} PieceOptions
- * @description If you use url you don't need to use username, password, port and host
- * @property {boolean} [cache=false] - If set to true, a [cache]{@link Piece#cache} will be created
- * @property {boolean} [fetchAll=false] - If set to true, the piece will caches all the database
+ * @description If you use url you don't need to use username, password, port and host.
+ * @property {boolean} [cache=false] - If set to true, a [cache]{@link Piece#cache} will be created.
+ * @property {boolean} [fetchAll=false] - If set to true, the piece will caches all the database.
 */
 
 /**
@@ -42,14 +42,14 @@ class MuffinClient extends EventEmitter {
      * @public
      * @since 1.0
      * @extends EventEmitter
-     * @classdesc Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} and allows you to create pieces, which are map-like objects (without cache)
-     * @param {MuffinOptions} options - Options for the client
+     * @classdesc Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} and allows you to create pieces, which are map-like objects. (with an optional cache)
+     * @param {MuffinOptions} options - Options for the client.
     */
     constructor(options = {}) {
         super();
 
         /**
-         * @member {Promise} - Resolved when the database is ready
+         * @member {Promise} - Resolved when the database is ready.
          * @since 1.0
          */
         this.defer = new Promise((res, rej) => {
@@ -62,20 +62,20 @@ class MuffinClient extends EventEmitter {
         });
 
         /**
-         * @member {string} - Name of the database, Muffin by default
+         * @member {string} - Name of the database, Muffin by default.
          * @since 1.0
          */
         this.dbName = options.dbName || "muffin";
         this[_url] = options.url || `mongodb://${options.username}:${options.password}@${options.host || "localhost"}:${options.port || 27017}/${this.dbName}`;
 
         /**
-         * @member {boolean} - True when the database is ready
+         * @member {boolean} - True when the database is ready.
          * @since 1.0
          */
         this.isReady = false;
 
         /**
-         * @member {boolean} - True if the database is closed
+         * @member {boolean} - True if the database is closed.
          * @since 1.0
          */
         this.closed = false;
@@ -120,7 +120,7 @@ class MuffinClient extends EventEmitter {
                 /**
                  * @event MuffinClient#change
                  * @since 1.1
-                 * @description Emit when a change occurs on the database
+                 * @description Emit when a change occurs on the database.
                  * @type {Object}
                  */
                 this[_db].watch().on("change", obj =>
@@ -137,10 +137,10 @@ class MuffinClient extends EventEmitter {
     }
 
     /**
-     * @description Creates multiple pieces
+     * @description Creates multiple pieces.
      * @since 1.0
-     * @param {Array<string>} names - Names of the pieces
-     * @param {PieceOptions} options - Options like cache or fetchAll
+     * @param {Array<string>} names - Names of the pieces.
+     * @param {PieceOptions} options - Options like cache or fetchAll.
      * @returns {Object<Piece>} An object with the pieces. [Destructuring]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment} can be useful !
      */
     multi(names = [], options) {
@@ -156,10 +156,10 @@ class MuffinClient extends EventEmitter {
     }
 
     /**
-     * @description Creates a {@link Piece} to interact with MongoDB
+     * @description Creates a {@link Piece} to interact with MongoDB.
      * @since 1.0
-     * @param {string} name - The piece's name
-     * @param {PieceOptions} options - Options like cache or fetchAll
+     * @param {string} name - The piece's name.
+     * @param {PieceOptions} options - Options like cache or fetchAll.
      * @returns {Piece} A {@link Piece} with the given name
      */
     piece(name, options) {
@@ -169,7 +169,7 @@ class MuffinClient extends EventEmitter {
     }
 
     /**
-     * @description Close the database
+     * @description Close the database.
      * @since 1.0
      * @returns {void} Nothing
      */
