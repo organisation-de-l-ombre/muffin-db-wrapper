@@ -265,8 +265,11 @@ class Piece {
      * @returns {Promise<void>} Nothing
      */
     async fetchAll() {
-        await this.base.find({}).map(d => {
-            console.log(this.cache, d);
+        this[_readyCheck]();
+
+        if (!this.hasCache) throw new Err("The cache is not activated, you can't use this method");
+
+        await this.base.find({}).forEach(d => {
             this.cache.set(d._id, d.value);
         });
     }
@@ -469,6 +472,8 @@ class Piece {
      * @returns {Array<*>} A promise. When resolved, returns an array with the values of all the documents
      */
     async valueArray(cache = false) {
+        this[_readyCheck]();
+
         if (this.hasCache && cache) {
             const values = [];
 
@@ -488,6 +493,8 @@ class Piece {
      * @returns {Promise<Array<*>>} A promise. When resolved, returns an array with the keys of all the documents
      */
     async keyArray(cache = false) {
+        this[_readyCheck]();
+
         if (this.hasCache && cache) {
             const keys = [];
 
@@ -506,6 +513,8 @@ class Piece {
      * @returns {Promise<Array<Object<*>>>} An array with all the documents of the database
      */
     async rawArray() {
+        this[_readyCheck]();
+
         return this.base.find({}).toArray();
     }
 
@@ -516,6 +525,8 @@ class Piece {
     * @returns {Promise<number>} A promise returning the size of the database when resolved
     */
     async size(fast = false) {
+        this[_readyCheck]();
+
         if (fast) {
             return this.base.estimatedDocumentCount();
         } else {
