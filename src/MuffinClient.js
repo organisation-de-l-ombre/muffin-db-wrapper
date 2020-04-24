@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 /**
  * @typedef {Object} MuffinOptions
  * @description If you use url you don't need to use username, password, port and host
@@ -9,31 +7,35 @@
  * @property {string} [host="localhost"]    - Not used if an url is provided
  * @property {string} [dbName="muffin"]     - The name of the database on the Mongo server
  * @property {string} [url]
-*/
+ */
 
 /**
  * @typedef {Object} PieceOptions
  * @description If you use url you don't need to use username, password, port and host.
- * @property {boolean} [cache=false] - If set to true, a [cache]{@link Piece#cache} will be created.
- * @property {boolean} [fetchAll=false] - If set to true, the piece will caches all the database.
-*/
+ * @property {boolean} [fetchAll=false] - If set to true, the cache will be available and it will caches all the database.
+ * @property {boolean} [cacheSyncAuto=false] - If set to true, the cache will be available and it will be automatically updated when a change occurs on the database.
+ */
 
 /**
  * @typedef {Object} MongoError {@link https://mongodb.github.io/node-mongodb-native/3.3/api/MongoError.html}
  */
 
-const Err = require("./MuffinError");
-const { MongoClient } = require("mongodb");
-const EventEmitter = require("events");
+const { MongoClient } = require("mongodb"),
+    EventEmitter = require("events");
 
-const Piece = require("./Piece");
+const Piece = require("./Piece"),
+    Err = require("./MuffinError");
 
-const _url = Symbol("url");
-const _client = Symbol("client");
-const _db = Symbol("db");
-const _readyCheck = Symbol("readyCheck");
-const _ready = Symbol("ready");
-const _readyFailed = Symbol("readyFailed");
+const _url = Symbol("url"),
+    _client = Symbol("client"),
+    _db = Symbol("db"),
+    _readyCheck = Symbol("readyCheck"),
+    _ready = Symbol("ready"),
+    _readyFailed = Symbol("readyFailed"),
+    _deprecatedChangeEvent = require("util").deprecate((client, obj) => {
+        client.emit("change", obj);
+    }, "MuffinDB : In the next major update, there will be a breaking change for the change event. Please consider using the piece's change event instead.");
+
 
 class MuffinClient extends EventEmitter {
 
@@ -119,12 +121,14 @@ class MuffinClient extends EventEmitter {
 
                 /**
                  * @event MuffinClient#change
+                 * @deprecated
                  * @since 1.1
                  * @description Emit when a change occurs on the database.
                  * @type {Object}
                  */
-                this[_db].watch().on("change", obj =>
-                    this.emit("change", obj));
+                this[_db].watch(null, { fullDocument: "updateLookup" }).on("change", obj => {
+                    _deprecatedChangeEvent(this, obj);
+                });
             } catch (e) {
                 this[_readyFailed](e);
             }

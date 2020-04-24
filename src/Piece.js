@@ -1,10 +1,11 @@
-const _ = require("lodash");
-const Err = require("./MuffinError");
+const _ = require("lodash"),
+    EventEmitter = require("events"),
+    Err = require("./MuffinError");
 
-const _readyCheck = Symbol("readyCheck");
-const _typeCheck = Symbol("typeCheck");
+const _readyCheck = Symbol("readyCheck"),
+    _typeCheck = Symbol("typeCheck");
 
-class Piece {
+class Piece extends EventEmitter {
 
     /**
      * @namespace
@@ -16,8 +17,11 @@ class Piece {
      * @param {Collection} base - The [Collection]{@link https://mongodb.github.io/node-mongodb-native/3.3/api/Collection.html} from MongoDB.
      * @param {MuffinClient} client - The client that instantiated the Piece.
      * @param {PieceOptions} options - Options like cache or fetchAll.
+     * @example
+     * const piece = new muffinClient.piece("example", { fetchAll: true, cacheSyncAuto: true })
      */
-    constructor(base, client, { cache, fetchAll }) {
+    constructor(base, client, { fetchAll, cacheSyncAuto }) {
+        super();
         /**
          * @since 1.0
          * @member {Collection} - The collection wrapped by the piece.
@@ -30,7 +34,7 @@ class Piece {
          */
         this.client = client;
 
-        if (cache) {
+        if (fetchAll || cacheSyncAuto) {
             /**
              * @since 1.2
              * @member {boolean} - If set to true, the cache is available.
@@ -49,6 +53,23 @@ class Piece {
         } else {
             this.hasCache = false;
         }
+
+        this.base.watch(null, { fullDocument: "updateLookup" }).on("change", obj => {
+            switch (obj.operationType) {
+                case "update":
+                case "insert":
+                case "replace":
+                    this.cache.set(obj.fullDocument._id, obj.fullDocument.value);
+                    break;
+                case "delete":
+                    this.cache.delete(obj.documentKey._id);
+                    break;
+                case "drop":
+                case "dropDatabase":
+                    this.cache.clear();
+                    break;
+            }
+        });
     }
 
     [_readyCheck]() {
@@ -260,9 +281,10 @@ class Piece {
     }
 
     /**
-     * @since 1.2
+     * @async
      * @description Fetch all the database and caches it all. It also updates already cached data.
-     * @returns {Promise<void>} Nothing
+     * @since 1.2
+     * @returns {void} Nothing
      */
     async fetchAll() {
         this[_readyCheck]();
@@ -392,6 +414,19 @@ class Piece {
     }
 
     /**
+     * @async
+     * @description Deletes all the documents.
+     * @since 1.0
+     * @returns {Promise<void>} A promise
+     */
+    async clear() {
+        this[_readyCheck]();
+
+        if (this.hasCache) this.cache.clear();
+        await this.base.deleteMany({});
+    }
+
+    /**
      * @description Do not works if the cache is not activated. Removes a cached element, it does not touch the real database.
      * @since 1.2
      * @param {*} key - The key.
@@ -440,26 +475,11 @@ class Piece {
     }
 
     /**
-     * @async
-     * @description Deletes all the documents.
-     * @since 1.0
-     * @returns {Promise<void>} A promise
-     */
-    async clear() {
-        this[_readyCheck]();
-
-        if (this.hasCache) this.cache.clear();
-        await this.base.deleteMany({});
-    }
-
-    /**
      * @description Do not works if the cache is not activated. Removes all the cached elements. It does not touch the real database.
      * @since 1.2
      * @returns {void} - Nothing
      */
     evictAll() {
-        this[_readyCheck]();
-
         if (!this.hasCache) throw new Err("The cache is not activated, you can't use this method");
 
         this.cache.clear();
