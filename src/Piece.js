@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const _ = require("lodash"),
     EventEmitter = require("events"),
     Err = require("./MuffinError");
@@ -193,7 +194,7 @@ class Piece extends EventEmitter {
      * @since 1.0
      * @param {*} key - The key of the document to get.
      * @param {string} [path=null] - Optional. The path to the property to take inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3".
-     * @param {boolean} [raw=false] - Optional. Returns the full object, i.e. : { _id: "foo", value: "bar" }.
+     * @param {boolean} [raw=false] - Optional. Returns the full object, i.e. : { _id: "foo", value: "bar" }. Not used if you don't use the cache.
      * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
      */
     async get(key, path, raw = false) {
@@ -242,7 +243,7 @@ class Piece extends EventEmitter {
      * @since 1.2
      * @param {*} key - The key of the document to get
      * @param {string} [path=null] - Optional. The path to the property to take inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3".
-     * @param {boolean} [raw=false] - Optional. Returns the full object, i.e. : { _id: "foo", value: "bar" }.
+     * @param {boolean} [raw=false] - Optional. Returns the full object, i.e. : { _id: "foo", value: "bar" }. Not used if you don't use the cache.
      * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
      */
     async fetch(key, path, raw = false) {
@@ -341,7 +342,7 @@ class Piece extends EventEmitter {
      * @param {*} key - The key to check if it exists or to set a document or a property inside the value.
      * @param {*} val - The value to set if the key doesn't exist.
      * @param {string} [path=null] - Optional. The path to the property to ensure. Can be a dot-separated path, such as "prop1.subprop2.subprop3".
-     * @param {boolean} [raw=false] - Optional. Returns the full object, i.e. : { _id: "foo", value: "bar" }.
+     * @param {boolean} [raw=false] - Optional. Returns the full object, i.e. : { _id: "foo", value: "bar" }. Not used if you don't use the cache.
      * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
      */
     async ensure(key, val, path, raw = false) {
@@ -488,10 +489,10 @@ class Piece extends EventEmitter {
     /**
      * @since 1.0
      * @async
-     * @param {boolean} [cache=false] - Optional. If there is a [cache]{@link Piece~cache}, it takes the data from it.
+     * @param {boolean} [cache=true] - Optional. If there is a [cache]{@link Piece~cache}, per defaut it is set to true and it will takes cached data. If you set it to false, it will takes the data from the Mongo server.
      * @returns {Array<*>} A promise. When resolved, returns an array with the values of all the documents
      */
-    async valueArray(cache = false) {
+    async valueArray(cache = true) {
         this[_readyCheck]();
 
         if (this.hasCache && cache) {
@@ -509,10 +510,10 @@ class Piece extends EventEmitter {
     /**
      * @since 1.0
      * @async
-     * @param {boolean} [cache=false] - Optional. If there is a [cache]{@link Piece~cache}, it takes the data from it.
+     * @param {boolean} [cache=true] - Optional. If there is a [cache]{@link Piece~cache}, per defaut it is set to true and it will takes cached data. If you set it to false, it will takes the data from the Mongo server.
      * @returns {Promise<Array<*>>} A promise. When resolved, returns an array with the keys of all the documents
      */
-    async keyArray(cache = false) {
+    async keyArray(cache = true) {
         this[_readyCheck]();
 
         if (this.hasCache && cache) {
