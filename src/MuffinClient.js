@@ -34,7 +34,7 @@ const _url = Symbol("url"),
     _readyFailed = Symbol("readyFailed"),
     _deprecatedChangeEvent = require("util").deprecate((client, obj) => {
         client.emit("change", obj);
-    }, "MuffinDB : In the next major update, there will be a breaking change for the change event. Please consider using the piece's change event instead.");
+    }, "MuffinDB : In the next major update, the change event will be probably removed or there will be a breaking change. Please consider using the piece's change event instead.");
 
 
 class MuffinClient extends EventEmitter {
@@ -127,7 +127,7 @@ class MuffinClient extends EventEmitter {
                  * @type {Object}
                  */
                 this[_db].watch(null, { fullDocument: "updateLookup" }).on("change", obj => {
-                    _deprecatedChangeEvent(this, obj);
+                    if (this.listenerCount("change") !== 0) _deprecatedChangeEvent(this, obj);
                 });
             } catch (e) {
                 this[_readyFailed](e);

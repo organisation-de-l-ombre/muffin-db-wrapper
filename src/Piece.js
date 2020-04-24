@@ -55,20 +55,31 @@ class Piece extends EventEmitter {
             this.hasCache = false;
         }
 
+        /**
+         * @event Piece#change
+         * @since 1.2
+         * @description Emit when a change occurs on the database.
+         * @type {Object}
+         */
+
         this.base.watch(null, { fullDocument: "updateLookup" }).on("change", obj => {
-            switch (obj.operationType) {
-                case "update":
-                case "insert":
-                case "replace":
-                    this.cache.set(obj.fullDocument._id, obj.fullDocument.value);
-                    break;
-                case "delete":
-                    this.cache.delete(obj.documentKey._id);
-                    break;
-                case "drop":
-                case "dropDatabase":
-                    this.cache.clear();
-                    break;
+            this.emit("change", obj);
+
+            if (cacheSyncAuto) {
+                switch (obj.operationType) {
+                    case "update":
+                    case "insert":
+                    case "replace":
+                        this.cache.set(obj.fullDocument._id, obj.fullDocument.value);
+                        break;
+                    case "delete":
+                        this.cache.delete(obj.documentKey._id);
+                        break;
+                    case "drop":
+                    case "dropDatabase":
+                        this.cache.clear();
+                        break;
+                }
             }
         });
     }
