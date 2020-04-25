@@ -64,7 +64,6 @@ typings/
 # JSDoc
 JSDoc.json
 README_JSDoc.md
-outputjsdoc/
 
 # Tests
 _tests/
