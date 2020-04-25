@@ -3,8 +3,8 @@
 **The muffin connects to a MongoDB server and allows you to create pieces, which can be used almost like a map !**
 **It also has an optional cache.**
 
-**[NPM](https://www.npmjs.com/package/muffindb) - [Documentation](https://muffindb.glitch.me/)**
+**[NPM](https://www.npmjs.com/package/muffindb) - [Documentation](https://cat66000.github.io/Muffin-docs)**
 
-**My personnal [Discord server](https://discord.gg/ZXtEVJm) where you can find updates announcements and support !**
+**[Join the community on Discord](https://discord.gg/ZXtEVJm)**
 
 **[This module inspired me a lot](https://www.npmjs.com/package/enmap)**
