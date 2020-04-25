@@ -71,7 +71,7 @@ class Piece extends EventEmitter {
             if (options.fetchAll) {
                 (async () => {
                     try {
-                        await this.base.find({}).map(d => this.cache.set(d._id, d.value));
+                        await this.base.find({}).forEach(d => this.cache.set(d._id, d.value));
 
                         this[_cacheReady]();
                         this.isCacheReady = true;
