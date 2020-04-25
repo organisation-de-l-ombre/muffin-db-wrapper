@@ -21,7 +21,7 @@ class Piece extends EventEmitter {
      * @example
      * const piece = new muffinClient.piece("example", { fetchAll: true, cacheSyncAuto: true })
      */
-    constructor(base, client, { fetchAll }) {
+    constructor(base, client, options) {
         super();
         /**
          * @since 1.0
@@ -35,7 +35,7 @@ class Piece extends EventEmitter {
          */
         this.client = client;
 
-        if (fetchAll) {
+        if (options) {
             /**
              * @since 1.2
              * @member {boolean} - If set to true, the cache is available.
@@ -48,7 +48,7 @@ class Piece extends EventEmitter {
              */
             this.cache = new Map();
 
-            if (fetchAll) {
+            if (options.fetchAll) {
                 this.base.find({}).map(d => { this.cache.set(d._id, d.value); });
             }
         } else {
@@ -100,6 +100,12 @@ class Piece extends EventEmitter {
      * @param {*} val - The value of the document to set into the database.
      * @param {string} [path=null] - The path to the property to modify inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3".
      * @returns {Promise<void>} A promise
+     * @example
+     * // Sets the value "bar" to the key "foo"
+     * await piece.set("foo", "bar");
+     *
+     * // Sets the value "oof" to the property bar
+     * await piece.set("foo", "oof", "bar");
      */
     async set(key, val, path) {
         this[_readyCheck]();
@@ -138,6 +144,12 @@ class Piece extends EventEmitter {
      * @param {string} [path=null] - Optional. The path to the property to modify inside the element. Can be a dot-separated path, such as "prop1.subprop2.subprop3".
      * @param {boolean} [allowDupes=false] - Optional. Allow duplicate values in the array.
      * @returns {Promise<void>} A promise
+     * @example
+     * // Adds the value "bar" to the array that is the value of the key "foo"
+     * await piece.push("foo", "bar");
+     *
+     * // We can also do that for properties that are arrays
+     * await piece.push("foo", "oof", "bar");
      */
     async push(key, val, path, allowDupes = false) {
         this[_readyCheck]();
@@ -196,6 +208,12 @@ class Piece extends EventEmitter {
      * @param {string} [path=null] - Optional. The path to the property to take inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3".
      * @param {boolean} [raw=false] - Optional. Returns the full object, i.e. : { _id: "foo", value: "bar" }. Not used if you don't use the cache.
      * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
+     * @example
+     * // Returns the value for the key foo
+     * const data = await piece.get("foo");
+     *
+     * // Returns the value of the property bar
+     * const data = await piece.get("foo", "bar")
      */
     async get(key, path, raw = false) {
         this[_readyCheck]();
@@ -245,6 +263,12 @@ class Piece extends EventEmitter {
      * @param {string} [path=null] - Optional. The path to the property to take inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3".
      * @param {boolean} [raw=false] - Optional. Returns the full object, i.e. : { _id: "foo", value: "bar" }. Not used if you don't use the cache.
      * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
+     * @example
+     * // Returns the value for the key foo and update the cache
+     * const data = await piece.fetch("foo");
+     *
+     * // Returns the value of the property bar and update the cache
+     * const data = await piece.fetch("foo", "bar")
      */
     async fetch(key, path, raw = false) {
         this[_readyCheck]();
@@ -304,6 +328,12 @@ class Piece extends EventEmitter {
      * @param {*} key - The key of the document to check.
      * @param {string} [path=null] - Optional. The path to the property to check. Can be a dot-separated path, such as "prop1.subprop2.subprop3".
      * @returns {Promise<boolean>} A promise
+     * @example
+     * // If the key "foo" doesn't exists, it returns
+     * if (!await piece.has("foo")) return;
+     *
+     * // If the property "bar" of the value of "foo" dosn't exists, it returns
+     * if (!await piece.has("foo", "bar")) return;
      */
     async has(key, path) {
         this[_readyCheck]();
@@ -337,13 +367,16 @@ class Piece extends EventEmitter {
 
     /**
      * @async
-     * @description If the document doesn't exist : creates it and returns it, if it does exist : returns it.
+     * @description If the document doesn't exists : creates it and returns it, if it does exists : returns it.
      * @since 1.0
      * @param {*} key - The key to check if it exists or to set a document or a property inside the value.
      * @param {*} val - The value to set if the key doesn't exist.
      * @param {string} [path=null] - Optional. The path to the property to ensure. Can be a dot-separated path, such as "prop1.subprop2.subprop3".
      * @param {boolean} [raw=false] - Optional. Returns the full object, i.e. : { _id: "foo", value: "bar" }. Not used if you don't use the cache.
      * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
+     * @example
+     * // If foo exists it returns its value, if it doesn't it set its value to "bar" and returns it
+     * const data = piece.ensure("foo", "bar");
      */
     async ensure(key, val, path, raw = false) {
         this[_readyCheck]();
