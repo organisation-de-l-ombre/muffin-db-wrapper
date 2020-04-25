@@ -1,5 +1,7 @@
 {
-    "plugins": [],
+    "plugins": [
+        "plugins/markdown"
+    ],
     "recurseDepth": 10,
     "source": {
         "includePattern": ".+\\.js(doc|x)?$",
@@ -14,14 +16,10 @@
         ]
     },
     "templates": {
-        "cleverLinks": true,
-        "monospaceLinks": false,
-        "better-docs": {
-            "name": "MuffinDB Documentation"
-        }
+        "cleverLinks": false,
+        "monospaceLinks": false
     },
     "opts": {
-        "template": "./node_modules/better-docs",
         "readme": "./README_JSDoc.md"
     }
 }
