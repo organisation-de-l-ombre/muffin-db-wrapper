@@ -3,7 +3,10 @@ const _ = require("lodash"),
     EventEmitter = require("events"),
     Err = require("./MuffinError");
 
-const _readyCheck = Symbol("readyCheck"),
+const _closeCheck = Symbol("closeCheck"),
+    _cacheDefer = Symbol("cacheDefer"),
+    _cacheReady = Symbol("cacheReady"),
+    _cacheFailed = Symbol("cacheFailed"),
     _typeCheck = Symbol("typeCheck");
 
 class Piece extends EventEmitter {
@@ -48,11 +51,38 @@ class Piece extends EventEmitter {
              */
             this.cache = new Map();
 
+            /**
+             * @since 1.3
+             * @member {Promise} - If the fetchAll option has been set to true, this property will be true when all the data have been cached. Otherwise it is always true.
+             */
+            this.isCacheReady = false;
+
+            this[_cacheDefer] = new Promise((res, rej) => {
+                try {
+                    if (this.isCacheReady) res();
+
+                    this[_cacheReady] = res;
+                    this[_cacheFailed] = rej;
+                } catch (error) {
+                    rej(error);
+                }
+            });
+
             if (options.fetchAll) {
-                this.base.find({}).map(d => { this.cache.set(d._id, d.value); });
+                (async () => {
+                    try {
+                        await this.base.find({}).map(d => this.cache.set(d._id, d.value));
+
+                        this[_cacheReady]();
+                        this.isCacheReady = true;
+                    } catch (e) {
+                        this[_cacheFailed](e);
+                    }
+                })();
+            } else {
+                this[_cacheReady]();
+                this.isCacheReady = true;
             }
-        } else {
-            this.hasCache = false;
         }
 
         /**
@@ -62,8 +92,10 @@ class Piece extends EventEmitter {
          * @type {Object}
          */
 
-        this.base.watch(null, { fullDocument: "updateLookup" }).on("change", obj => {
+        this.base.watch(null, { fullDocument: "updateLookup" }).on("change", async obj => {
             this.emit("change", obj);
+
+            await this[_cacheDefer];
 
             if (this.hasCache) {
                 switch (obj.operationType) {
@@ -84,7 +116,7 @@ class Piece extends EventEmitter {
         });
     }
 
-    [_readyCheck]() {
+    [_closeCheck]() {
         if (this.client.isClosed) throw new Err("the database has been closed", "MuffinClosedError");
     }
 
@@ -108,7 +140,7 @@ class Piece extends EventEmitter {
      * @returns {Promise<void>} A promise
      */
     async set(key, val, path) {
-        this[_readyCheck]();
+        this[_closeCheck]();
 
         if (_.isNil(key)) throw new Err("key is null or undefined");
 
@@ -120,6 +152,8 @@ class Piece extends EventEmitter {
             let rawData;
 
             if (this.hasCache) {
+                await this[_cacheDefer];
+
                 if (this.cache.has(key)) {
                     rawData = { value: this.cache.get(key) };
                 } else {
@@ -152,7 +186,7 @@ class Piece extends EventEmitter {
      * @returns {Promise<void>} A promise
      */
     async push(key, val, path, allowDupes = false) {
-        this[_readyCheck]();
+        this[_closeCheck]();
 
         if (_.isNil(key)) throw new Err("key is null or undefined");
 
@@ -163,6 +197,8 @@ class Piece extends EventEmitter {
         let rawData;
 
         if (this.hasCache) {
+            await this[_cacheDefer];
+
             if (this.cache.has(key)) {
                 rawData = { value: this.cache.get(key) };
             } else {
@@ -216,7 +252,7 @@ class Piece extends EventEmitter {
      * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
      */
     async get(key, path, raw = false) {
-        this[_readyCheck]();
+        this[_closeCheck]();
 
         if (_.isNil(key)) return null;
 
@@ -227,6 +263,8 @@ class Piece extends EventEmitter {
 
         try {
             if (this.hasCache) {
+                await this[_cacheDefer];
+
                 if (this.cache.has(key)) {
                     rawData = { _id: key, value: this.cache.get(key) };
                 } else {
@@ -257,7 +295,7 @@ class Piece extends EventEmitter {
 
     /**
      * @async
-     * @description Do not works if the cache is not activated. Update the cache with data from database.
+     * @description Do not works if the cache is not activated. Fetch a document on the database.
      * @since 1.2
      * @param {*} key - The key of the document to get
      * @param {string} [path=null] - Optional. The path to the property to take inside the value. Can be a dot-separated path, such as "prop1.subprop2.subprop3".
@@ -271,7 +309,7 @@ class Piece extends EventEmitter {
      * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
      */
     async fetch(key, path, raw = false) {
-        this[_readyCheck]();
+        this[_closeCheck]();
 
         if (!this.hasCache) throw new Err("The cache is not activated, you can't use this method");
 
@@ -312,7 +350,7 @@ class Piece extends EventEmitter {
      * @returns {void} Nothing
      */
     async fetchAll() {
-        this[_readyCheck]();
+        this[_closeCheck]();
 
         if (!this.hasCache) throw new Err("The cache is not activated, you can't use this method");
 
@@ -336,13 +374,15 @@ class Piece extends EventEmitter {
      * @returns {Promise<boolean>} A promise
      */
     async has(key, path) {
-        this[_readyCheck]();
+        this[_closeCheck]();
 
         if (!this[_typeCheck](key)) key = key.toString();
 
         let rawData;
 
         if (this.hasCache) {
+            await this[_cacheDefer];
+
             if (this.cache.has(key)) {
                 rawData = { value: this.cache.get(key) };
             } else {
@@ -379,7 +419,7 @@ class Piece extends EventEmitter {
      * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
      */
     async ensure(key, val, path, raw = false) {
-        this[_readyCheck]();
+        this[_closeCheck]();
 
         if (_.isNil(key)) throw new Err("key is null or undefined");
         if (_.isNil(val)) throw new Err("val is null or undefined");
@@ -401,7 +441,7 @@ class Piece extends EventEmitter {
      * @returns {Promise<void>} A promise
      */
     async delete(key, path) {
-        this[_readyCheck]();
+        this[_closeCheck]();
 
         if (_.isNil(key)) throw new Err("key is null or undefined");
 
@@ -411,6 +451,8 @@ class Piece extends EventEmitter {
             let rawData;
 
             if (this.hasCache) {
+                await this[_cacheDefer];
+
                 if (this.cache.has(key)) {
                     rawData = { value: this.cache.get(key) };
                 } else {
@@ -452,9 +494,8 @@ class Piece extends EventEmitter {
      * @returns {Promise<void>} A promise
      */
     async clear() {
-        this[_readyCheck]();
+        this[_closeCheck]();
 
-        if (this.hasCache) this.cache.clear();
         await this.base.deleteMany({});
     }
 
@@ -469,39 +510,41 @@ class Piece extends EventEmitter {
         if (!this.hasCache) throw new Err("The cache is not activated, you can't use this method");
         if (_.isNil(key)) throw new Err("key is null or undefined");
 
-        if (!this[_typeCheck](key)) key = key.toString();
+        this[_cacheDefer].then(() => {
+            if (!this[_typeCheck](key)) key = key.toString();
 
-        if (path) {
-            let data;
+            if (path) {
+                let data;
 
-            if (this.cache.has(key)) {
-                data = this.cache.get(key);
+                if (this.cache.has(key)) {
+                    data = this.cache.get(key);
+                } else {
+                    return;
+                }
+
+                if (_.isNil(data)) return;
+
+                path = _.toPath(path);
+                const last = path.pop();
+                const propValue = path.length ? _.get(data, path) : data;
+
+                if (_.isArray(propValue)) {
+                    propValue.splice(last, 1);
+                } else {
+                    delete propValue[last];
+                }
+
+                if (path.length) {
+                    _.set(data, path, propValue);
+                } else {
+                    data = propValue;
+                }
+
+                this.cache.set(key, data);
             } else {
-                return;
+                this.cache.delete(key);
             }
-
-            if (_.isNil(data)) return;
-
-            path = _.toPath(path);
-            const last = path.pop();
-            const propValue = path.length ? _.get(data, path) : data;
-
-            if (_.isArray(propValue)) {
-                propValue.splice(last, 1);
-            } else {
-                delete propValue[last];
-            }
-
-            if (path.length) {
-                _.set(data, path, propValue);
-            } else {
-                data = propValue;
-            }
-
-            this.cache.set(key, data);
-        } else {
-            this.cache.delete(key);
-        }
+        });
     }
 
     /**
@@ -512,7 +555,9 @@ class Piece extends EventEmitter {
     evictAll() {
         if (!this.hasCache) throw new Err("The cache is not activated, you can't use this method");
 
-        this.cache.clear();
+        this[_cacheDefer].then(() => {
+            this.cache.clear();
+        });
     }
 
     /**
@@ -522,9 +567,9 @@ class Piece extends EventEmitter {
      * @returns {Array<*>} A promise. When resolved, returns an array with the values of all the documents
      */
     async valueArray(cache = true) {
-        this[_readyCheck]();
-
         if (this.hasCache && cache) {
+            await this[_cacheDefer];
+
             const values = [];
 
             for (const value of this.cache.values()) {
@@ -532,7 +577,7 @@ class Piece extends EventEmitter {
             }
             return values;
         } else {
-            this[_readyCheck]();
+            this[_closeCheck]();
 
             return this.base.find({}).map(d => d.value).toArray();
         }
@@ -546,6 +591,8 @@ class Piece extends EventEmitter {
      */
     async keyArray(cache = true) {
         if (this.hasCache && cache) {
+            await this[_cacheDefer];
+
             const keys = [];
 
             for (const key of this.cache.keys()) {
@@ -553,7 +600,7 @@ class Piece extends EventEmitter {
             }
             return keys;
         } else {
-            this[_readyCheck]();
+            this[_closeCheck]();
 
             return this.base.find({}).map(d => d._id).toArray();
         }
@@ -565,7 +612,7 @@ class Piece extends EventEmitter {
      * @returns {Promise<Array<Object<*>>>} An array with all the documents of the database
      */
     async rawArray() {
-        this[_readyCheck]();
+        this[_closeCheck]();
 
         return this.base.find({}).toArray();
     }
@@ -577,7 +624,7 @@ class Piece extends EventEmitter {
     * @returns {Promise<number>} A promise returning the size of the database when resolved
     */
     async size(fast = false) {
-        this[_readyCheck]();
+        this[_closeCheck]();
 
         if (fast) {
             return this.base.estimatedDocumentCount();

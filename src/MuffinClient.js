@@ -50,34 +50,36 @@ class MuffinClient extends EventEmitter {
         super();
 
         /**
-         * @member {Promise} - Resolved when the database is ready.
          * @since 1.0
+         * @member {Promise} - Resolved when the database is ready.
          */
         this.defer = new Promise((res, rej) => {
             try {
+                if (this.isReady) res();
+
                 this[_ready] = res;
                 this[_readyFailed] = rej;
             } catch (error) {
-                throw new Error(error);
+                rej(error);
             }
         });
 
         /**
-         * @member {string} - Name of the database, Muffin by default.
          * @since 1.0
+         * @member {string} - Name of the database, Muffin by default.
          */
         this.dbName = options.dbName || "muffin";
         this[_url] = options.url || `mongodb://${options.username}:${options.password}@${options.host || "localhost"}:${options.port || 27017}/${this.dbName}`;
 
         /**
-         * @member {boolean} - True when the database is ready.
          * @since 1.0
+         * @member {boolean} - True when the database is ready.
          */
         this.isReady = false;
 
         /**
-         * @member {boolean} - True if the database is closed.
          * @since 1.0
+         * @member {boolean} - True if the database is closed.
          */
         this.closed = false;
 
@@ -91,8 +93,8 @@ class MuffinClient extends EventEmitter {
 
                 /**
                  * @event MuffinClient#close
-                 * @description Emitted after a socket closed against a single server or mongos proxy.
                  * @since 1.0
+                 * @description Emitted after a socket closed against a single server or mongos proxy.
                  * @type {MongoError}
                  */
                 this[_db].on("close", () => {
