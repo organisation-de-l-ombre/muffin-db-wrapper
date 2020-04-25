@@ -13,7 +13,6 @@
  * @typedef {Object} PieceOptions
  * @description If you use url you don't need to use username, password, port and host.
  * @property {boolean} [fetchAll=false] - If set to true, the cache will be available and it will caches all the database.
- * @property {boolean} [cacheSyncAuto=false] - If set to true, the cache will be available and it will be automatically updated when a change occurs on the database.
  */
 
 /**
@@ -146,6 +145,16 @@ class MuffinClient extends EventEmitter {
      * @param {Array<string>} names - Names of the pieces.
      * @param {PieceOptions} options - Options like cache or fetchAll.
      * @returns {Object<Piece>} An object with the pieces. [Destructuring]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment} can be useful !
+     * @example
+     * const Muffin = require("muffindb");
+     * // MuffinOptions is a placeholder for... muffin options
+     * const client = new Muffin.Client(MuffinOptions);
+     *
+     * // This will returns an object with pieces inside
+     * // Theses pieces will have a cache because of fetchAll
+     * // fetchAll will make the pieces fetch all the data and caches them
+     * // Their cache will be synchronized with the database
+     * const pieces = client.multi(["a piece", "another piece", "third piece"], { fetchAll: true })
      */
     multi(names = [], options) {
         this[_readyCheck]();
@@ -165,6 +174,15 @@ class MuffinClient extends EventEmitter {
      * @param {string} name - The piece's name.
      * @param {PieceOptions} options - Options like cache or fetchAll.
      * @returns {Piece} A {@link Piece} with the given name
+     * @example
+     * const Muffin = require("muffindb");
+     * // MuffinOptions is a placeholder for... muffin options
+     * const client = new Muffin.Client(MuffinOptions);
+     *
+     * // These piece will have a cache because of fetchAll and cacheSyncAuto
+     * // fetchAll will make the piece fetch all the data and caches them
+     * // Their cache will be synchronized with the database
+     * const piece = client.piece("a piece", { fetchAll: true, cacheSyncAuto: true })
      */
     piece(name, options) {
         this[_readyCheck]();

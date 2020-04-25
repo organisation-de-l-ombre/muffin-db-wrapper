@@ -21,7 +21,7 @@ class Piece extends EventEmitter {
      * @example
      * const piece = new muffinClient.piece("example", { fetchAll: true, cacheSyncAuto: true })
      */
-    constructor(base, client, { fetchAll, cacheSyncAuto }) {
+    constructor(base, client, { fetchAll }) {
         super();
         /**
          * @since 1.0
@@ -35,7 +35,7 @@ class Piece extends EventEmitter {
          */
         this.client = client;
 
-        if (fetchAll || cacheSyncAuto) {
+        if (fetchAll) {
             /**
              * @since 1.2
              * @member {boolean} - If set to true, the cache is available.
@@ -65,7 +65,7 @@ class Piece extends EventEmitter {
         this.base.watch(null, { fullDocument: "updateLookup" }).on("change", obj => {
             this.emit("change", obj);
 
-            if (cacheSyncAuto) {
+            if (this.hasCache) {
                 switch (obj.operationType) {
                     case "update":
                     case "insert":
@@ -126,7 +126,6 @@ class Piece extends EventEmitter {
             val = _.set(rawData.value || {}, path, val);
         }
 
-        if (this.hasCache) this.cache.set(key, val);
         await this.base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
     }
 
@@ -170,11 +169,7 @@ class Piece extends EventEmitter {
             if (!_.isArray(_.get(rawData.value, path))) throw new Err("The element you tried to modify is not an array");
             data = _.isArray(_.get(rawData.value, path)) ? rawData.value : [];
 
-            if (data.indexOf(val) > -1 && !allowDupes) {
-                if (!this.cache.has(key)) this.cache.set(key, finalData);
-
-                return;
-            }
+            if (data.indexOf(val) > -1 && !allowDupes) return;
 
             data.push(val);
 
@@ -183,18 +178,12 @@ class Piece extends EventEmitter {
             if (!_.isArray(rawData.value)) throw new Err("The element you tried to modify is not an array");
             data = _.isArray(rawData.value) ? rawData.value : [];
 
-            if (data.indexOf(val) > -1 && !allowDupes) {
-                if (!this.cache.has(key)) this.cache.set(key, finalData);
-
-                return;
-            }
+            if (data.indexOf(val) > -1 && !allowDupes) return;
 
             data.push(val);
 
             finalData = data;
         }
-
-        if (this.hasCache) this.cache.set(key, finalData);
 
         await this.base.updateOne({ _id: key }, { $set: { _id: key, value: finalData } }, { upsert: true });
     }
@@ -337,13 +326,13 @@ class Piece extends EventEmitter {
         const data = rawData.value;
         if (_.isNil(data)) return false;
 
-        if (this.hasCache) this.cache.set(key, data);
+        if (this.hasCache) if (!this.cache.has(key)) this.cache.set(key, data);
 
         if (path) {
             return _.has(data, path);
+        } else {
+            return true;
         }
-
-        return true;
     }
 
     /**
@@ -417,10 +406,8 @@ class Piece extends EventEmitter {
                 data = propValue;
             }
 
-            if (this.hasCache) this.cache.set(key, data);
             await this.base.updateOne({ _id: key }, { $set: { _id: key, value: data } }, { upsert: true });
         } else {
-            if (this.hasCache) this.cache.delete(key);
             await this.base.deleteOne({ _id: key }, { single: true });
         }
     }
@@ -446,8 +433,6 @@ class Piece extends EventEmitter {
      * @returns {void} - Nothing
      */
     evict(key, path) {
-        this[_readyCheck]();
-
         if (!this.hasCache) throw new Err("The cache is not activated, you can't use this method");
         if (_.isNil(key)) throw new Err("key is null or undefined");
 
@@ -514,6 +499,8 @@ class Piece extends EventEmitter {
             }
             return values;
         } else {
+            this[_readyCheck]();
+
             return this.base.find({}).map(d => d.value).toArray();
         }
     }
@@ -525,8 +512,6 @@ class Piece extends EventEmitter {
      * @returns {Promise<Array<*>>} A promise. When resolved, returns an array with the keys of all the documents
      */
     async keyArray(cache = true) {
-        this[_readyCheck]();
-
         if (this.hasCache && cache) {
             const keys = [];
 
@@ -535,6 +520,8 @@ class Piece extends EventEmitter {
             }
             return keys;
         } else {
+            this[_readyCheck]();
+
             return this.base.find({}).map(d => d._id).toArray();
         }
     }
