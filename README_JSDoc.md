@@ -1,4 +1,4 @@
-<h1>Muffin v1.2</h1>
+<h1>Muffin v1.3</h1>
 
 **The muffin connects to a MongoDB server and allows you to create pieces, which can be used almost like a map !**
 
