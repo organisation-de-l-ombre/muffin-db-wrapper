@@ -9,4 +9,4 @@
 
 **Muffindb is a derivated work of [Enmap](https://www.npmjs.com/package/enmap)**
 
-**Please see LICENSE file for details**
+**Please see [LICENSE file](https://github.com/Cat66000/Muffin/blob/master/LICENSE) for details**
