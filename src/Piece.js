@@ -431,7 +431,6 @@ class Piece extends EventEmitter {
         return this.get(key, path, raw);
     }
 
-    // This method was mostly taken from Enmap (but it was modified)... Licence : https://github.com/eslachance/enmap/blob/master/LICENSE
     /**
      * @async
      * @description Deletes a document in the database.

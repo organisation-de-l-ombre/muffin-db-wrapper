@@ -8,4 +8,6 @@
 
 **[Join the community on Discord](https://discord.gg/ZXtEVJm)**
 
-**[This module inspired me a lot](https://www.npmjs.com/package/enmap)**
+**Muffindb is a derivated work of [Enmap](https://www.npmjs.com/package/enmap)**
+
+**Please see LICENSE file for details**
