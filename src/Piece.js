@@ -117,7 +117,7 @@ class Piece extends EventEmitter {
     }
 
     [_closeCheck]() {
-        if (this.client.isClosed) throw new Err("the database has been closed", "MuffinClosedError");
+        if (this.client.closed) throw new Err("the database has been closed", "MuffinClosedError");
     }
 
     [_typeCheck](key) {

@@ -137,8 +137,8 @@ class MuffinClient extends EventEmitter {
     }
 
     [_readyCheck]() {
-        if (this.isReady === false) throw new Err("the database is not ready", "MuffinReadyError");
-        if (this.closed === true) throw new Err("the database has been closed", "MuffinClosedError");
+        if (!this.isReady) throw new Err("the database is not ready", "MuffinReadyError");
+        if (this.closed) throw new Err("the database has been closed", "MuffinClosedError");
     }
 
     /**
@@ -202,6 +202,7 @@ class MuffinClient extends EventEmitter {
 
         this[_client].close();
         this.closed = true;
+        this.isReady = false;
     }
 
 }
