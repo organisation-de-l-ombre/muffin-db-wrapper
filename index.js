@@ -1,4 +1,4 @@
 module.exports = {
-    Client: require("./src/MuffinClient"),
-    version: require("./package.json").version
+	Client: require("./src/MuffinClient.js"),
+	version: require("./package.json").version
 };
