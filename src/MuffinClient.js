@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /**
  * @typedef {Object} MuffinOptions
  * @description If you use url you don't need to use username, password, port and host
@@ -71,9 +72,9 @@ class MuffinClient extends EventEmitter {
 		this.dbName = options.dbName || "muffin";
 		this[_url] =
 			options.url ||
-			`mongodb://${options.username}:${options.password}@${
-				options.host || "localhost"
-			}:${options.port || 27017}/${this.dbName}`;
+			`mongodb://${options.username}:${options.password}@${options.host || "localhost"}:${
+				options.port || 27017
+			}/${this.dbName}`;
 
 		/**
 		 * @since 1.0
@@ -113,7 +114,7 @@ class MuffinClient extends EventEmitter {
 				 * @since 1.0
 				 * @type {Object}
 				 */
-				this[_db].on("reconnect", object => {
+				this[_db].on("reconnect", (object) => {
 					this.emit("reconnect", object);
 				});
 
@@ -123,7 +124,7 @@ class MuffinClient extends EventEmitter {
 				 * @description Emitted after a socket timeout occurred against a single server or mongos proxy.
 				 * @type {MongoError}
 				 */
-				this[_db].on("timeout", err => {
+				this[_db].on("timeout", (err) => {
 					this.emit("timeout", err);
 				});
 
@@ -134,13 +135,11 @@ class MuffinClient extends EventEmitter {
 				 * @description Emit when a change occurs on the database.
 				 * @type {Object}
 				 */
-				this[_db]
-					.watch(null, { fullDocument: "updateLookup" })
-					.on("change", obj => {
-						if (this.listenerCount("change") !== 0) {
-							_deprecatedChangeEvent(this, obj);
-						}
-					});
+				this[_db].watch(null, { fullDocument: "updateLookup" }).on("change", (obj) => {
+					if (this.listenerCount("change") !== 0) {
+						_deprecatedChangeEvent(this, obj);
+					}
+				});
 			} catch (e) {
 				this[_readyFailed](e);
 			}
@@ -179,7 +178,7 @@ class MuffinClient extends EventEmitter {
 		const pieces = {};
 
 		// eslint-disable-next-line array-callback-return
-		names.map(val => {
+		names.map((val) => {
 			pieces[val] = this.piece(val, options);
 		});
 

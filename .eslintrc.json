@@ -14,12 +14,12 @@
 		"prettier/prettier": [
 			2,
 			{
-				"printWidth": 80,
+				"printWidth": 90,
 				"singleQuote": false,
 				"trailingComma": "none",
 				"tabWidth": 2,
 				"useTabs": true,
-				"arrowParens": "avoid"
+				"arrowParens": "always"
 			}
 		],
 		"no-await-in-loop": "warn",
@@ -137,7 +137,7 @@
 		"max-depth": "error",
 		"max-len": [
 			"error",
-			200,
+			180,
 			2
 		],
 		"max-nested-callbacks": [
@@ -214,10 +214,6 @@
 		"template-tag-spacing": "error",
 		"unicode-bom": "error",
 		"arrow-body-style": "error",
-		"arrow-parens": [
-			"error",
-			"as-needed"
-		],
 		"arrow-spacing": "error",
 		"no-duplicate-imports": "error",
 		"no-useless-computed-key": "error",

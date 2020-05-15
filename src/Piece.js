@@ -72,9 +72,7 @@ class Piece extends EventEmitter {
 			if (options.fetchAll) {
 				(async () => {
 					try {
-						await this.base
-							.find({})
-							.forEach(d => this.cache.set(d._id, d.value));
+						await this.base.find({}).forEach((d) => this.cache.set(d._id, d.value));
 
 						this[_cacheReady]();
 						this.isCacheReady = true;
@@ -95,30 +93,28 @@ class Piece extends EventEmitter {
 		 * @type {Object}
 		 */
 
-		this.base
-			.watch(null, { fullDocument: "updateLookup" })
-			.on("change", async obj => {
-				this.emit("change", obj);
+		this.base.watch(null, { fullDocument: "updateLookup" }).on("change", async (obj) => {
+			this.emit("change", obj);
 
-				await this[_cacheDefer];
+			await this[_cacheDefer];
 
-				if (this.hasCache) {
-					switch (obj.operationType) {
-						case "update":
-						case "insert":
-						case "replace":
-							this.cache.set(obj.fullDocument._id, obj.fullDocument.value);
-							break;
-						case "delete":
-							this.cache.delete(obj.documentKey._id);
-							break;
-						case "drop":
-						case "dropDatabase":
-							this.cache.clear();
-							break;
-					}
+			if (this.hasCache) {
+				switch (obj.operationType) {
+					case "update":
+					case "insert":
+					case "replace":
+						this.cache.set(obj.fullDocument._id, obj.fullDocument.value);
+						break;
+					case "delete":
+						this.cache.delete(obj.documentKey._id);
+						break;
+					case "drop":
+					case "dropDatabase":
+						this.cache.clear();
+						break;
 				}
-			});
+			}
+		});
 	}
 
 	[_closeCheck]() {
@@ -407,7 +403,7 @@ class Piece extends EventEmitter {
 			throw new Err("The cache is not activated, you can't use this method");
 		}
 
-		await this.base.find({}).forEach(d => {
+		await this.base.find({}).forEach((d) => {
 			this.cache.set(d._id, d.value);
 		});
 	}
@@ -667,7 +663,7 @@ class Piece extends EventEmitter {
 
 			return this.base
 				.find({})
-				.map(d => d.value)
+				.map((d) => d.value)
 				.toArray();
 		}
 	}
@@ -693,7 +689,7 @@ class Piece extends EventEmitter {
 
 			return this.base
 				.find({})
-				.map(d => d._id)
+				.map((d) => d._id)
 				.toArray();
 		}
 	}
