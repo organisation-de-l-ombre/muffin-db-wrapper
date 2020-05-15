@@ -175,11 +175,7 @@ class Piece extends EventEmitter {
 			val = _.set(rawData.value || {}, path, val);
 		}
 
-		await this.base.updateOne(
-			{ _id: key },
-			{ $set: { _id: key, value: val } },
-			{ upsert: true }
-		);
+		await this.base.updateOne({ _id: key }, { $set: { _id: key, value: val } }, { upsert: true });
 	}
 
 	/**

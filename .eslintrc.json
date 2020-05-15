@@ -14,7 +14,7 @@
 		"prettier/prettier": [
 			2,
 			{
-				"printWidth": 90,
+				"printWidth": 100,
 				"singleQuote": false,
 				"trailingComma": "none",
 				"tabWidth": 2,
@@ -84,6 +84,7 @@
 		"no-useless-return": "error",
 		"no-void": "error",
 		"no-warning-comments": "warn",
+		"prefer-const": "error",
 		"prefer-promise-reject-errors": "error",
 		"require-await": "warn",
 		"wrap-iife": "error",
