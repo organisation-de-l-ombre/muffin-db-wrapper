@@ -20,20 +20,20 @@
  * @typedef {Object} MongoError {@link https://mongodb.github.io/node-mongodb-native/3.3/api/MongoError.html}
  */
 
-const { MongoClient } = require("mongodb"),
-	EventEmitter = require("events");
+const { MongoClient } = require('mongodb'),
+	EventEmitter = require('events');
 
-const Piece = require("./Piece"),
-	Err = require("./MuffinError");
+const Piece = require('./Piece'),
+	Err = require('./MuffinError');
 
-const _url = Symbol("url"),
-	_client = Symbol("client"),
-	_db = Symbol("db"),
-	_readyCheck = Symbol("readyCheck"),
-	_ready = Symbol("ready"),
-	_readyFailed = Symbol("readyFailed"),
-	_deprecatedChangeEvent = require("util").deprecate((client, obj) => {
-		client.emit("change", obj);
+const _url = Symbol('url'),
+	_client = Symbol('client'),
+	_db = Symbol('db'),
+	_readyCheck = Symbol('readyCheck'),
+	_ready = Symbol('ready'),
+	_readyFailed = Symbol('readyFailed'),
+	_deprecatedChangeEvent = require('util').deprecate((client, obj) => {
+		client.emit('change', obj);
 	}, "MuffinDB : In the next major update, the change event will be probably removed or there will be a breaking change. Please consider using the piece's change event instead.");
 
 class MuffinClient extends EventEmitter {
@@ -69,10 +69,10 @@ class MuffinClient extends EventEmitter {
 		 * @since 1.0
 		 * @member {string} - Name of the database, Muffin by default.
 		 */
-		this.dbName = options.dbName || "muffin";
+		this.dbName = options.dbName || 'muffin';
 		this[_url] =
 			options.url ||
-			`mongodb://${options.username}:${options.password}@${options.host || "localhost"}:${
+			`mongodb://${options.username}:${options.password}@${options.host || 'localhost'}:${
 				options.port || 27017
 			}/${this.dbName}`;
 
@@ -105,8 +105,8 @@ class MuffinClient extends EventEmitter {
 				 * @description Emitted after a socket closed against a single server or mongos proxy.
 				 * @type {MongoError}
 				 */
-				this[_db].on("close", () => {
-					this.emit("close");
+				this[_db].on('close', () => {
+					this.emit('close');
 				});
 
 				/**
@@ -114,8 +114,8 @@ class MuffinClient extends EventEmitter {
 				 * @since 1.0
 				 * @type {Object}
 				 */
-				this[_db].on("reconnect", (object) => {
-					this.emit("reconnect", object);
+				this[_db].on('reconnect', (object) => {
+					this.emit('reconnect', object);
 				});
 
 				/**
@@ -124,8 +124,8 @@ class MuffinClient extends EventEmitter {
 				 * @description Emitted after a socket timeout occurred against a single server or mongos proxy.
 				 * @type {MongoError}
 				 */
-				this[_db].on("timeout", (err) => {
-					this.emit("timeout", err);
+				this[_db].on('timeout', (err) => {
+					this.emit('timeout', err);
 				});
 
 				/**
@@ -135,8 +135,8 @@ class MuffinClient extends EventEmitter {
 				 * @description Emit when a change occurs on the database.
 				 * @type {Object}
 				 */
-				this[_db].watch(null, { fullDocument: "updateLookup" }).on("change", (obj) => {
-					if (this.listenerCount("change") !== 0) {
+				this[_db].watch(null, { fullDocument: 'updateLookup' }).on('change', (obj) => {
+					if (this.listenerCount('change') !== 0) {
 						_deprecatedChangeEvent(this, obj);
 					}
 				});
@@ -148,10 +148,10 @@ class MuffinClient extends EventEmitter {
 
 	[_readyCheck]() {
 		if (!this.isReady) {
-			throw new Err("the database is not ready", "MuffinReadyError");
+			throw new Err('the database is not ready', 'MuffinReadyError');
 		}
 		if (this.closed) {
-			throw new Err("the database has been closed", "MuffinClosedError");
+			throw new Err('the database has been closed', 'MuffinClosedError');
 		}
 	}
 
