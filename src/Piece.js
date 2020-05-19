@@ -1,13 +1,13 @@
 /* eslint-disable max-len */
-const _ = require('lodash'),
-	EventEmitter = require('events'),
-	Err = require('./MuffinError');
+const _ = require("lodash"),
+	EventEmitter = require("events"),
+	Err = require("./MuffinError");
 
-const _closeCheck = Symbol('closeCheck'),
-	_cacheDefer = Symbol('cacheDefer'),
-	_cacheReady = Symbol('cacheReady'),
-	_cacheFailed = Symbol('cacheFailed'),
-	_typeCheck = Symbol('typeCheck');
+const _closeCheck = Symbol("closeCheck"),
+	_cacheDefer = Symbol("cacheDefer"),
+	_cacheReady = Symbol("cacheReady"),
+	_cacheFailed = Symbol("cacheFailed"),
+	_typeCheck = Symbol("typeCheck");
 
 class Piece extends EventEmitter {
 	/**
@@ -93,23 +93,23 @@ class Piece extends EventEmitter {
 		 * @type {Object}
 		 */
 
-		this.base.watch(null, { fullDocument: 'updateLookup' }).on('change', async (obj) => {
-			this.emit('change', obj);
+		this.base.watch(null, { fullDocument: "updateLookup" }).on("change", async (obj) => {
+			this.emit("change", obj);
 
 			await this[_cacheDefer];
 
 			if (this.hasCache) {
 				switch (obj.operationType) {
-					case 'update':
-					case 'insert':
-					case 'replace':
+					case "update":
+					case "insert":
+					case "replace":
 						this.cache.set(obj.fullDocument._id, obj.fullDocument.value);
 						break;
-					case 'delete':
+					case "delete":
 						this.cache.delete(obj.documentKey._id);
 						break;
-					case 'drop':
-					case 'dropDatabase':
+					case "drop":
+					case "dropDatabase":
 						this.cache.clear();
 						break;
 				}
@@ -119,12 +119,12 @@ class Piece extends EventEmitter {
 
 	[_closeCheck]() {
 		if (this.client.closed) {
-			throw new Err('the database has been closed', 'MuffinClosedError');
+			throw new Err("the database has been closed", "MuffinClosedError");
 		}
 	}
 
 	[_typeCheck](key) {
-		return ['Number', 'String', 'Object'].includes(key.constructor.name);
+		return ["Number", "String", "Object"].includes(key.constructor.name);
 	}
 
 	/**
@@ -146,10 +146,10 @@ class Piece extends EventEmitter {
 		this[_closeCheck]();
 
 		if (_.isNil(key)) {
-			throw new Err('key is null or undefined');
+			throw new Err("key is null or undefined");
 		}
 		if (_.isNil(val)) {
-			throw new Err('val is null or undefined');
+			throw new Err("val is null or undefined");
 		}
 
 		if (!this[_typeCheck](key)) {
@@ -197,10 +197,10 @@ class Piece extends EventEmitter {
 		this[_closeCheck]();
 
 		if (_.isNil(key)) {
-			throw new Err('key is null or undefined');
+			throw new Err("key is null or undefined");
 		}
 		if (_.isNil(val)) {
-			throw new Err('val is null or undefined');
+			throw new Err("val is null or undefined");
 		}
 		if (!this[_typeCheck](key)) {
 			key = key.toString();
@@ -227,7 +227,7 @@ class Piece extends EventEmitter {
 		let finalData;
 		if (path) {
 			if (!_.isArray(_.get(rawData.value, path))) {
-				throw new Err('The element you tried to modify is not an array');
+				throw new Err("The element you tried to modify is not an array");
 			}
 			data = _.isArray(_.get(rawData.value, path)) ? rawData.value : [];
 
@@ -240,7 +240,7 @@ class Piece extends EventEmitter {
 			finalData = _.set(rawData.value, path, data);
 		} else {
 			if (!_.isArray(rawData.value)) {
-				throw new Err('The element you tried to modify is not an array');
+				throw new Err("The element you tried to modify is not an array");
 			}
 			data = _.isArray(rawData.value) ? rawData.value : [];
 
@@ -469,10 +469,10 @@ class Piece extends EventEmitter {
 		this[_closeCheck]();
 
 		if (_.isNil(key)) {
-			throw new Err('key is null or undefined');
+			throw new Err("key is null or undefined");
 		}
 		if (_.isNil(val)) {
-			throw new Err('val is null or undefined');
+			throw new Err("val is null or undefined");
 		}
 
 		if (!(await this.has(key, path))) {
@@ -494,7 +494,7 @@ class Piece extends EventEmitter {
 		this[_closeCheck]();
 
 		if (_.isNil(key)) {
-			throw new Err('key is null or undefined');
+			throw new Err("key is null or undefined");
 		}
 
 		if (!this[_typeCheck](key)) {
@@ -570,7 +570,7 @@ class Piece extends EventEmitter {
 			throw new Err("The cache is not activated, you can't use this method");
 		}
 		if (_.isNil(key)) {
-			throw new Err('key is null or undefined');
+			throw new Err("key is null or undefined");
 		}
 
 		this[_cacheDefer].then(() => {
