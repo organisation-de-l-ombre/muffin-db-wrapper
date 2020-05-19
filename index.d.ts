@@ -71,7 +71,7 @@ declare module "./" {
 
         public has(key: any, path?: string): Promise<boolean>;
 
-        public delete(key: any, val: any): Promise<void>;
+        public delete(key: any, path?: string): Promise<void>;
         public clear(): Promise<void>;
 
         public evict(key: any, path?: string): void;
