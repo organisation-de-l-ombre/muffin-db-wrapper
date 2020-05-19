@@ -52,7 +52,7 @@ declare module "./" {
         public emit<K extends keyof ClientEvents>(event: K, ...args: ClientEvents[K]): boolean;
     }
 
-    class Piece extends EventEmitter {
+    export class Piece extends EventEmitter {
         public base: Collection;
         public client: Client;
         public hasCache: boolean;
