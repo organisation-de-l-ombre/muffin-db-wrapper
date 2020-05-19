@@ -3,5 +3,6 @@
 JSDoc.json
 tsconfig.json
 README_JSDoc.md
+.vscode/
 _tests/
 node_modules/

@@ -33,6 +33,8 @@ declare module "./" {
         [key: string]: Piece;
     }
 
+    export const version: string;
+
     export class Client extends EventEmitter {
         public defer: Promise<void>;
         public dbName: string;
@@ -60,19 +62,25 @@ declare module "./" {
         constructor(base: Collection, client: Client, options?: PieceOptions);
 
         public set(key: any, val: any, path?: string): Promise<void>;
+        public ensure(key: any, val: any, path?: string, raw?: boolean): Promise<any> | Promise<RawData>;
         public push(key: any, val: any, path?: string, allowDupes?: boolean): Promise<void>;
+
         public get(key: any, val: any, raw?: boolean): Promise<any> | Promise<RawData>;
         public fetch(key: any, val: any, raw?: boolean): Promise<any> | Promise<RawData>;
         public fetchAll(): Promise<void>;
+
         public has(key: any, path?: string): Promise<boolean>;
-        public ensure(key: any, val: any, path?: string, raw?: boolean): Promise<any> | Promise<RawData>;
+
         public delete(key: any, val: any): Promise<void>;
         public clear(): Promise<void>;
+
         public evict(key: any, path?: string): void;
         public evictAll(): void;
+
         public valueArray(cache?: boolean): Promise<any[]>;
         public keyArray(cache?: boolean): Promise<any[]>;
         public rawArray(): Promise<RawData>;
+
         public size(fast?: boolean): Promise<number>;
 
         public on(event: "change", listener: (change: object) => void): this;
