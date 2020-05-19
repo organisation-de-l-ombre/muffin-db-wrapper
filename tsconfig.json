@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "outDir": "./built",
+        "module": "commonJS",
+        "moduleResolution": "node",
+        "allowJs": true,
+        "target": "ES2019",
+        "esModuleInterop": true,
+        "resolveJsonModule": true
+    },
+    "include": [
+        "./src/**/*"
+    ],
+}

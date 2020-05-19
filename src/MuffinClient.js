@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
+
 /**
- * @typedef {Object} MuffinOptions
+ * @typedef {Object} ClientOptions
  * @description If you use url you don't need to use username, password, port and host
  * @property {string} [username]            - Not used if an url is provided
  * @property {string} [password]            - Not used if an url is provided
@@ -34,23 +35,23 @@ const _url = Symbol('url'),
 	_readyFailed = Symbol('readyFailed'),
 	_deprecatedChangeEvent = require('util').deprecate((client, obj) => {
 		client.emit('change', obj);
-	}, "MuffinDB : In the next major update, the change event will be probably removed or there will be a breaking change. Please consider using the piece's change event instead.");
+	}, "MuffinDB : Please consider using Piece's change event instead of Client's change event.");
 
-class MuffinClient extends EventEmitter {
+class Client extends EventEmitter {
 	/**
+	 * Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} and allows you to create pieces, which are map-like objects. (with an optional cache)
 	 * @constructor
 	 * @public
 	 * @since 1.0
 	 * @extends EventEmitter
-	 * @classdesc Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} and allows you to create pieces, which are map-like objects. (with an optional cache)
-	 * @param {MuffinOptions} options - Options for the client.
+	 * @param {ClientOptions} options - Options for the client.
 	 */
 	constructor(options = {}) {
 		super();
 
 		/**
 		 * @since 1.0
-		 * @member {Promise} - Resolved when the database is ready.
+		 * @member {Promise<void>} - Resolved when the database is ready.
 		 */
 		this.defer = new Promise((res, rej) => {
 			try {
@@ -103,7 +104,6 @@ class MuffinClient extends EventEmitter {
 				 * @event MuffinClient#close
 				 * @since 1.0
 				 * @description Emitted after a socket closed against a single server or mongos proxy.
-				 * @type {MongoError}
 				 */
 				this[_db].on('close', () => {
 					this.emit('close');
@@ -221,4 +221,4 @@ class MuffinClient extends EventEmitter {
 	}
 }
 
-module.exports = MuffinClient;
+module.exports = Client;

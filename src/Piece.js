@@ -11,17 +11,17 @@ const _closeCheck = Symbol('closeCheck'),
 
 class Piece extends EventEmitter {
 	/**
+	 * An object similar to Map that has an optional cache, used to interact with the database.
 	 * @namespace
 	 * @class
 	 * @protected
-	 * @classdesc An object similar to Map that has an optional cache, used to interact with the database.
 	 * @description Initialize a new Piece. You need to use MuffinClient#piece or MuffinClient#multi to do that.
 	 * @since 1.0
 	 * @example
 	 * const piece = new muffinClient.piece("example", { fetchAll: true, cacheSyncAuto: true })
 	 * @param {Collection} base - The [Collection]{@link https://mongodb.github.io/node-mongodb-native/3.3/api/Collection.html} from MongoDB.
 	 * @param {MuffinClient} client - The client that instantiated the Piece.
-	 * @param {PieceOptions} options - Options like cache or fetchAll.
+	 * @param {PieceOptions} options - Actually there is only the fetchAll option.
 	 */
 	constructor(base, client, options) {
 		super();
@@ -148,13 +148,12 @@ class Piece extends EventEmitter {
 		if (_.isNil(key)) {
 			throw new Err('key is null or undefined');
 		}
+		if (_.isNil(val)) {
+			throw new Err('val is null or undefined');
+		}
 
 		if (!this[_typeCheck](key)) {
 			key = key.toString();
-		}
-
-		if (_.isNil(val)) {
-			throw new Err('val is null or undefined');
 		}
 
 		if (path) {
@@ -200,17 +199,14 @@ class Piece extends EventEmitter {
 		if (_.isNil(key)) {
 			throw new Err('key is null or undefined');
 		}
-
+		if (_.isNil(val)) {
+			throw new Err('val is null or undefined');
+		}
 		if (!this[_typeCheck](key)) {
 			key = key.toString();
 		}
 
-		if (_.isNil(val)) {
-			throw new Err('val is null or undefined');
-		}
-
 		let rawData;
-
 		if (this.hasCache) {
 			await this[_cacheDefer];
 
@@ -229,7 +225,6 @@ class Piece extends EventEmitter {
 
 		let data;
 		let finalData;
-
 		if (path) {
 			if (!_.isArray(_.get(rawData.value, path))) {
 				throw new Err('The element you tried to modify is not an array');
@@ -293,7 +288,6 @@ class Piece extends EventEmitter {
 
 		let rawData;
 		let data;
-
 		try {
 			if (this.hasCache) {
 				await this[_cacheDefer];
@@ -360,7 +354,6 @@ class Piece extends EventEmitter {
 
 		let rawData;
 		let data;
-
 		try {
 			rawData = await this.base.findOne({ _id: key });
 
@@ -390,7 +383,7 @@ class Piece extends EventEmitter {
 	 * @async
 	 * @description Fetch all the database and caches it all. It also updates already cached data.
 	 * @since 1.2
-	 * @returns {void} Nothing
+	 * @returns {Promise<void>} Nothing
 	 */
 	async fetchAll() {
 		this[_closeCheck]();
@@ -426,7 +419,6 @@ class Piece extends EventEmitter {
 		}
 
 		let rawData;
-
 		if (this.hasCache) {
 			await this[_cacheDefer];
 
@@ -511,7 +503,6 @@ class Piece extends EventEmitter {
 
 		if (path) {
 			let rawData;
-
 			if (this.hasCache) {
 				await this[_cacheDefer];
 
@@ -589,7 +580,6 @@ class Piece extends EventEmitter {
 
 			if (path) {
 				let data;
-
 				if (this.cache.has(key)) {
 					data = this.cache.get(key);
 				} else {
@@ -642,7 +632,7 @@ class Piece extends EventEmitter {
 	 * @since 1.0
 	 * @async
 	 * @param {boolean} [cache=true] - Optional. If there is a [cache]{@link Piece~cache}, per defaut it is set to true and it will takes cached data. If you set it to false, it will takes the data from the Mongo server.
-	 * @returns {Array<*>} A promise. When resolved, returns an array with the values of all the documents
+	 * @returns {Promise<Array<*>>} A promise. When resolved, returns an array with the values of all the documents
 	 */
 	async valueArray(cache = true) {
 		if (this.hasCache && cache) {
@@ -653,6 +643,7 @@ class Piece extends EventEmitter {
 			for (const value of this.cache.values()) {
 				values.push(value);
 			}
+
 			return values;
 		} else {
 			this[_closeCheck]();
@@ -679,6 +670,7 @@ class Piece extends EventEmitter {
 			for (const key of this.cache.keys()) {
 				keys.push(key);
 			}
+
 			return keys;
 		} else {
 			this[_closeCheck]();
