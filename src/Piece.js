@@ -138,8 +138,8 @@ class Piece extends EventEmitter {
 	 * // Sets the value "bar" to the key "foo"
 	 * await piece.set("foo", "bar");
 	 *
-	 * // Sets the value "oof" to the property bar
-	 * await piece.set("foo", "oof", "bar");
+	 * // Sets the value "baz" to the property bar
+	 * await piece.set("foo", "baz", "bar");
 	 * @returns {Promise<void>} A promise
 	 */
 	async set(key, val, path) {
@@ -190,7 +190,7 @@ class Piece extends EventEmitter {
 	 * await piece.push("foo", "bar");
 	 *
 	 * // We can also do that for properties that are arrays
-	 * await piece.push("foo", "oof", "bar");
+	 * await piece.push("foo", "baz", "bar");
 	 * @returns {Promise<void>} A promise
 	 */
 	async push(key, val, path, allowDupes = false) {
