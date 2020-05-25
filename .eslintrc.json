@@ -1,25 +1,41 @@
 {
 	"extends": [
 		"eslint:recommended",
-		"plugin:prettier/recommended"
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended",
+		"prettier",
+		"plugin:prettier/recommended",
+		"prettier/@typescript-eslint"
 	],
-	"parserOptions": {
-		"ecmaVersion": 2019
-	},
+	"parser": "@typescript-eslint/parser",
+	"plugins": [
+		"@typescript-eslint",
+		"prettier"
+	],
 	"env": {
 		"es6": true,
 		"node": true
 	},
+	"ignorePatterns": [
+		"./client/built/*",
+		"./client/node_modules/*",
+		"./data-process/built/*",
+		"./data-process/node_modules/*",
+		"./manager/built/*",
+		"./manager/node_modules/*",
+		"./serveur/built/*",
+		"./serveur/node_modules/*"
+	],
 	"rules": {
 		"prettier/prettier": [
 			2,
 			{
 				"printWidth": 100,
+				"useTabs": true,
 				"singleQuote": false,
 				"trailingComma": "none",
-				"tabWidth": 2,
-				"useTabs": true,
-				"arrowParens": "always"
+				"arrowParens": "always",
+				"endOfLine": "lf"
 			}
 		],
 		"getter-return": "off",
@@ -31,6 +47,8 @@
 			"error",
 			"all"
 		],
+		"default-case": "error",
+		"default-param-last": "warn",
 		"dot-location": [
 			"error",
 			"property"
@@ -108,6 +126,10 @@
 		],
 		"key-spacing": "error",
 		"keyword-spacing": "error",
+		"linebreak-style": [
+			"error",
+			"unix"
+		],
 		"max-depth": "error",
 		"max-len": [
 			"error",
