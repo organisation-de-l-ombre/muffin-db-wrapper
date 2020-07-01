@@ -17,27 +17,21 @@
 		"node": true
 	},
 	"ignorePatterns": [
-		"./client/built/*",
-		"./client/node_modules/*",
-		"./data-process/built/*",
-		"./data-process/node_modules/*",
-		"./manager/built/*",
-		"./manager/node_modules/*",
-		"./serveur/built/*",
-		"./serveur/node_modules/*"
+		"./built/*",
+		"./vscode/*"
 	],
 	"rules": {
 		"prettier/prettier": [
 			2,
 			{
-				"printWidth": 100,
+				"printWidth": 110,
 				"useTabs": true,
 				"singleQuote": false,
-				"trailingComma": "none",
 				"arrowParens": "always",
 				"endOfLine": "lf"
 			}
 		],
+		"@typescript-eslint/no-empty-function": "off",
 		"getter-return": "off",
 		"no-await-in-loop": "warn",
 		"no-template-curly-in-string": "error",
@@ -104,9 +98,6 @@
 				"ignoreConsecutiveComments": true
 			}
 		],
-		"comma-dangle": [
-			"error"
-		],
 		"comma-spacing": "error",
 		"comma-style": "error",
 		"computed-property-spacing": "error",
@@ -149,12 +140,6 @@
 			}
 		],
 		"new-cap": "off",
-		"newline-per-chained-call": [
-			"error",
-			{
-				"ignoreChainWithDepth": 3
-			}
-		],
 		"no-array-constructor": "error",
 		"no-inline-comments": "error",
 		"no-lonely-if": "error",
@@ -193,7 +178,6 @@
 			}
 		],
 		"semi-spacing": "error",
-		"semi": "error",
 		"space-before-blocks": "error",
 		"space-before-function-paren": [
 			"error",
