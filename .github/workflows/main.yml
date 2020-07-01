@@ -25,7 +25,7 @@ jobs:
           output_dir: ./out
           config_file: JSDoc.json
           template: minami
-          front_page: README.md
+          front_page: README_JSDoc.md
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
