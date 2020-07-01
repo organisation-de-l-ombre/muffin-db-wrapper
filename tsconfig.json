@@ -1,14 +1,19 @@
 {
     "compilerOptions": {
-        "outDir": "./built",
-        "module": "commonJS",
-        "moduleResolution": "node",
+        "outDir": "./lib",
+        "module": "CommonJS",
+        "moduleResolution": "Node",
         "allowJs": true,
-        "target": "ES2019",
+        "target": "ES2018",
         "esModuleInterop": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "pretty": true,
+        "removeComments": true
     },
     "include": [
         "./src/**/*"
     ],
+    "exclude": [
+        "./lib/**/*"
+    ]
 }
