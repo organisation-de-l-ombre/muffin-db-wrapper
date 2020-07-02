@@ -5,6 +5,7 @@ JSDoc.json
 tsconfig.json
 README_JSDoc.md
 src/
+docs/
 .vscode/
 _tests/
 node_modules/
