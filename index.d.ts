@@ -36,55 +36,55 @@ declare module "./" {
     export const version: string;
 
     export class Client extends EventEmitter {
-        public defer: Promise<void>;
-        public dbName: string;
-        public isReady: boolean;
-        public closed: boolean;
+        defer: Promise<void>;
+        dbName: string;
+        isReady: boolean;
+        closed: boolean;
 
         constructor(options: ClientOptions);
 
-        public multi(names: string[], options?: PieceOptions): DynamicObject;
-        public piece(name: string, options?: PieceOptions): Piece;
-        public close(): void;
+        multi(names: string[], options?: PieceOptions): DynamicObject;
+        piece(name: string, options?: PieceOptions): Piece;
+        close(): void;
 
-        public on<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => void): this;
-        public once<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => void): this;
-        public emit<K extends keyof ClientEvents>(event: K, ...args: ClientEvents[K]): boolean;
+        on<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => void): this;
+        once<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => void): this;
+        emit<K extends keyof ClientEvents>(event: K, ...args: ClientEvents[K]): boolean;
     }
 
-    export class Piece extends EventEmitter {
-        public base: Collection;
-        public client: Client;
-        public hasCache: boolean;
-        public cache: Map<any, any>;
-        public isCacheReady: boolean;
+    export class Piece<T = any> extends EventEmitter {
+        base: Collection;
+        client: Client;
+        hasCache: boolean;
+        cache: Map<any, any>;
+        isCacheReady: boolean;
 
         constructor(base: Collection, client: Client, options?: PieceOptions);
 
-        public set(key: any, val: any, path?: string): Promise<void>;
-        public ensure(key: any, val: any, path?: string, raw?: boolean): Promise<any> | Promise<RawData>;
-        public push(key: any, val: any, path?: string, allowDupes?: boolean): Promise<void>;
+        set(key: any, val: any, path?: string): Promise<void>;
+        ensure(key: any, val: any, path?: string, raw?: boolean): Promise<any> | Promise<RawData>;
+        push(key: any, val: any, path?: string, allowDupes?: boolean): Promise<void>;
 
-        public get(key: any, path?: string, raw?: boolean): Promise<any> | Promise<RawData>;
-        public fetch(key: any, path?: any, raw?: boolean): Promise<any> | Promise<RawData>;
-        public fetchAll(): Promise<void>;
+        get(key: any, path?: string, raw?: boolean): Promise<any> | Promise<RawData>;
+        fetch(key: any, path?: any, raw?: boolean): Promise<any> | Promise<RawData>;
+        fetchAll(): Promise<void>;
 
-        public has(key: any, path?: string): Promise<boolean>;
+        has(key: any, path?: string): Promise<boolean>;
 
-        public delete(key: any, path?: string): Promise<void>;
-        public clear(): Promise<void>;
+        delete(key: any, path?: string): Promise<void>;
+        clear(): Promise<void>;
 
-        public evict(key: any, path?: string): void;
-        public evictAll(): void;
+        evict(key: any, path?: string): void;
+        evictAll(): void;
 
-        public valueArray(cache?: boolean): Promise<any[]>;
-        public keyArray(cache?: boolean): Promise<any[]>;
-        public rawArray(): Promise<RawData[]>;
+        valueArray(cache?: boolean): Promise<any[]>;
+        keyArray(cache?: boolean): Promise<any[]>;
+        rawArray(): Promise<RawData[]>;
 
-        public size(fast?: boolean): Promise<number>;
+        size(fast?: boolean): Promise<number>;
 
-        public on(event: "change", listener: (change: object) => void): this;
-        public once(event: "change", listener: (change: object) => void): this;
-        public emit(event: "change", change: object): boolean;
+        on(event: "change", listener: (change: object) => void): this;
+        once(event: "change", listener: (change: object) => void): this;
+        emit(event: "change", change: object): boolean;
     }
 }
