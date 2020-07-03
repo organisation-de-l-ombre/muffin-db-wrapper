@@ -93,7 +93,7 @@ class Client extends EventEmitter {
 			try {
 				this[_client] = await MongoClient.connect(this[_url], {
 					useNewUrlParser: true,
-					useUnifiedTopology: true
+					useUnifiedTopology: true,
 				});
 				this[_db] = this[_client].db(this.dbName);
 

@@ -31,8 +31,6 @@
 			"error",
 			"all"
 		],
-		"default-case": "error",
-		"default-param-last": "warn",
 		"dot-location": [
 			"error",
 			"property"
