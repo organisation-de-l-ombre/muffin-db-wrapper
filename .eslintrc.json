@@ -1,37 +1,27 @@
 {
 	"extends": [
 		"eslint:recommended",
-		"plugin:@typescript-eslint/eslint-recommended",
-		"plugin:@typescript-eslint/recommended",
-		"prettier",
-		"plugin:prettier/recommended",
-		"prettier/@typescript-eslint"
+		"plugin:prettier/recommended"
 	],
-	"parser": "@typescript-eslint/parser",
-	"plugins": [
-		"@typescript-eslint",
-		"prettier"
-	],
+	"parserOptions": {
+		"ecmaVersion": 2019
+	},
 	"env": {
 		"es6": true,
 		"node": true
 	},
-	"ignorePatterns": [
-		"./lib/*",
-		"./vscode/*"
-	],
 	"rules": {
 		"prettier/prettier": [
 			2,
 			{
-				"printWidth": 110,
-				"useTabs": true,
+				"printWidth": 100,
 				"singleQuote": false,
-				"arrowParens": "always",
-				"endOfLine": "lf"
+				"trailingComma": "all",
+				"tabWidth": 2,
+				"useTabs": true,
+				"arrowParens": "always"
 			}
 		],
-		"@typescript-eslint/no-empty-function": "off",
 		"getter-return": "off",
 		"no-await-in-loop": "warn",
 		"no-template-curly-in-string": "error",
