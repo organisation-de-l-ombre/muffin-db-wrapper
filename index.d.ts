@@ -16,9 +16,9 @@ declare module "./" {
         fetchAll?: boolean
     }
 
-    type RawData = {
-        _id: any,
-        value: any,
+    type RawData<TKey, TValue> = {
+        _id: TKey,
+        value: TValue,
         [key: string]: any
     }
 
@@ -44,7 +44,7 @@ declare module "./" {
         constructor(options: ClientOptions);
 
         multi(names: string[], options?: PieceOptions): DynamicObject;
-        piece(name: string, options?: PieceOptions): Piece;
+        piece<TKey = any, TValue = any>(name: string, options?: PieceOptions): Piece<TKey, TValue>;
         close(): void;
 
         on<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => void): this;
@@ -52,34 +52,45 @@ declare module "./" {
         emit<K extends keyof ClientEvents>(event: K, ...args: ClientEvents[K]): boolean;
     }
 
-    export class Piece<T = any> extends EventEmitter {
-        base: Collection;
+    export class Piece<TKey = any, TValue = any> extends EventEmitter {
+        base: Collection<{ TKey: TValue }>;
         client: Client;
+
+        cache: Map<TKey, TValue>;
         hasCache: boolean;
-        cache: Map<any, any>;
         isCacheReady: boolean;
 
         constructor(base: Collection, client: Client, options?: PieceOptions);
 
-        set(key: any, val: any, path?: string): Promise<void>;
-        ensure(key: any, val: any, path?: string, raw?: boolean): Promise<any> | Promise<RawData>;
-        push(key: any, val: any, path?: string, allowDupes?: boolean): Promise<void>;
+        set(key: TKey, val: TValue, path?: string): Promise<void>;
 
-        get(key: any, path?: string, raw?: boolean): Promise<any> | Promise<RawData>;
-        fetch(key: any, path?: any, raw?: boolean): Promise<any> | Promise<RawData>;
+        push(key: TKey, val: TValue, path?: string, allowDupes?: boolean): Promise<void>;
+
+        ensure(key: TKey, val: TValue): Promise<TValue>;
+        ensure(key: TKey, val: TValue, path?: string): Promise<any>;
+        ensure(key: TKey, val: TValue, path?: string, raw?: boolean): Promise<RawData<TKey, TValue>>;
+
+        get(key: TKey): Promise<TValue>
+        get(key: TKey, path?: string): Promise<any>
+        get(key: TKey, path?: string, raw?: boolean): Promise<RawData<TKey, TValue>>;
+
+        fetch(key: TKey): Promise<TValue>
+        fetch(key: TKey, path?: string): Promise<any>
+        fetch(key: TKey, path?: string, raw?: boolean): Promise<RawData<TKey, TValue>>;
+
         fetchAll(): Promise<void>;
 
-        has(key: any, path?: string): Promise<boolean>;
+        has(key: TKey, path?: string): Promise<boolean>;
 
-        delete(key: any, path?: string): Promise<void>;
+        delete(key: TKey, path?: string): Promise<void>;
         clear(): Promise<void>;
 
-        evict(key: any, path?: string): void;
+        evict(key: TKey, path?: string): void;
         evictAll(): void;
 
-        valueArray(cache?: boolean): Promise<any[]>;
-        keyArray(cache?: boolean): Promise<any[]>;
-        rawArray(): Promise<RawData[]>;
+        valueArray(cache?: boolean): Promise<TValue[]>;
+        keyArray(cache?: boolean): Promise<TKey[]>;
+        rawArray(): Promise<RawData<TKey, TValue>[]>;
 
         size(fast?: boolean): Promise<number>;
 
