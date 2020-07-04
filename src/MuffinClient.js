@@ -14,7 +14,8 @@
 /**
  * @typedef {Object} PieceOptions
  * @description If you use url you don't need to use username, password, port and host.
- * @property {boolean} [fetchAll=false] - If set to true, the cache will be available and it will caches all the database.
+ * @property {boolean} [fetchAll=false] - Default to false. Caches all the database.
+ * @property {boolean} [autoCacheSync=true] - Default to true. Makes the cache sync itself with the Mongo server.
  */
 
 /**

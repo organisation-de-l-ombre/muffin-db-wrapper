@@ -4,29 +4,30 @@ import { MongoError, Collection } from "mongodb";
 
 declare module "./" {
     type ClientOptions = {
-        username?: string,
-        password?: string,
-        port?: number,
-        host?: string,
-        url?: string,
-        dbName: string
+        username?: string;
+        password?: string;
+        port?: number;
+        host?: string;
+        url?: string;
+        dbName: string;
     }
 
     type PieceOptions = {
-        fetchAll?: boolean
+        fetchAll?: boolean;
+        autoCacheSync?: boolean;
     }
 
     type RawData<TKey, TValue> = {
-        _id: TKey,
-        value: TValue,
-        [key: string]: any
+        _id: TKey;
+        value: TValue;
+        [key: string]: any;
     }
 
     interface ClientEvents {
-        close: [],
-        reconnect: [any],
-        timeout: [MongoError],
-        change: [any]
+        close: [];
+        reconnect: [any];
+        timeout: [MongoError];
+        change: [any];
     }
 
     interface DynamicObject {

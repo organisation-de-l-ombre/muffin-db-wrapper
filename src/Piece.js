@@ -86,32 +86,37 @@ class Piece extends EventEmitter {
 			}
 		}
 
+		if (_.isNil(options.autoCacheSync)) {
+			options.autoCacheSync = true;
+		}
+
 		/**
 		 * @event Piece#change
 		 * @since 1.2
 		 * @description Emit when a change occurs on the database.
 		 * @type {Object}
 		 */
-
 		this.base.watch(null, { fullDocument: "updateLookup" }).on("change", async (obj) => {
 			this.emit("change", obj);
 
-			await this[_cacheDefer];
+			if (options.autoCacheSync) {
+				await this[_cacheDefer];
 
-			if (this.hasCache) {
-				switch (obj.operationType) {
-					case "update":
-					case "insert":
-					case "replace":
-						this.cache.set(obj.fullDocument._id, obj.fullDocument.value);
-						break;
-					case "delete":
-						this.cache.delete(obj.documentKey._id);
-						break;
-					case "drop":
-					case "dropDatabase":
-						this.cache.clear();
-						break;
+				if (this.hasCache) {
+					switch (obj.operationType) {
+						case "update":
+						case "insert":
+						case "replace":
+							this.cache.set(obj.fullDocument._id, obj.fullDocument.value);
+							break;
+						case "delete":
+							this.cache.delete(obj.documentKey._id);
+							break;
+						case "drop":
+						case "dropDatabase":
+							this.cache.clear();
+							break;
+					}
 				}
 			}
 		});
