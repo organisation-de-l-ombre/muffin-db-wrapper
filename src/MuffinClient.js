@@ -46,6 +46,9 @@ class MuffinClient extends EventEmitter {
 	 * @public
 	 * @since 1.0
 	 * @extends EventEmitter
+	 * @example
+	 * // Creates a MuffinClient and connects to localhost with port 27017, using "muffin" as db's name
+	 * const client = new Muffin.Client()
 	 * @param {ClientOptions} options - Options for the client.
 	 */
 	constructor(options = {}) {
