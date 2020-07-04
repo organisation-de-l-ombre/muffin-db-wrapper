@@ -690,7 +690,7 @@ class Piece extends EventEmitter {
 	/**
 	 * @since 1.0
 	 * @async
-	 * @returns {Promise<Array<any>} An array with all the documents of the database
+	 * @returns {Promise<Array<*>} An array with all the documents of the database
 	 */
 	rawArray() {
 		this[_closeCheck]();
