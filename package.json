@@ -6,7 +6,7 @@
   "bugs": "https://github.com/organisation-de-l-ombre/muffin-db-wrapper/issues",
   "main": "index.js",
   "types": "index.d.ts",
-  "repository": "github:Cat66000/Muffin",
+  "repository": "github:organisation-de-l-ombre/muffin-db-wrapper",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
