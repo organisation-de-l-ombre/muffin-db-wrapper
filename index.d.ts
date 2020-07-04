@@ -44,7 +44,9 @@ declare module "./" {
         constructor(options: ClientOptions);
 
         multi(names: string[], options?: PieceOptions): DynamicObject;
+
         piece<TKey = any, TValue = any>(name: string, options?: PieceOptions): Piece<TKey, TValue>;
+
         close(): void;
 
         on<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => void): this;
@@ -94,8 +96,8 @@ declare module "./" {
 
         size(fast?: boolean): Promise<number>;
 
-        on(event: "change", listener: (change: object) => void): this;
-        once(event: "change", listener: (change: object) => void): this;
-        emit(event: "change", change: object): boolean;
+        on(event: "change", listener: (change: any) => void): this;
+        once(event: "change", listener: (change: any) => void): this;
+        emit(event: "change", change: any): boolean;
     }
 }
