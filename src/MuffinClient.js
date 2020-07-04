@@ -135,7 +135,7 @@ class MuffinClient extends EventEmitter {
 
 				/**
 				 * @event MuffinClient#change
-				 * @deprecated Use [this event]{@link Piece~change} instead
+				 * @deprecated Use [Piece#change]{@link Piece#change} instead
 				 * @since 1.1
 				 * @description Emit when a change occurs on the database.
 				 * @type {any}
