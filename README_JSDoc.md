@@ -4,7 +4,7 @@
 
 **It also has an optional cache.**
 
-**[NPM](https://www.npmjs.com/package/muffindb) - [GitHub](https://organisation-de-l-ombre.github.io/muffin-db-wrapper)**
+**[NPM](https://www.npmjs.com/package/muffindb) - [GitHub](https://github.com/organisation-de-l-ombre/muffin-db-wrapper)**
 
 **[Join the community on Discord](https://discord.gg/ZXtEVJm)**
 
