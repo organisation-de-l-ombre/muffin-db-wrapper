@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 
 /**
- * @typedef {Object} ClientOptions
+ * @typedef {Object} MuffinClientOptions
  * @description If you use url you don't need to use username, password, port and host
  * @property {string} [username]            - Not used if an url is provided
  * @property {string} [password]            - Not used if an url is provided
@@ -39,7 +39,7 @@ const _url = Symbol("url"),
 		client.emit("change", obj);
 	}, "MuffinDB : Please consider using Piece's change event instead of Client's change event.");
 
-class Client extends EventEmitter {
+class MuffinClient extends EventEmitter {
 	/**
 	 * Use the [MongoDB official Driver]{@link https://www.npmjs.com/package/mongodb} and allows you to create pieces, which are map-like objects. (with an optional cache)
 	 * @constructor
@@ -103,7 +103,7 @@ class Client extends EventEmitter {
 				this[_ready]();
 
 				/**
-				 * @event Client#close
+				 * @event MuffinClient#close
 				 * @since 1.0
 				 * @description Emitted after a socket closed against a single server or mongos proxy.
 				 */
@@ -112,7 +112,7 @@ class Client extends EventEmitter {
 				});
 
 				/**
-				 * @event Client#reconnect
+				 * @event MuffinClient#reconnect
 				 * @since 1.0
 				 * @type {any}
 				 */
@@ -121,7 +121,7 @@ class Client extends EventEmitter {
 				});
 
 				/**
-				 * @event Client#timeout
+				 * @event MuffinClient#timeout
 				 * @since 1.0
 				 * @description Emitted after a socket timeout occurred against a single server or mongos proxy.
 				 * @type {MongoError}
@@ -131,7 +131,7 @@ class Client extends EventEmitter {
 				});
 
 				/**
-				 * @event Client#change
+				 * @event MuffinClient#change
 				 * @deprecated
 				 * @since 1.1
 				 * @description Emit when a change occurs on the database.
@@ -223,4 +223,4 @@ class Client extends EventEmitter {
 	}
 }
 
-module.exports = Client;
+module.exports = MuffinClient;
