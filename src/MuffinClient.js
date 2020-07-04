@@ -19,7 +19,7 @@
  */
 
 /**
- * @typedef {Object} MongoError {@link https://mongodb.github.io/node-mongodb-native/3.3/api/MongoError.html}
+ * @typedef {any} MongoError {@link https://mongodb.github.io/node-mongodb-native/3.3/api/MongoError.html}
  */
 
 const { MongoClient } = require("mongodb"),
