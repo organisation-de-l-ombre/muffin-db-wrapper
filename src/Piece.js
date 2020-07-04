@@ -94,7 +94,7 @@ class Piece extends EventEmitter {
 		 * @event Piece#change
 		 * @since 1.2
 		 * @description Emit when a change occurs on the database.
-		 * @type {Object}
+		 * @type {any}
 		 */
 		this.base.watch(null, { fullDocument: "updateLookup" }).on("change", async (obj) => {
 			this.emit("change", obj);
@@ -278,7 +278,7 @@ class Piece extends EventEmitter {
 	 *
 	 * // Returns the value of the property bar
 	 * const data = await piece.get("foo", "bar")
-	 * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
+	 * @returns {Promise<any>} If raw is set to false, returns the value found in the database for this key.
 	 */
 	async get(key, path, raw = false) {
 		this[_closeCheck]();
@@ -340,7 +340,7 @@ class Piece extends EventEmitter {
 	 *
 	 * // Returns the value of the property bar and update the cache
 	 * const data = await piece.fetch("foo", "bar")
-	 * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
+	 * @returns {Promise<any>} If raw is set to false, returns the value found in the database for this key.
 	 */
 	async fetch(key, path, raw = false) {
 		this[_closeCheck]();
@@ -468,7 +468,7 @@ class Piece extends EventEmitter {
 	 * @example
 	 * // If foo exists it returns its value, if it doesn't it set its value to "bar" and returns it
 	 * const data = piece.ensure("foo", "bar");
-	 * @returns {Promise<*>} If raw is set to false, returns the value found in the database for this key.
+	 * @returns {Promise<any>} If raw is set to false, returns the value found in the database for this key.
 	 */
 	async ensure(key, val, path, raw = false) {
 		this[_closeCheck]();
@@ -690,7 +690,7 @@ class Piece extends EventEmitter {
 	/**
 	 * @since 1.0
 	 * @async
-	 * @returns {Promise<Array<Object<*>>>} An array with all the documents of the database
+	 * @returns {Promise<Array<any>} An array with all the documents of the database
 	 */
 	rawArray() {
 		this[_closeCheck]();

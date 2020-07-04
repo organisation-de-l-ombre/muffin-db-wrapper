@@ -114,7 +114,7 @@ class Client extends EventEmitter {
 				/**
 				 * @event MuffinClient#reconnect
 				 * @since 1.0
-				 * @type {Object}
+				 * @type {any}
 				 */
 				this[_db].on("reconnect", (object) => {
 					this.emit("reconnect", object);
@@ -135,7 +135,7 @@ class Client extends EventEmitter {
 				 * @deprecated
 				 * @since 1.1
 				 * @description Emit when a change occurs on the database.
-				 * @type {Object}
+				 * @type {any}
 				 */
 				this[_db].watch(null, { fullDocument: "updateLookup" }).on("change", (obj) => {
 					if (this.listenerCount("change") !== 0) {
