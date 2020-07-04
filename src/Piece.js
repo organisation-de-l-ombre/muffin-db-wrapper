@@ -15,12 +15,12 @@ class Piece extends EventEmitter {
 	 * @namespace
 	 * @class
 	 * @protected
-	 * @description Initialize a new Piece. You need to use MuffinClient#piece or MuffinClient#multi to do that.
+	 * @description Initialize a new Piece. You need to use Client#piece or Client#multi to do that.
 	 * @since 1.0
 	 * @example
-	 * const piece = new muffinClient.piece("example", { fetchAll: true, cacheSyncAuto: true })
+	 * const piece = new Client.piece("example", { fetchAll: true, cacheSyncAuto: true })
 	 * @param {Collection} base - The [Collection]{@link https://mongodb.github.io/node-mongodb-native/3.3/api/Collection.html} from MongoDB.
-	 * @param {MuffinClient} client - The client that instantiated the Piece.
+	 * @param {Client} client - The client that instantiated the Piece.
 	 * @param {PieceOptions} options - Actually there is only the fetchAll option.
 	 */
 	constructor(base, client, options) {
@@ -33,7 +33,7 @@ class Piece extends EventEmitter {
 
 		/**
 		 * @since 1.0
-		 * @member {MuffinClient} - The client that instantiated the Piece.
+		 * @member {Client} - The client that instantiated the Piece.
 		 */
 		this.client = client;
 
