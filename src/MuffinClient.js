@@ -103,7 +103,7 @@ class Client extends EventEmitter {
 				this[_ready]();
 
 				/**
-				 * @event MuffinClient#close
+				 * @event Client#close
 				 * @since 1.0
 				 * @description Emitted after a socket closed against a single server or mongos proxy.
 				 */
@@ -112,7 +112,7 @@ class Client extends EventEmitter {
 				});
 
 				/**
-				 * @event MuffinClient#reconnect
+				 * @event Client#reconnect
 				 * @since 1.0
 				 * @type {any}
 				 */
@@ -121,7 +121,7 @@ class Client extends EventEmitter {
 				});
 
 				/**
-				 * @event MuffinClient#timeout
+				 * @event Client#timeout
 				 * @since 1.0
 				 * @description Emitted after a socket timeout occurred against a single server or mongos proxy.
 				 * @type {MongoError}
@@ -131,7 +131,7 @@ class Client extends EventEmitter {
 				});
 
 				/**
-				 * @event MuffinClient#change
+				 * @event Client#change
 				 * @deprecated
 				 * @since 1.1
 				 * @description Emit when a change occurs on the database.
