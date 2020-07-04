@@ -3,7 +3,7 @@
 .eslintignore
 JSDoc.json
 README_JSDoc.md
-src/
+.github/
 .vscode/
 _tests/
 node_modules/
