@@ -85,13 +85,17 @@ declare module "./" {
         has(key: TKey, path?: string): Promise<boolean>;
 
         delete(key: TKey, path?: string): Promise<void>;
+
         clear(): Promise<void>;
 
         evict(key: TKey, path?: string): void;
+
         evictAll(): void;
 
         valueArray(cache?: boolean): Promise<TValue[]>;
+
         keyArray(cache?: boolean): Promise<TKey[]>;
+        
         rawArray(): Promise<RawData<TKey, TValue>[]>;
 
         size(fast?: boolean): Promise<number>;
