@@ -1,6 +1,6 @@
 {
   "name": "muffindb",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Uses Mongo and allows you to create pieces of muffin, which allows you to interact with the database as if you were using a Map. It has also an optional cache.",
   "homepage": "https://organisation-de-l-ombre.github.io/muffin-db-wrapper/",
   "bugs": "https://github.com/organisation-de-l-ombre/muffin-db-wrapper/issues",
