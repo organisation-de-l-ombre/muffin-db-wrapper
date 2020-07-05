@@ -253,11 +253,7 @@ class Piece extends EventEmitter {
 			finalData = data;
 		}
 
-		await this.base.updateOne(
-			{ _id: key },
-			{ $set: { _id: key, value: finalData } },
-			{ upsert: true }
-		);
+		await this.base.updateOne({ _id: key }, { $set: { _id: key, value: finalData } }, { upsert: true });
 	}
 
 	/**
@@ -536,11 +532,7 @@ class Piece extends EventEmitter {
 				data = propValue;
 			}
 
-			await this.base.updateOne(
-				{ _id: key },
-				{ $set: { _id: key, value: data } },
-				{ upsert: true }
-			);
+			await this.base.updateOne({ _id: key }, { $set: { _id: key, value: data } }, { upsert: true });
 		} else {
 			await this.base.deleteOne({ _id: key }, { single: true });
 		}
