@@ -4,6 +4,9 @@ export interface BaseProvider {
 	defer: Promise<void>;
 	isReady: boolean;
 	connect: () => Promise<void>;
+
+	size: Promise<boolean>;
+	clear: () => Promise<void>;
 }
 
 export interface ClientOptions {
@@ -34,19 +37,31 @@ export class MuffinClient<TKey = any, TValue = any> {
 		}
 	}
 
+	get isReady(): boolean {
+		return this.provider.isReady;
+	}
+
 	private readyCheck() {
 		if (!this.isReady) {
 			throw new MuffinError("The database is not ready");
 		}
 	}
 
-	get isReady(): boolean {
-		return this.provider.isReady;
-	}
-
 	async connect(): Promise<this> {
 		await this.provider.connect();
 
 		return this;
+	}
+
+	get size(): Promise<boolean> {
+		this.readyCheck();
+
+		return this.provider.size;
+	}
+
+	async clear(): Promise<void> {
+		this.readyCheck();
+
+		await this.provider.clear();
 	}
 }
