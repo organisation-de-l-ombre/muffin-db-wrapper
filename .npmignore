@@ -6,4 +6,5 @@ README_JSDoc.md
 .vscode/
 _tests/
 node_modules/
+providers/
 src/
