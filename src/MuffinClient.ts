@@ -1,12 +1,14 @@
 import MuffinError from "./MuffinError";
 
-export interface BaseProvider {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface BaseProvider<TKey = any, TValue = any> {
 	defer: Promise<void>;
 	isReady: boolean;
 	connect: () => Promise<void>;
 
 	size: Promise<boolean>;
 	clear: () => Promise<void>;
+	delete: (key: TKey) => Promise<boolean>;
 }
 
 export interface ClientOptions {
@@ -62,6 +64,20 @@ export class MuffinClient<TKey = any, TValue = any> {
 	async clear(): Promise<void> {
 		this.readyCheck();
 
+		if (this.useCache) {
+			this.cache.clear();
+		}
 		await this.provider.clear();
+	}
+
+	async delete(key: TKey): Promise<this> {
+		this.readyCheck();
+		if (this.useCache) {
+			this.cache.delete(key);
+		}
+
+		await this.provider.delete(key);
+
+		return this;
 	}
 }
