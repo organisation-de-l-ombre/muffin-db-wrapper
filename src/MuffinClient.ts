@@ -1,3 +1,4 @@
+/* eslint-disable require-await */
 import MuffinError from "./MuffinError";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -6,9 +7,10 @@ export interface BaseProvider<TKey = any, TValue = any> {
 	isReady: boolean;
 	connect: () => Promise<void>;
 
-	size: Promise<boolean>;
+	size: Promise<number>;
 	clear: () => Promise<void>;
 	delete: (key: TKey) => Promise<boolean>;
+	entries: () => Promise<IterableIterator<[TKey, TValue]>>;
 }
 
 export interface ClientOptions {
@@ -55,7 +57,7 @@ export class MuffinClient<TKey = any, TValue = any> {
 		return this;
 	}
 
-	get size(): Promise<boolean> {
+	get size(): Promise<number> {
 		this.readyCheck();
 
 		return this.provider.size;
@@ -67,17 +69,23 @@ export class MuffinClient<TKey = any, TValue = any> {
 		if (this.useCache) {
 			this.cache.clear();
 		}
+
 		await this.provider.clear();
 	}
 
-	async delete(key: TKey): Promise<this> {
+	async delete(key: TKey): Promise<boolean> {
 		this.readyCheck();
+
 		if (this.useCache) {
 			this.cache.delete(key);
 		}
 
-		await this.provider.delete(key);
+		return this.provider.delete(key);
+	}
 
-		return this;
+	async entries(useCache = true): Promise<IterableIterator<[TKey, TValue]>> {
+		this.readyCheck();
+
+		return useCache ? this.cache.entries() : this.provider.entries();
 	}
 }
