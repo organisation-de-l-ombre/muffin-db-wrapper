@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 /* eslint-disable require-await */
 
 import MuffinError from "./MuffinError";
@@ -82,11 +82,23 @@ export class MuffinClient<TKey = any, TValue = any> {
 		return this.provider.delete(key);
 	}
 
-	async entries(options: { useCache: boolean }): Promise<IterableIterator<[TKey, TValue]>> {
+	async entries(options?: { useCache: boolean }): Promise<IterableIterator<[TKey, TValue]>> {
 		this.readyCheck();
 
-		return !options || options.useCache ? this.cache.entries() : this.provider.entries();
+		return (!options || options.useCache) && this.useCache ? this.cache.entries() : this.provider.entries();
 	}
 
-	// async forEach(callbackfn: (value: TValue, key: TKey, map: Map<TKey, TValue>) => void, thisArg?: any) {}
+	async forEach(
+		callbackfn: (value: TValue, key: TKey, map: Map<TKey, TValue>) => void,
+		thisArg?: any,
+		options?: { useCache: boolean }
+	): Promise<this> {
+		if ((!options || options.useCache) && this.useCache) {
+			this.cache.forEach(callbackfn, thisArg);
+		} else {
+			new Map(await this.provider.entries()).forEach(callbackfn, thisArg);
+		}
+
+		return this;
+	}
 }
