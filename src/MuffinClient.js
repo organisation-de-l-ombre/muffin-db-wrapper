@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 
 /**
- * @typedef {Object} MuffinClientOptions
+ * @typedef {Object} ClientOptions
  * @description If you use url you don't need to use username, password, port and host
  * @property {string} [username]            - Not used if an url is provided
  * @property {string} [password]            - Not used if an url is provided
