@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 /* eslint-disable require-await */
+
 import MuffinError from "./MuffinError";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface BaseProvider<TKey = any, TValue = any> {
 	defer: Promise<void>;
 	isReady: boolean;
@@ -18,7 +21,6 @@ export interface ClientOptions {
 	useCache: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class MuffinClient<TKey = any, TValue = any> {
 	provider: BaseProvider;
 	defer: BaseProvider["defer"];
@@ -35,10 +37,7 @@ export class MuffinClient<TKey = any, TValue = any> {
 		this.defer = provider.defer;
 
 		this.useCache = useCache || false;
-
-		if (this.useCache) {
-			this.cache = new Map();
-		}
+		this.cache = useCache ? new Map() : undefined;
 	}
 
 	get isReady(): boolean {
@@ -83,9 +82,11 @@ export class MuffinClient<TKey = any, TValue = any> {
 		return this.provider.delete(key);
 	}
 
-	async entries(useCache = true): Promise<IterableIterator<[TKey, TValue]>> {
+	async entries(options: { useCache: boolean }): Promise<IterableIterator<[TKey, TValue]>> {
 		this.readyCheck();
 
-		return useCache ? this.cache.entries() : this.provider.entries();
+		return !options || options.useCache ? this.cache.entries() : this.provider.entries();
 	}
+
+	// async forEach(callbackfn: (value: TValue, key: TKey, map: Map<TKey, TValue>) => void, thisArg?: any) {}
 }
