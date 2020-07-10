@@ -14,7 +14,7 @@ class Piece extends EventEmitter {
 	 * An object similar to Map that has an optional cache, used to interact with the database.
 	 * @namespace
 	 * @class
-	 * @protected
+	 * @private
 	 * @description Initialize a new Piece. You need to use MuffinClient#piece or MuffinClient#multi to do that.
 	 * @since 1.0
 	 * @example
