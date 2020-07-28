@@ -15,6 +15,10 @@ export interface BaseProvider<TKey = any, TValue = any> {
 	delete: (key: TKey) => Promise<boolean>;
 	entries: () => Promise<IterableIterator<[TKey, TValue]>>;
 	get: (key: TKey) => Promise<TValue>;
+	has: (key: TKey) => Promise<boolean>;
+	keys: () => Promise<IterableIterator<TKey>>;
+	set: (key: TKey, value: TValue) => Promise<void>;
+	values: () => Promise<IterableIterator<TValue>>;
 }
 
 export interface ClientOptions {
@@ -98,6 +102,8 @@ export class MuffinClient<TKey = any, TValue = any> {
 		thisArg?: any,
 		options?: { useCache?: boolean }
 	): Promise<this> {
+		this.readyCheck();
+
 		// eslint-disable-next-line no-unused-expressions
 		this.useCacheCondition(options)
 			? this.cache.forEach(callbackfn, thisArg)
@@ -107,6 +113,38 @@ export class MuffinClient<TKey = any, TValue = any> {
 	}
 
 	async get(key: TKey, options?: { useCache?: boolean }): Promise<TValue> {
+		this.readyCheck();
+
 		return this.useCacheCondition(options) ? this.cache.get(key) : this.provider.get(key);
+	}
+
+	async has(key: TKey, options?: { useCache?: boolean }): Promise<boolean> {
+		this.readyCheck();
+
+		return this.useCacheCondition(options) ? this.cache.has(key) : this.provider.has(key);
+	}
+
+	async keys(options?: { useCache?: boolean }): Promise<IterableIterator<TKey>> {
+		this.readyCheck();
+
+		return this.useCacheCondition(options) ? this.cache.keys() : this.provider.keys();
+	}
+
+	async set(key: TKey, value: TValue): Promise<this> {
+		this.readyCheck();
+
+		// eslint-disable-next-line no-unused-expressions
+		await this.provider.set(key, value);
+		if (this.useCache) {
+			this.cache.set(key, value);
+		}
+
+		return this;
+	}
+
+	async values(options?: { useCache?: boolean }): Promise<IterableIterator<TValue>> {
+		this.readyCheck();
+
+		return this.useCacheCondition(options) ? this.cache.values() : this.provider.values();
 	}
 }
