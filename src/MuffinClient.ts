@@ -10,7 +10,7 @@ export interface BaseProvider<TKey = any, TValue = any> {
 	isReady: boolean;
 	connect: () => Promise<void>;
 
-	size: Promise<number>;
+	size: () => Promise<number>;
 	clear: () => Promise<void>;
 	delete: (key: TKey) => Promise<boolean>;
 	entries: () => Promise<IterableIterator<[TKey, TValue]>>;
@@ -63,12 +63,6 @@ export class MuffinClient<TKey = any, TValue = any> {
 		await this.provider.connect();
 
 		return this;
-	}
-
-	get size(): Promise<number> {
-		this.readyCheck();
-
-		return this.provider.size;
 	}
 
 	async clear(): Promise<void> {
@@ -140,6 +134,12 @@ export class MuffinClient<TKey = any, TValue = any> {
 		}
 
 		return this;
+	}
+
+	async size(): Promise<number> {
+		this.readyCheck();
+
+		return this.provider.size();
 	}
 
 	async values(options?: { useCache?: boolean }): Promise<IterableIterator<TValue>> {
