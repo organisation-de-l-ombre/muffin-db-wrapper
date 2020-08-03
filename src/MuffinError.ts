@@ -1,8 +1,6 @@
 export default class MuffinError extends Error {
-	constructor(message: string, name?: string) {
+	constructor(public message: string, public name = "MuffinError") {
 		super();
 		Error.captureStackTrace(this, this.constructor);
-		this.name = name || "MuffinError";
-		this.message = message;
 	}
 }
