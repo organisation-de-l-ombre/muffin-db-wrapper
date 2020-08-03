@@ -6,9 +6,11 @@
 import MuffinError from "./MuffinError";
 
 export interface BaseProvider<TKey = any, TValue = any> {
-	defer: Promise<void>;
 	isReady: boolean;
+
+	defer(): Promise<void>;
 	connect: () => Promise<void>;
+	close: () => Promise<void>;
 
 	size: () => Promise<number>;
 	clear: () => Promise<void>;
@@ -24,39 +26,38 @@ export interface BaseProvider<TKey = any, TValue = any> {
 export interface ClientOptions {
 	provider: BaseProvider;
 	useCache: boolean;
+	fetchAll: boolean;
 }
 
 export class MuffinClient<TKey = any, TValue = any> {
-	provider: BaseProvider;
-	defer: BaseProvider["defer"];
-	cache: Map<TKey, TValue>;
+	public provider: BaseProvider;
+	public cache?: Map<TKey, TValue>;
 
-	useCache: boolean;
+	public useCache: boolean;
 
-	constructor({ provider, useCache }: ClientOptions) {
-		if (!provider) {
+	constructor(public options: ClientOptions) {
+		if (!options.provider) {
 			throw new MuffinError("Can not invoke a new MuffinClient without a provider");
 		}
 
-		this.provider = provider;
-		this.defer = provider.defer;
+		this.provider = options.provider;
 
-		this.useCache = useCache || false;
-		this.cache = useCache ? new Map() : undefined;
+		this.useCache = options.useCache || false;
+		this.cache = options.useCache ? new Map() : undefined;
 	}
 
 	get isReady(): boolean {
 		return this.provider.isReady;
 	}
 
-	private readyCheck() {
-		if (!this.isReady) {
-			throw new MuffinError("The database is not ready");
-		}
-	}
-
 	private useCacheCondition(options: { useCache?: boolean }) {
 		return (!options || options.useCache) && this.useCache;
+	}
+
+	async defer(): Promise<this> {
+		await this.provider.defer();
+
+		return this;
 	}
 
 	async connect(): Promise<this> {
@@ -65,8 +66,12 @@ export class MuffinClient<TKey = any, TValue = any> {
 		return this;
 	}
 
+	async close(): Promise<void> {
+		await this.provider.close();
+	}
+
 	async clear(): Promise<void> {
-		this.readyCheck();
+		await this.defer();
 
 		if (this.useCache) {
 			this.cache.clear();
@@ -76,7 +81,7 @@ export class MuffinClient<TKey = any, TValue = any> {
 	}
 
 	async delete(key: TKey): Promise<boolean> {
-		this.readyCheck();
+		await this.defer();
 
 		if (this.useCache) {
 			this.cache.delete(key);
@@ -86,7 +91,7 @@ export class MuffinClient<TKey = any, TValue = any> {
 	}
 
 	async entries(options?: { useCache?: boolean }): Promise<IterableIterator<[TKey, TValue]>> {
-		this.readyCheck();
+		await this.defer();
 
 		return this.useCacheCondition(options) ? this.cache.entries() : this.provider.entries();
 	}
@@ -96,7 +101,7 @@ export class MuffinClient<TKey = any, TValue = any> {
 		thisArg?: any,
 		options?: { useCache?: boolean }
 	): Promise<this> {
-		this.readyCheck();
+		await this.defer();
 
 		// eslint-disable-next-line no-unused-expressions
 		this.useCacheCondition(options)
@@ -107,25 +112,25 @@ export class MuffinClient<TKey = any, TValue = any> {
 	}
 
 	async get(key: TKey, options?: { useCache?: boolean }): Promise<TValue> {
-		this.readyCheck();
+		await this.defer();
 
 		return this.useCacheCondition(options) ? this.cache.get(key) : this.provider.get(key);
 	}
 
 	async has(key: TKey, options?: { useCache?: boolean }): Promise<boolean> {
-		this.readyCheck();
+		await this.defer();
 
 		return this.useCacheCondition(options) ? this.cache.has(key) : this.provider.has(key);
 	}
 
 	async keys(options?: { useCache?: boolean }): Promise<IterableIterator<TKey>> {
-		this.readyCheck();
+		await this.defer();
 
 		return this.useCacheCondition(options) ? this.cache.keys() : this.provider.keys();
 	}
 
 	async set(key: TKey, value: TValue): Promise<this> {
-		this.readyCheck();
+		await this.defer();
 
 		// eslint-disable-next-line no-unused-expressions
 		await this.provider.set(key, value);
@@ -137,13 +142,13 @@ export class MuffinClient<TKey = any, TValue = any> {
 	}
 
 	async size(): Promise<number> {
-		this.readyCheck();
+		await this.defer();
 
 		return this.provider.size();
 	}
 
 	async values(options?: { useCache?: boolean }): Promise<IterableIterator<TValue>> {
-		this.readyCheck();
+		await this.defer();
 
 		return this.useCacheCondition(options) ? this.cache.values() : this.provider.values();
 	}
