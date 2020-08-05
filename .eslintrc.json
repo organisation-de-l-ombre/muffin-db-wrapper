@@ -17,7 +17,7 @@
 		"node": true
 	},
 	"ignorePatterns": [
-		"./built/*",
+		"./lib/*",
 		"./vscode/*"
 	],
 	"rules": {
