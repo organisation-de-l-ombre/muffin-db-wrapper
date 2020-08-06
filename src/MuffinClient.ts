@@ -6,8 +6,11 @@
 import MuffinError from "./MuffinError";
 
 export interface BaseProvider<TKey = any, TValue = any> {
+	databaseClient: any;
+
 	isReady: boolean;
 	defer: Promise<void>;
+
 	connect: () => Promise<void>;
 	close: () => Promise<void>;
 
@@ -15,26 +18,31 @@ export interface BaseProvider<TKey = any, TValue = any> {
 	clear: () => Promise<void>;
 	delete: (key: TKey) => Promise<boolean>;
 	entries: () => Promise<IterableIterator<[TKey, TValue]>>;
-	get: (key: TKey) => Promise<TValue>;
+	fetch: (key: TKey) => Promise<TValue>;
+	fetchAll: () => Promise<[TKey, TValue][]>;
 	has: (key: TKey) => Promise<boolean>;
 	keys: () => Promise<IterableIterator<TKey>>;
 	set: (key: TKey, value: TValue) => Promise<void>;
 	values: () => Promise<IterableIterator<TValue>>;
 }
 
-export interface ClientOptions {
-	provider: BaseProvider;
+export interface ClientOptions<TKey, TValue, TProvider extends BaseProvider<TKey, TValue>> {
+	provider: TProvider;
 	useCache: boolean;
 	fetchAll: boolean;
 }
 
-export class MuffinClient<TKey = any, TValue = any> {
-	public provider: BaseProvider;
+export class MuffinClient<
+	TKey = any,
+	TValue = any,
+	TProvider extends BaseProvider<TKey, TValue> = BaseProvider<TKey, TValue>
+> {
+	public provider: TProvider;
 	public cache?: Map<TKey, TValue>;
 
 	public useCache: boolean;
 
-	constructor(public options: ClientOptions) {
+	constructor(public options: ClientOptions<TKey, TValue, TProvider>) {
 		if (!options.provider) {
 			throw new MuffinError("Can not invoke a new MuffinClient without a provider");
 		}
@@ -113,13 +121,13 @@ export class MuffinClient<TKey = any, TValue = any> {
 	public async get(key: TKey, options?: { useCache?: boolean }): Promise<TValue> {
 		await this.provider.defer;
 
-		return this.useCacheCondition(options) ? this.cache.get(key) : this.provider.get(key);
+		return this.useCacheCondition(options) ? this.cache.get(key) : this.provider.fetch(key);
 	}
 
 	public async fetch(key: TKey): Promise<TValue> {
 		await this.provider.defer;
 
-		const value = await this.provider.get(key);
+		const value = await this.provider.fetch(key);
 		this.cache.set(key, value);
 
 		return value;
