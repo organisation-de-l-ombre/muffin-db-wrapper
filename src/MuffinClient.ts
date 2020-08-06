@@ -33,8 +33,8 @@ export interface ClientOptions<TKey, TValue, TProvider extends BaseProvider<TKey
 }
 
 export class MuffinClient<
-	TKey = any,
-	TValue = any,
+	TKey,
+	TValue,
 	TProvider extends BaseProvider<TKey, TValue> = BaseProvider<TKey, TValue>
 > {
 	public provider: TProvider;
@@ -69,6 +69,10 @@ export class MuffinClient<
 
 	public async connect(): Promise<this> {
 		await this.provider.connect();
+
+		if (this.options.fetchAll && this.useCache) {
+			(await this.provider.fetchAll()).forEach(([key, value]) => this.cache.set(key, value));
+		}
 
 		return this;
 	}
