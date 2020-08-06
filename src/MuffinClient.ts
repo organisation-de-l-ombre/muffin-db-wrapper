@@ -33,6 +33,7 @@ export interface ClientOptions<TKey, TValue, TProvider extends BaseProvider<TKey
 	fetchAll: boolean;
 }
 
+// Todo: Methods like get, set etc... but with a path parameter
 export class MuffinClient<
 	TKey,
 	TValue,
