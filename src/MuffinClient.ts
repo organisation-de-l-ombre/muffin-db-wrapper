@@ -9,6 +9,7 @@ export interface BaseProvider<TKey = any, TValue = any> {
 	databaseClient: any;
 
 	isReady: boolean;
+	isClosed: boolean;
 	defer: Promise<void>;
 
 	connect: () => Promise<void>;
