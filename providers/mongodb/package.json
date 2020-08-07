@@ -1,5 +1,5 @@
 {
-  "name": "muffin-provider-mongo",
+  "name": "muffindb-provider-mongo",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
