@@ -1,1 +1,1 @@
-module.exports = require("./lib/MongoProvider.js")
+module.exports = require("./lib/MongoProvider.js");
