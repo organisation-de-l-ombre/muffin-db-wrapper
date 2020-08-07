@@ -201,10 +201,8 @@ export class MuffinClient<
 		return this;
 	}
 
-	public async size(): Promise<number> {
-		await this.provider.defer;
-
-		return this.provider.size();
+	public get size(): Promise<number> {
+		return this.provider.defer.then(() => this.provider.size());
 	}
 
 	public async values(options?: { useCache?: boolean }): Promise<IterableIterator<TValue>> {
