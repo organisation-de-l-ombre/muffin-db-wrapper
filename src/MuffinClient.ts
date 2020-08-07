@@ -22,7 +22,6 @@ export interface BaseProvider<TKey, TValue> {
 	delete: (key: TKey) => Promise<boolean>;
 	entryArray: () => Promise<[TKey, TValue][]>;
 	fetch: (key: TKey) => Promise<TValue>;
-	has: (key: TKey) => Promise<boolean>;
 	keyArray: () => Promise<TKey[]>;
 	set: (key: TKey, value: TValue) => Promise<void>;
 	valueArray: () => Promise<TValue[]>;
@@ -155,7 +154,9 @@ export class MuffinClient<
 	public async has(key: TKey, options?: { useCache?: boolean }): Promise<boolean> {
 		await this.provider.defer;
 
-		return this.useCacheCondition(options) ? this.cache.has(key) : this.provider.has(key);
+		return this.useCacheCondition(options)
+			? this.cache.has(key)
+			: (await this.provider.fetch(key)) !== undefined;
 	}
 
 	public async keys(options?: { useCache?: boolean }): Promise<IterableIterator<TKey>> {
