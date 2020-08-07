@@ -5,11 +5,13 @@
 
 import MuffinError from "./MuffinError";
 
-export interface BaseProvider<TKey = any, TValue = any> {
+export interface BaseProvider<TKey, TValue> {
 	databaseClient: any;
 
 	isReady: boolean;
 	isClosed: boolean;
+
+	resolveDefer: () => void;
 	defer: Promise<void>;
 
 	connect: () => Promise<void>;
@@ -18,13 +20,13 @@ export interface BaseProvider<TKey = any, TValue = any> {
 	size: () => Promise<number>;
 	clear: () => Promise<void>;
 	delete: (key: TKey) => Promise<boolean>;
-	entries: () => Promise<IterableIterator<[TKey, TValue]>>;
+	entryArray: () => Promise<[TKey, TValue][]>;
 	fetch: (key: TKey) => Promise<TValue>;
 	fetchAll: () => Promise<[TKey, TValue][]>;
 	has: (key: TKey) => Promise<boolean>;
-	keys: () => Promise<IterableIterator<TKey>>;
+	keyArray: () => Promise<TKey[]>;
 	set: (key: TKey, value: TValue) => Promise<void>;
-	values: () => Promise<IterableIterator<TValue>>;
+	valueArray: () => Promise<TValue[]>;
 }
 
 export interface ClientOptions<TKey, TValue, TProvider extends BaseProvider<TKey, TValue>> {
@@ -59,6 +61,10 @@ export class MuffinClient<
 		return this.provider.isReady;
 	}
 
+	get isClosed(): boolean {
+		return this.provider.isClosed;
+	}
+
 	private useCacheCondition(options: { useCache?: boolean }) {
 		return (!options || options.useCache) && this.useCache;
 	}
@@ -76,11 +82,17 @@ export class MuffinClient<
 			(await this.provider.fetchAll()).forEach(([key, value]) => this.cache.set(key, value));
 		}
 
+		this.provider.resolveDefer();
+		this.provider.isReady = true;
+
 		return this;
 	}
 
 	public async close(): Promise<void> {
 		await this.provider.close();
+
+		this.provider.isClosed = true;
+		this.provider.isReady = false;
 	}
 
 	public async clear(): Promise<void> {
@@ -106,7 +118,9 @@ export class MuffinClient<
 	public async entries(options?: { useCache?: boolean }): Promise<IterableIterator<[TKey, TValue]>> {
 		await this.provider.defer;
 
-		return this.useCacheCondition(options) ? this.cache.entries() : this.provider.entries();
+		return this.useCacheCondition(options)
+			? this.cache.entries()
+			: (await this.provider.entryArray())[Symbol.iterator]();
 	}
 
 	public async forEach(
@@ -119,7 +133,7 @@ export class MuffinClient<
 		// eslint-disable-next-line no-unused-expressions
 		this.useCacheCondition(options)
 			? this.cache.forEach(callbackfn, thisArg)
-			: new Map(await this.provider.entries()).forEach(callbackfn, thisArg);
+			: new Map(await this.provider.entryArray()).forEach(callbackfn, thisArg);
 
 		return this;
 	}
@@ -148,7 +162,9 @@ export class MuffinClient<
 	public async keys(options?: { useCache?: boolean }): Promise<IterableIterator<TKey>> {
 		await this.provider.defer;
 
-		return this.useCacheCondition(options) ? this.cache.keys() : this.provider.keys();
+		return this.useCacheCondition(options)
+			? this.cache.keys()
+			: (await this.provider.keyArray())[Symbol.iterator]();
 	}
 
 	public async set(key: TKey, value: TValue): Promise<this> {
@@ -172,6 +188,8 @@ export class MuffinClient<
 	public async values(options?: { useCache?: boolean }): Promise<IterableIterator<TValue>> {
 		await this.provider.defer;
 
-		return this.useCacheCondition(options) ? this.cache.values() : this.provider.values();
+		return this.useCacheCondition(options)
+			? this.cache.values()
+			: (await this.provider.valueArray())[Symbol.iterator]();
 	}
 }
