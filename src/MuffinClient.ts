@@ -22,6 +22,7 @@ export interface BaseProvider<TKey, TValue> {
 	delete: (key: TKey) => Promise<boolean>;
 	entryArray: () => Promise<[TKey, TValue][]>;
 	fetch: (key: TKey) => Promise<TValue>;
+	has: (key: TKey) => Promise<boolean>;
 	keyArray: () => Promise<TKey[]>;
 	set: (key: TKey, value: TValue) => Promise<void>;
 	valueArray: () => Promise<TValue[]>;
