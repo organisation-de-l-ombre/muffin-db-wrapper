@@ -175,9 +175,7 @@ export class MuffinClient<
 
 		this.keyCheck(key);
 
-		return this.useCacheCondition(options)
-			? this.cache.has(key)
-			: (await this.provider.fetch(key)) !== undefined;
+		return this.useCacheCondition(options) ? this.cache.has(key) : this.provider.has(key);
 	}
 
 	public async keys(options?: { useCache?: boolean }): Promise<IterableIterator<TKey>> {
