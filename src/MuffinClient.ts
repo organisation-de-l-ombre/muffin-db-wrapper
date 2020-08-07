@@ -22,7 +22,6 @@ export interface BaseProvider<TKey, TValue> {
 	delete: (key: TKey) => Promise<boolean>;
 	entryArray: () => Promise<[TKey, TValue][]>;
 	fetch: (key: TKey) => Promise<TValue>;
-	fetchAll: () => Promise<[TKey, TValue][]>;
 	has: (key: TKey) => Promise<boolean>;
 	keyArray: () => Promise<TKey[]>;
 	set: (key: TKey, value: TValue) => Promise<void>;
@@ -79,7 +78,7 @@ export class MuffinClient<
 		await this.provider.connect();
 
 		if (this.options.fetchAll && this.useCache) {
-			(await this.provider.fetchAll()).forEach(([key, value]) => this.cache.set(key, value));
+			(await this.provider.entryArray()).forEach(([key, value]) => this.cache.set(key, value));
 		}
 
 		this.provider.resolveDefer();
