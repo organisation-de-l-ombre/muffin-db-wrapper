@@ -71,7 +71,20 @@ export default class MongoProvider<TKey, TValue> {
 				.on("error", rej);
 		});
 	}
+
 	private fetchAll(): Promise<{ _id: TKey; value: TValue }[]> {
 		return this.coll.find({}).toArray();
+	}
+
+	public async keyArray(): Promise<TKey[]> {
+		return (await this.fetchAll()).map(({ _id }) => _id);
+	}
+
+	public async set(key: TKey, value: TValue): Promise<void> {
+		await this.coll.updateOne({ _id: key }, { $set: { value: value } }, { upsert: true });
+	}
+
+	public async valueArray(): Promise<TValue[]> {
+		return (await this.fetchAll()).map(({ value }) => value);
 	}
 }
