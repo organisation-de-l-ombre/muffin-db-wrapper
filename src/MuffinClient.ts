@@ -6,7 +6,7 @@
 import MuffinError from "./MuffinError";
 
 export function isNullOrUndefined(something: any) {
-	return something === null || something || undefined;
+	return something === null || something === undefined;
 }
 
 export interface BaseProvider<TKey, TValue> {
