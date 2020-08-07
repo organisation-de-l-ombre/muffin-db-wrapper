@@ -67,6 +67,18 @@ export class MuffinClient<
 		return (!options || options.useCache) && this.useCache;
 	}
 
+	private keyCheck(key: TKey) {
+		if (key === undefined) {
+			throw new MuffinError("key must not be undefined !");
+		}
+	}
+
+	private valueCheck(value: TValue) {
+		if (value === undefined) {
+			throw new MuffinError("value must not be undefined !");
+		}
+	}
+
 	public async defer(): Promise<this> {
 		await this.provider.defer;
 
@@ -136,23 +148,31 @@ export class MuffinClient<
 		return this;
 	}
 
-	public async get(key: TKey, options?: { useCache?: boolean }): Promise<TValue> {
+	public async get(key: TKey, options?: { useCache?: boolean }): Promise<TValue | null> {
 		await this.provider.defer;
+
+		this.keyCheck(key);
 
 		return this.useCacheCondition(options) ? this.cache.get(key) : this.provider.fetch(key);
 	}
 
-	public async fetch(key: TKey): Promise<TValue> {
+	public async fetch(key: TKey): Promise<TValue | null> {
 		await this.provider.defer;
 
+		this.keyCheck(key);
+
 		const value = await this.provider.fetch(key);
-		this.cache.set(key, value);
+		if (value) {
+			this.cache.set(key, value);
+		}
 
 		return value;
 	}
 
 	public async has(key: TKey, options?: { useCache?: boolean }): Promise<boolean> {
 		await this.provider.defer;
+
+		this.keyCheck(key);
 
 		return this.useCacheCondition(options)
 			? this.cache.has(key)
@@ -169,6 +189,9 @@ export class MuffinClient<
 
 	public async set(key: TKey, value: TValue): Promise<this> {
 		await this.provider.defer;
+
+		this.keyCheck(key);
+		this.valueCheck(value);
 
 		// eslint-disable-next-line no-unused-expressions
 		await this.provider.set(key, value);
