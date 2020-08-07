@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "outDir": "./lib",
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "allowJs": true,
+        "target": "ES2018",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "pretty": true,
+        "alwaysStrict": true,
+        "downlevelIteration": true
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}
