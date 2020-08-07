@@ -58,6 +58,19 @@ export default class MongoProvider<TKey, TValue> {
 		return this.coll.findOne({ _id: key });
 	}
 
+	public has(key: TKey): Promise<boolean> {
+		return new Promise((res, rej) => {
+			const cursor = this.coll.find({ _id: key });
+
+			cursor
+				.on("end", () => {
+					cursor.count(null, { limit: 1 }).then((count) => {
+						res(count > 0);
+					});
+				})
+				.on("error", rej);
+		});
+	}
 	private fetchAll(): Promise<{ _id: TKey; value: TValue }[]> {
 		return this.coll.find({}).toArray();
 	}
