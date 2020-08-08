@@ -151,6 +151,13 @@ export class MuffinClient<
 			: (await this.provider.entryArray())[Symbol.iterator]();
 	}
 
+	public async array(options?: { useCache?: boolean }): Promise<[TKey, TValue][]> {
+		this.closeCheck();
+		await this.provider.defer;
+
+		return this.useCacheCondition(options) ? [...this.cache.entries()] : this.provider.entryArray();
+	}
+
 	public async forEach(
 		callbackfn: (value: TValue, key: TKey, map: Map<TKey, TValue>) => void,
 		thisArg?: any,
@@ -167,23 +174,34 @@ export class MuffinClient<
 		return this;
 	}
 
-	public async get(key: TKey, options?: { useCache?: boolean }): Promise<TValue | null> {
+	public async get(key: TKey, options?: { useCache?: boolean }): Promise<TValue> {
 		this.closeCheck();
 		await this.provider.defer;
 
 		this.keyCheck(key);
 
-		return this.useCacheCondition(options) ? this.cache.get(key) : this.provider.fetch(key);
+		if (this.useCacheCondition(options)) {
+			let value = this.cache.get(key);
+
+			if (isNullOrUndefined(value)) {
+				value = await this.fetch(key);
+			}
+
+			return value;
+		} else {
+			return this.provider.fetch(key);
+		}
 	}
 
-	public async fetch(key: TKey): Promise<TValue | null> {
+	public async fetch(key: TKey): Promise<TValue> {
 		this.closeCheck();
 		await this.provider.defer;
 
 		this.keyCheck(key);
 
 		const value = await this.provider.fetch(key);
-		if (value) {
+
+		if (!isNullOrUndefined(value) && this.useCache) {
 			this.cache.set(key, value);
 		}
 
@@ -208,7 +226,14 @@ export class MuffinClient<
 			: (await this.provider.keyArray())[Symbol.iterator]();
 	}
 
-	public async set(key: TKey, value: TValue): Promise<this> {
+	public async keyArray(options?: { useCache?: boolean }): Promise<TKey[]> {
+		this.closeCheck();
+		await this.provider.defer;
+
+		return this.useCacheCondition(options) ? [...this.cache.keys()] : this.provider.keyArray();
+	}
+
+	public async set(key: TKey, value: TValue, options?: { useCache?: boolean }): Promise<this> {
 		this.closeCheck();
 		await this.provider.defer;
 
@@ -217,16 +242,18 @@ export class MuffinClient<
 
 		// eslint-disable-next-line no-unused-expressions
 		await this.provider.set(key, value);
-		if (this.useCache) {
+		if (this.useCacheCondition(options)) {
 			this.cache.set(key, value);
 		}
 
 		return this;
 	}
 
-	public async setMany(array: [TKey, TValue][]): Promise<void> {
+	public async setMany(array: [TKey, TValue][], options?: { useCache?: boolean }): Promise<this> {
 		// eslint-disable-next-line no-void
-		Promise.all(array.map(([key, value]) => void this.set(key, value)));
+		await Promise.all(array.map(([key, value]) => void this.set(key, value, options)));
+
+		return this;
 	}
 
 	public get size(): Promise<number> {
@@ -241,5 +268,12 @@ export class MuffinClient<
 		return this.useCacheCondition(options)
 			? this.cache.values()
 			: (await this.provider.valueArray())[Symbol.iterator]();
+	}
+
+	public async valueArray(options?: { useCache?: boolean }): Promise<TValue[]> {
+		this.closeCheck();
+		await this.provider.defer;
+
+		return this.useCacheCondition(options) ? [...this.cache.values()] : this.provider.valueArray();
 	}
 }
