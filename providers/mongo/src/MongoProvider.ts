@@ -7,7 +7,7 @@ export function isNullOrUndefined(something: any) {
 }
 
 interface ProviderOptions {
-	uri?: string;
+	url?: string;
 	dbName: string;
 	collectionName: string;
 }
@@ -25,7 +25,7 @@ export default class MongoProvider<TKey, TValue> {
 	public coll: Collection<{ _id: TKey; value: TValue }>;
 
 	constructor(public options: ProviderOptions) {
-		const url = options.uri || `mongodb+srv://localhost:27017/?retryWrites=true&w=majority`;
+		const url = options.url || `mongodb+srv://localhost:27017/?retryWrites=true&w=majority`;
 
 		this.conn = new MongoClient(url, { useNewUrlParser: true });
 		this.db = this.conn.db(options.dbName);
