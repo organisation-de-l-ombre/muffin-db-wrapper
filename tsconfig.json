@@ -9,9 +9,14 @@
         "resolveJsonModule": true,
         "pretty": true,
         "alwaysStrict": true,
-        "downlevelIteration": true
+        "downlevelIteration": true,
+        "declaration": true
     },
     "include": [
         "./src/**/*"
+    ],
+    "exclude": [
+        "./providers/**/*",
+        "./_tests/**/*"
     ]
 }
