@@ -11,7 +11,7 @@ export interface ProviderOptions {
 	tableName: string;
 }
 
-export default class RethinkProvider<TKey, TValue> {
+export class RethinkProvider<TKey, TValue> {
 	public conn!: Connection;
 
 	public isReady = false;
@@ -82,3 +82,5 @@ export default class RethinkProvider<TKey, TValue> {
 		return (await this.table.run(this.conn)).toArray();
 	}
 }
+
+export default RethinkProvider;

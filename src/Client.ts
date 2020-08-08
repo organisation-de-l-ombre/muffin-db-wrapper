@@ -223,3 +223,5 @@ export class Client<
 		return this.provider.valueArray();
 	}
 }
+
+export default Client;

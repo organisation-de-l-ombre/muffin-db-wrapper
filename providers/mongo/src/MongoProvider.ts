@@ -18,7 +18,7 @@ export interface ProviderOptions {
 	collectionName: string;
 }
 
-export default class MongoProvider<TKey, TValue> {
+export class MongoProvider<TKey, TValue> {
 	public conn: MongoClient;
 
 	public isReady = false;
@@ -105,3 +105,5 @@ export default class MongoProvider<TKey, TValue> {
 		return (await this.fetchAll()).map(({ value }) => value);
 	}
 }
+
+export default MongoClient;
