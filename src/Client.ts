@@ -33,14 +33,22 @@ export interface BaseProvider<TKey, TValue> {
 	valueArray: () => Promise<TValue[]>;
 }
 
-export interface ClientOptions<TKey, TValue, TProvider extends BaseProvider<TKey, TValue>> {
+export interface ClientOptions<
+	TKey,
+	TValue,
+	TProvider extends BaseProvider<TKey, TValue>
+> {
 	provider: TProvider;
 	useCache: boolean;
 	fetchAll: boolean;
 }
 
 // Todo: Methods like get, set etc... but with a path parameter
-export class Client<TKey, TValue, TProvider extends BaseProvider<TKey, TValue> = BaseProvider<TKey, TValue>> {
+export class Client<
+	TKey,
+	TValue,
+	TProvider extends BaseProvider<TKey, TValue> = BaseProvider<TKey, TValue>
+> {
 	public provider: TProvider;
 
 	constructor(public options: ClientOptions<TKey, TValue, TProvider>) {

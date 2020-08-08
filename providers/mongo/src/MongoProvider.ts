@@ -38,7 +38,9 @@ export default class MongoProvider<TKey, TValue> {
 		});
 
 		const credentials =
-			options.username && options.password ? `${options.username}:${options.password}@` : "";
+			options.username && options.password
+				? `${options.username}:${options.password}@`
+				: "";
 		options.port = options.port || 27017;
 		options.host = options.host || "localhost";
 
