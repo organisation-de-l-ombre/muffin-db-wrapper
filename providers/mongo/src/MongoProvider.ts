@@ -7,7 +7,13 @@ export function isNullOrUndefined(something: any) {
 }
 
 interface ProviderOptions {
+	username?: string;
+	password?: string;
+	port?: string | number;
+	host?: string;
+
 	url?: string;
+
 	dbName: string;
 	collectionName: string;
 }
@@ -25,7 +31,14 @@ export default class MongoProvider<TKey, TValue> {
 	public coll: Collection<{ _id: TKey; value: TValue }>;
 
 	constructor(public options: ProviderOptions) {
-		const url = options.url || `mongodb+srv://localhost:27017/?retryWrites=true&w=majority`;
+		const credentials =
+			options.username && options.password ? `${options.username}:${options.password}@` : "";
+		options.port = options.port || 27017;
+		options.host = options.host || "localhost";
+
+		const url =
+			options.url ||
+			`mongodb+srv://${credentials}${options.host}:${options.port}/?retryWrites=true&w=majority`;
 
 		this.conn = new MongoClient(url, { useNewUrlParser: true });
 		this.db = this.conn.db(options.dbName);
