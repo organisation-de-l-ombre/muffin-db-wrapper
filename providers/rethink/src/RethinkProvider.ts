@@ -32,7 +32,7 @@ export default class RethinkProvider<TKey, TValue> {
 	}
 
 	public async connect(): Promise<void> {
-		const { username: user, password, port, host } = this.options;
-		this.conn = await connect({ user, password, port, host, db: this.options.dbName });
+		const { username: user, password, port, host, dbName: db } = this.options;
+		this.conn = await connect({ user, password, port, host, db });
 	}
 }
