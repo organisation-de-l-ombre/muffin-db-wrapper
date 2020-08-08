@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-await */
 
-import MuffinError from "./MuffinError";
+import MuffinError from "./CustomError";
 
 export function isNullOrUndefined(something: any) {
 	return something === null || something === undefined;
@@ -40,11 +40,7 @@ export interface ClientOptions<TKey, TValue, TProvider extends BaseProvider<TKey
 }
 
 // Todo: Methods like get, set etc... but with a path parameter
-export class MuffinClient<
-	TKey,
-	TValue,
-	TProvider extends BaseProvider<TKey, TValue> = BaseProvider<TKey, TValue>
-> {
+export class Client<TKey, TValue, TProvider extends BaseProvider<TKey, TValue> = BaseProvider<TKey, TValue>> {
 	public provider: TProvider;
 
 	constructor(public options: ClientOptions<TKey, TValue, TProvider>) {
