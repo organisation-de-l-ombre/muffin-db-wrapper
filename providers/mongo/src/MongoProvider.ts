@@ -6,10 +6,10 @@ export function isNullOrUndefined(something: any) {
 	return something === null || something === undefined;
 }
 
-interface ProviderOptions {
+export interface ProviderOptions {
 	username?: string;
 	password?: string;
-	port?: string | number;
+	port?: number;
 	host?: string;
 
 	url?: string;
@@ -31,6 +31,12 @@ export default class MongoProvider<TKey, TValue> {
 	public coll: Collection<{ _id: TKey; value: TValue }>;
 
 	constructor(public options: ProviderOptions) {
+		["dbName", "collectionName"].forEach((prop) => {
+			if (!options[prop] || options[prop] !== "string") {
+				throw new Error(`\`options.${prop}\` should be a string`);
+			}
+		});
+
 		const credentials =
 			options.username && options.password ? `${options.username}:${options.password}@` : "";
 		options.port = options.port || 27017;
