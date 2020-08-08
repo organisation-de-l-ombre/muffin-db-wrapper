@@ -20,7 +20,7 @@ export default class RethinkProvider<TKey, TValue> {
 	public resolveDefer: () => void;
 	public defer: Promise<void>;
 
-	public db: Db;
+	public db!: Db;
 	public table!: Table;
 
 	constructor(public options: ProviderOptions) {
@@ -30,19 +30,27 @@ export default class RethinkProvider<TKey, TValue> {
 			}
 		});
 
-		this.db = r.db(options.dbName);
-
 		this.defer = new Promise((res) => {
 			this.resolveDefer = res;
 		});
 	}
 
 	public async connect(): Promise<void> {
-		const { username: user, password, port, host, dbName: db } = this.options;
-		this.conn = await connect({ user, password, port, host, db });
+		const { username, password, port, host, dbName, tableName } = this.options;
+		this.conn = await connect({ user: username, password, port, host, db: dbName });
 
-		if ((await r.dbList().run(this.conn)).includes(db)) {
-			await r.dbCreate(db).run(this.conn);
+		if (!(await r.dbList().run(this.conn)).includes(dbName)) {
+			await r.dbCreate(dbName).run(this.conn);
 		}
+
+		this.conn.use(dbName);
+
+		this.db = r.db(dbName);
+
+		if (!(await this.db.tableList().run(this.conn)).includes(tableName)) {
+			await this.db.tableCreate(tableName).run(this.conn);
+		}
+
+		this.table = this.db.table(tableName);
 	}
 }
