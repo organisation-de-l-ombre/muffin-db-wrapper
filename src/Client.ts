@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable require-await */
 
-import MuffinError from "./CustomError";
+import CustomError from "./CustomError";
 
 export function isNullOrUndefined(something: any) {
 	return something === null || something === undefined;
@@ -45,7 +45,7 @@ export class Client<TKey, TValue, TProvider extends BaseProvider<TKey, TValue> =
 
 	constructor(public options: ClientOptions<TKey, TValue, TProvider>) {
 		if (!options.provider) {
-			throw new MuffinError("Can not invoke a new MuffinClient without a provider");
+			throw new CustomError("Can not invoke a new MuffinClient without a provider");
 		}
 
 		this.provider = options.provider;
@@ -61,19 +61,19 @@ export class Client<TKey, TValue, TProvider extends BaseProvider<TKey, TValue> =
 
 	private keyCheck(key: TKey) {
 		if (isNullOrUndefined(key)) {
-			throw new MuffinError("`key` must not be undefined !");
+			throw new CustomError("`key` must not be undefined !");
 		}
 	}
 
 	private valueCheck(value: TValue) {
 		if (isNullOrUndefined(value)) {
-			throw new MuffinError("`value` must not be undefined !");
+			throw new CustomError("`value` must not be undefined !");
 		}
 	}
 
 	private closeCheck() {
 		if (this.isClosed) {
-			throw new MuffinError("The connection is closed");
+			throw new CustomError("The connection is closed");
 		}
 	}
 
@@ -85,7 +85,7 @@ export class Client<TKey, TValue, TProvider extends BaseProvider<TKey, TValue> =
 
 	public async connect(): Promise<this> {
 		if (this.isReady) {
-			throw new MuffinError("Provider already connected");
+			throw new CustomError("Provider already connected");
 		}
 
 		await this.provider.connect();
