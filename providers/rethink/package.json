@@ -1,0 +1,19 @@
+{
+  "name": "muffindb-provider-rethink",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "rethinkdb": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/rethinkdb": "^2.3.16",
+    "typescript": "^3.9.7"
+  }
+}
