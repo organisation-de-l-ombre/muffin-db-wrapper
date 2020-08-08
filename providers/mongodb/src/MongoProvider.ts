@@ -1,4 +1,10 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MongoClient, Db, Collection } from "mongodb";
+
+export function isNullOrUndefined(something: any) {
+	return something === null || something === undefined;
+}
 
 interface ProviderOptions {
 	url?: string;
@@ -58,18 +64,8 @@ export default class MongoProvider<TKey, TValue> {
 		return this.coll.findOne({ _id: key });
 	}
 
-	public has(key: TKey): Promise<boolean> {
-		return new Promise((res, rej) => {
-			const cursor = this.coll.find({ _id: key });
-
-			cursor
-				.on("end", () => {
-					cursor.count(null, { limit: 1 }).then((count) => {
-						res(count > 0);
-					});
-				})
-				.on("error", rej);
-		});
+	public async has(key: TKey): Promise<boolean> {
+		return !isNullOrUndefined(await this.coll.findOne(key));
 	}
 
 	private fetchAll(): Promise<{ _id: TKey; value: TValue }[]> {
