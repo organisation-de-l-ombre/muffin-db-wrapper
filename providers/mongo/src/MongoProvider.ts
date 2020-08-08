@@ -84,7 +84,7 @@ export default class MongoProvider<TKey, TValue> {
 	}
 
 	public async has(key: TKey): Promise<boolean> {
-		return !isNullOrUndefined(await this.coll.findOne(key));
+		return !isNullOrUndefined(await this.coll.findOne({ _id: key }));
 	}
 
 	private fetchAll(): Promise<{ _id: TKey; value: TValue }[]> {
