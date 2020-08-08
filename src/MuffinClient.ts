@@ -10,7 +10,7 @@ export function isNullOrUndefined(something: any) {
 }
 
 export interface BaseProvider<TKey, TValue> {
-	databaseClient: any;
+	conn: any;
 
 	isReady: boolean;
 	isClosed: boolean;

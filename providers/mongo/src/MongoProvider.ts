@@ -13,7 +13,7 @@ interface ProviderOptions {
 }
 
 export default class MongoProvider<TKey, TValue> {
-	public databaseClient: MongoClient;
+	public conn: MongoClient;
 
 	public isReady = false;
 	public isClosed = false;
@@ -27,8 +27,8 @@ export default class MongoProvider<TKey, TValue> {
 	constructor(public options: ProviderOptions) {
 		const url = options.uri || `mongodb+srv://localhost:27017/?retryWrites=true&w=majority`;
 
-		this.databaseClient = new MongoClient(url, { useNewUrlParser: true });
-		this.db = this.databaseClient.db(options.dbName);
+		this.conn = new MongoClient(url, { useNewUrlParser: true });
+		this.db = this.conn.db(options.dbName);
 		this.coll = this.db.collection(options.collectionName);
 
 		this.defer = new Promise((res) => {
@@ -37,11 +37,11 @@ export default class MongoProvider<TKey, TValue> {
 	}
 
 	public async connect(): Promise<void> {
-		await this.databaseClient.connect();
+		await this.conn.connect();
 	}
 
 	public async close(): Promise<void> {
-		await this.databaseClient.close();
+		await this.conn.close();
 	}
 
 	public size(): Promise<number> {
