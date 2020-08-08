@@ -53,4 +53,32 @@ export default class RethinkProvider<TKey, TValue> {
 
 		this.table = this.db.table(tableName);
 	}
+
+	public async close(): Promise<void> {
+		await this.conn.close();
+	}
+
+	public size(): Promise<number> {
+		return this.table.count().run(this.conn);
+	}
+
+	public async clear(): Promise<void> {
+		await this.table.delete().run(this.conn);
+	}
+
+	public async delete(key: TKey): Promise<boolean> {
+		return (
+			(
+				await this.table
+					.get((key as unknown) as string)
+					.delete()
+					.run(this.conn)
+			).deleted > 0
+		);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public async fetchAll(): Promise<any[]> {
+		return (await this.table.run(this.conn)).toArray();
+	}
 }
