@@ -46,9 +46,6 @@ export class MuffinClient<
 	TProvider extends BaseProvider<TKey, TValue> = BaseProvider<TKey, TValue>
 > {
 	public provider: TProvider;
-	public cache?: Map<TKey, TValue>;
-
-	public useCache: boolean;
 
 	constructor(public options: ClientOptions<TKey, TValue, TProvider>) {
 		if (!options.provider) {
@@ -56,9 +53,6 @@ export class MuffinClient<
 		}
 
 		this.provider = options.provider;
-
-		this.useCache = options.useCache || false;
-		this.cache = options.useCache ? new Map() : undefined;
 	}
 
 	get isReady(): boolean {
@@ -67,10 +61,6 @@ export class MuffinClient<
 
 	get isClosed(): boolean {
 		return this.provider.isClosed;
-	}
-
-	private useCacheCondition(options: { useCache?: boolean }) {
-		return (!options || options.useCache) && this.useCache;
 	}
 
 	private keyCheck(key: TKey) {
@@ -104,10 +94,6 @@ export class MuffinClient<
 
 		await this.provider.connect();
 
-		if (this.options.fetchAll && this.useCache) {
-			(await this.provider.entryArray()).forEach(([key, value]) => this.cache.set(key, value));
-		}
-
 		this.provider.resolveDefer();
 		this.provider.isReady = true;
 
@@ -125,10 +111,6 @@ export class MuffinClient<
 		this.closeCheck();
 		await this.provider.defer;
 
-		if (this.useCache) {
-			this.cache.clear();
-		}
-
 		await this.provider.clear();
 	}
 
@@ -136,105 +118,69 @@ export class MuffinClient<
 		this.closeCheck();
 		await this.provider.defer;
 
-		if (this.useCache) {
-			this.cache.delete(key);
-		}
-
 		return this.provider.delete(key);
 	}
 
-	public async entries(options?: { useCache?: boolean }): Promise<IterableIterator<[TKey, TValue]>> {
+	public async entries(): Promise<IterableIterator<[TKey, TValue]>> {
 		this.closeCheck();
 		await this.provider.defer;
 
-		return this.useCacheCondition(options)
-			? this.cache.entries()
-			: (await this.provider.entryArray())[Symbol.iterator]();
+		return (await this.provider.entryArray())[Symbol.iterator]();
 	}
 
-	public async array(options?: { useCache?: boolean }): Promise<[TKey, TValue][]> {
+	public async array(): Promise<[TKey, TValue][]> {
 		this.closeCheck();
 		await this.provider.defer;
 
-		return this.useCacheCondition(options) ? [...this.cache.entries()] : this.provider.entryArray();
+		return this.provider.entryArray();
 	}
 
 	public async forEach(
 		callbackfn: (value: TValue, key: TKey, map: Map<TKey, TValue>) => void,
-		thisArg?: any,
-		options?: { useCache?: boolean }
+		thisArg?: any
 	): Promise<this> {
 		this.closeCheck();
 		await this.provider.defer;
 
 		// eslint-disable-next-line no-unused-expressions
-		this.useCacheCondition(options)
-			? this.cache.forEach(callbackfn, thisArg)
-			: new Map(await this.provider.entryArray()).forEach(callbackfn, thisArg);
+		new Map(await this.provider.entryArray()).forEach(callbackfn, thisArg);
 
 		return this;
 	}
 
-	public async get(key: TKey, options?: { useCache?: boolean }): Promise<TValue> {
+	public async get(key: TKey): Promise<TValue> {
 		this.closeCheck();
 		await this.provider.defer;
 
 		this.keyCheck(key);
 
-		if (this.useCacheCondition(options)) {
-			let value = this.cache.get(key);
-
-			if (isNullOrUndefined(value)) {
-				value = await this.fetch(key);
-			}
-
-			return value;
-		} else {
-			return this.provider.fetch(key);
-		}
+		return this.provider.fetch(key);
 	}
 
-	public async fetch(key: TKey): Promise<TValue> {
+	public async has(key: TKey): Promise<boolean> {
 		this.closeCheck();
 		await this.provider.defer;
 
 		this.keyCheck(key);
 
-		const value = await this.provider.fetch(key);
-
-		if (!isNullOrUndefined(value) && this.useCache) {
-			this.cache.set(key, value);
-		}
-
-		return value;
+		return this.provider.has(key);
 	}
 
-	public async has(key: TKey, options?: { useCache?: boolean }): Promise<boolean> {
+	public async keys(): Promise<IterableIterator<TKey>> {
 		this.closeCheck();
 		await this.provider.defer;
 
-		this.keyCheck(key);
-
-		return this.useCacheCondition(options) ? this.cache.has(key) : this.provider.has(key);
+		return (await this.provider.keyArray())[Symbol.iterator]();
 	}
 
-	public async keys(options?: { useCache?: boolean }): Promise<IterableIterator<TKey>> {
+	public async keyArray(): Promise<TKey[]> {
 		this.closeCheck();
 		await this.provider.defer;
 
-		return this.useCacheCondition(options)
-			? this.cache.keys()
-			: (await this.provider.keyArray())[Symbol.iterator]();
+		return this.provider.keyArray();
 	}
 
-	public async keyArray(options?: { useCache?: boolean }): Promise<TKey[]> {
-		this.closeCheck();
-		await this.provider.defer;
-
-		return this.useCacheCondition(options) ? [...this.cache.keys()] : this.provider.keyArray();
-	}
-
-	public async set(key: TKey, value: TValue, options?: { useCache?: boolean }): Promise<this> {
+	public async set(key: TKey, value: TValue): Promise<this> {
 		this.closeCheck();
 		await this.provider.defer;
 
@@ -243,16 +189,13 @@ export class MuffinClient<
 
 		// eslint-disable-next-line no-unused-expressions
 		await this.provider.set(key, value);
-		if (this.useCacheCondition(options)) {
-			this.cache.set(key, value);
-		}
 
 		return this;
 	}
 
-	public async setMany(array: [TKey, TValue][], options?: { useCache?: boolean }): Promise<this> {
+	public async setMany(array: [TKey, TValue][]): Promise<this> {
 		// eslint-disable-next-line no-void
-		await Promise.all(array.map(([key, value]) => void this.set(key, value, options)));
+		await Promise.all(array.map(([key, value]) => this.set(key, value)));
 
 		return this;
 	}
@@ -262,19 +205,17 @@ export class MuffinClient<
 		return this.provider.defer.then(() => this.provider.size());
 	}
 
-	public async values(options?: { useCache?: boolean }): Promise<IterableIterator<TValue>> {
+	public async values(): Promise<IterableIterator<TValue>> {
 		this.closeCheck();
 		await this.provider.defer;
 
-		return this.useCacheCondition(options)
-			? this.cache.values()
-			: (await this.provider.valueArray())[Symbol.iterator]();
+		return (await this.provider.valueArray())[Symbol.iterator]();
 	}
 
-	public async valueArray(options?: { useCache?: boolean }): Promise<TValue[]> {
+	public async valueArray(): Promise<TValue[]> {
 		this.closeCheck();
 		await this.provider.defer;
 
-		return this.useCacheCondition(options) ? [...this.cache.values()] : this.provider.valueArray();
+		return this.provider.valueArray();
 	}
 }
