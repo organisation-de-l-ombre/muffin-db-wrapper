@@ -68,7 +68,7 @@ export default class MongoProvider<TKey, TValue> {
 	}
 
 	public async clear(): Promise<void> {
-		await this.coll.drop();
+		await this.coll.deleteMany({});
 	}
 
 	public async delete(key: TKey): Promise<boolean> {
