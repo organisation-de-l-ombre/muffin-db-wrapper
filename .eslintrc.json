@@ -24,7 +24,7 @@
 		"prettier/prettier": [
 			2,
 			{
-				"printWidth": 110,
+				"printWidth": 90,
 				"useTabs": true,
 				"singleQuote": false,
 				"arrowParens": "always",
