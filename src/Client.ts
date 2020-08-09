@@ -5,8 +5,8 @@
 
 import CustomError from "./CustomError";
 
-export function isNullOrUndefined(something: any) {
-	return something === null || something === undefined;
+export function isUndefined(something: any) {
+	return something === undefined;
 }
 
 export interface BaseProvider<TKey, TValue> {
@@ -57,13 +57,13 @@ export class Client<
 	}
 
 	private keyCheck(key: TKey) {
-		if (isNullOrUndefined(key)) {
+		if (isUndefined(key)) {
 			throw new CustomError("`key` must not be undefined !");
 		}
 	}
 
 	private valueCheck(value: TValue) {
-		if (isNullOrUndefined(value)) {
+		if (isUndefined(value)) {
 			throw new CustomError("`value` must not be undefined !");
 		}
 	}

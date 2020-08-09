@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { MongoClient, Db, Collection } from "mongodb";
 
-export function isNullOrUndefined(something: any) {
-	return something === null || something === undefined;
+export function isUndefined(something: any) {
+	return something === undefined;
 }
 
 export interface ProviderOptions {
@@ -86,7 +86,7 @@ export class MongoProvider<TKey, TValue> {
 	}
 
 	public async has(key: TKey): Promise<boolean> {
-		return !isNullOrUndefined(await this.coll.findOne({ _id: key }));
+		return !isUndefined(await this.coll.findOne({ _id: key }));
 	}
 
 	private fetchAll(): Promise<{ _id: TKey; value: TValue }[]> {
