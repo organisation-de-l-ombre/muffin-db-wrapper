@@ -121,6 +121,10 @@ export class Client<
 		return (await this.provider.entryArray())[Symbol.iterator]();
 	}
 
+	public async entryArray(): Promise<[TKey, TValue][]> {
+		return this.array();
+	}
+
 	public async array(): Promise<[TKey, TValue][]> {
 		this.closeCheck();
 		await this.provider.defer;
