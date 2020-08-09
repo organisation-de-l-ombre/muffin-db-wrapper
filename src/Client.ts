@@ -33,15 +33,8 @@ export interface BaseProvider<TKey, TValue> {
 	valueArray: () => Promise<TValue[]>;
 }
 
-export interface ClientOptions<
-	TKey,
-	TValue,
-	TProvider extends BaseProvider<TKey, TValue>
-> {
-	provider: TProvider;
-	useCache: boolean;
-	fetchAll: boolean;
-}
+// eslint-disable-next-line capitalized-comments
+// export interface ClientOptions<TKey, TValue> {}
 
 // Todo: Methods like get, set etc... but with a path parameter
 export class Client<
@@ -49,14 +42,10 @@ export class Client<
 	TValue,
 	TProvider extends BaseProvider<TKey, TValue> = BaseProvider<TKey, TValue>
 > {
-	public provider: TProvider;
-
-	constructor(public options: ClientOptions<TKey, TValue, TProvider>) {
-		if (!options.provider) {
+	constructor(public provider: TProvider) {
+		if (!provider) {
 			throw new CustomError("Can not invoke a new MuffinClient without a provider");
 		}
-
-		this.provider = options.provider;
 	}
 
 	get isReady(): boolean {
