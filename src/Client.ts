@@ -121,15 +121,15 @@ export class Client<
 		return (await this.provider.entryArray())[Symbol.iterator]();
 	}
 
-	public async entryArray(): Promise<[TKey, TValue][]> {
-		return this.array();
-	}
-
 	public async array(): Promise<[TKey, TValue][]> {
 		this.closeCheck();
 		await this.provider.defer;
 
 		return this.provider.entryArray();
+	}
+
+	public entryArray(): Promise<[TKey, TValue][]> {
+		return this.array();
 	}
 
 	public async forEach(
@@ -163,6 +163,10 @@ export class Client<
 		this.keyCheck(key);
 
 		return this.provider.fetch(key);
+	}
+
+	public fetch(key: TKey): Promise<TValue> {
+		return this.get(key);
 	}
 
 	public async has(key: TKey): Promise<boolean> {
