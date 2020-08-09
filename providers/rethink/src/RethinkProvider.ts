@@ -1,5 +1,10 @@
-/* eslint-disable no-useless-constructor */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import r, { connect, Connection, Db, Table } from "rethinkdb";
+
+export function isUndefined(something: any): boolean {
+	return something === undefined;
+}
 
 export interface ProviderOptions {
 	username?: string;
@@ -66,15 +71,8 @@ export class RethinkProvider<TKey, TValue> {
 		await this.table.delete().run(this.conn);
 	}
 
-	public async delete(key: TKey): Promise<boolean> {
-		return (
-			(
-				await this.table
-					.get((key as unknown) as string)
-					.delete()
-					.run(this.conn)
-			).deleted > 0
-		);
+	public async delete(key: string): Promise<boolean> {
+		return (await this.table.get(key).delete().run(this.conn)).deleted > 0;
 	}
 
 	public async entryArray(): Promise<[TKey, TValue][]> {
@@ -86,12 +84,24 @@ export class RethinkProvider<TKey, TValue> {
 			.value;
 	}
 
+	public async has(key: string): Promise<boolean> {
+		return !isUndefined(await this.table.get(key).run(this.conn));
+	}
+
 	public async fetchAll(): Promise<{ id: TKey; value: TValue }[]> {
 		return (await this.table.run(this.conn)).toArray();
 	}
 
+	public async keyArray(): Promise<TKey[]> {
+		return (await this.fetchAll()).map(({ id }) => id);
+	}
+
 	public async set(key: TKey, value: TValue): Promise<void> {
 		await this.table.insert({ id: key, value }, { conflict: "replace" }).run(this.conn);
+	}
+
+	public async valueArray(): Promise<TValue[]> {
+		return (await this.fetchAll()).map(({ value }) => value);
 	}
 }
 
