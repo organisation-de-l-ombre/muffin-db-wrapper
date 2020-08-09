@@ -25,7 +25,7 @@ export class RethinkProvider<TKey, TValue> {
 
 	constructor(public options: ProviderOptions) {
 		["dbName", "tableName"].forEach((prop) => {
-			if (!options[prop] || options[prop] !== "string") {
+			if (!options[prop] || typeof options[prop] !== "string") {
 				throw new Error(`\`options.${prop}\` should be a string`);
 			}
 		});
