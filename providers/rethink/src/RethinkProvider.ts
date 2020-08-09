@@ -77,9 +77,21 @@ export class RethinkProvider<TKey, TValue> {
 		);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	public async fetchAll(): Promise<any[]> {
+	public async entryArray(): Promise<[TKey, TValue][]> {
+		return (await this.fetchAll()).map(({ id, value }) => [id, value]);
+	}
+
+	public async fetch(key: string): Promise<TValue> {
+		return ((await this.table.get(key).run(this.conn)) as { id: TKey; value: TValue })
+			.value;
+	}
+
+	public async fetchAll(): Promise<{ id: TKey; value: TValue }[]> {
 		return (await this.table.run(this.conn)).toArray();
+	}
+
+	public async set(key: TKey, value: TValue): Promise<void> {
+		await this.table.insert({ id: key, value }, { conflict: "replace" }).run(this.conn);
 	}
 }
 
