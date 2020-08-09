@@ -36,7 +36,7 @@ export interface BaseProvider<TKey, TValue> {
 // eslint-disable-next-line capitalized-comments
 // export interface ClientOptions<TKey, TValue> {}
 
-// Todo: Methods like get, set etc... but with a path parameter
+// Todo: Math methods
 export class Client<
 	TKey,
 	TValue,
@@ -129,16 +129,27 @@ export class Client<
 	}
 
 	public async forEach(
-		callbackfn: (value: TValue, key: TKey, map: Map<TKey, TValue>) => void,
+		callbackfn: (value: [TKey, TValue], index: number, array: [TKey, TValue][]) => void,
 		thisArg?: any
 	): Promise<this> {
 		this.closeCheck();
 		await this.provider.defer;
 
 		// eslint-disable-next-line no-unused-expressions
-		new Map(await this.provider.entryArray()).forEach(callbackfn, thisArg);
+		(await this.provider.entryArray()).forEach(callbackfn, thisArg);
 
 		return this;
+	}
+
+	public async map<T>(
+		callbackfn: (value: [TKey, TValue], index: number, array: [TKey, TValue][]) => T,
+		thisArg?: any
+	): Promise<T[]> {
+		this.closeCheck();
+		await this.provider.defer;
+
+		// eslint-disable-next-line no-unused-expressions
+		return (await this.provider.entryArray()).map(callbackfn, thisArg);
 	}
 
 	public async get(key: TKey): Promise<TValue> {
