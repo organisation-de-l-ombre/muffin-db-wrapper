@@ -16,7 +16,7 @@ export interface ProviderOptions {
 	tableName: string;
 }
 
-export class RethinkProvider<TKey, TValue> {
+export class RethinkProvider {
 	public conn!: Connection;
 
 	public isReady = false;
@@ -75,32 +75,31 @@ export class RethinkProvider<TKey, TValue> {
 		return (await this.table.get(key).delete().run(this.conn)).deleted > 0;
 	}
 
-	public async entryArray(): Promise<[TKey, TValue][]> {
+	public async entryArray(): Promise<[any, any][]> {
 		return (await this.fetchAll()).map(({ id, value }) => [id, value]);
 	}
 
-	public async fetch(key: string): Promise<TValue> {
-		return ((await this.table.get(key).run(this.conn)) as { id: TKey; value: TValue })
-			.value;
+	public async fetch(key: string): Promise<any> {
+		return ((await this.table.get(key).run(this.conn)) as { id: any; value: any }).value;
 	}
 
 	public async has(key: string): Promise<boolean> {
 		return !isUndefined(await this.table.get(key).run(this.conn));
 	}
 
-	public async fetchAll(): Promise<{ id: TKey; value: TValue }[]> {
+	public async fetchAll(): Promise<{ id: any; value: any }[]> {
 		return (await this.table.run(this.conn)).toArray();
 	}
 
-	public async keyArray(): Promise<TKey[]> {
+	public async keyArray(): Promise<any[]> {
 		return (await this.fetchAll()).map(({ id }) => id);
 	}
 
-	public async set(key: TKey, value: TValue): Promise<void> {
+	public async set(key: any, value: any): Promise<void> {
 		await this.table.insert({ id: key, value }, { conflict: "replace" }).run(this.conn);
 	}
 
-	public async valueArray(): Promise<TValue[]> {
+	public async valueArray(): Promise<any[]> {
 		return (await this.fetchAll()).map(({ value }) => value);
 	}
 }

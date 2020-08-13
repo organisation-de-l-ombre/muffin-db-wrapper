@@ -9,7 +9,7 @@ export function isUndefined(something: any) {
 	return something === undefined;
 }
 
-export interface BaseProvider<TKey, TValue> {
+export interface BaseProvider {
 	options: any;
 	conn: any;
 
@@ -24,24 +24,20 @@ export interface BaseProvider<TKey, TValue> {
 
 	size: () => Promise<number>;
 	clear: () => Promise<void>;
-	delete: (key: TKey) => Promise<boolean>;
-	entryArray: () => Promise<[TKey, TValue][]>;
-	fetch: (key: TKey) => Promise<TValue>;
-	has: (key: TKey) => Promise<boolean>;
-	keyArray: () => Promise<TKey[]>;
-	set: (key: TKey, value: TValue) => Promise<void>;
-	valueArray: () => Promise<TValue[]>;
+	delete: (key: any) => Promise<boolean>;
+	entryArray: () => Promise<[any, any][]>;
+	fetch: (key: any) => Promise<any>;
+	has: (key: any) => Promise<boolean>;
+	keyArray: () => Promise<any[]>;
+	set: (key: any, value: any) => Promise<void>;
+	valueArray: () => Promise<any[]>;
 }
 
 // eslint-disable-next-line capitalized-comments
 // export interface ClientOptions<TKey, TValue> {}
 
 // Todo: Math methods
-export class Client<
-	TKey,
-	TValue,
-	TProvider extends BaseProvider<TKey, TValue> = BaseProvider<TKey, TValue>
-> {
+export class Client<TKey, TValue, TProvider extends BaseProvider = BaseProvider> {
 	constructor(public provider: TProvider) {
 		if (!provider) {
 			throw new CustomError("Can not invoke a new MuffinClient without a provider");

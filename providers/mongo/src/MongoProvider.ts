@@ -18,7 +18,7 @@ export interface ProviderOptions {
 	collectionName: string;
 }
 
-export class MongoProvider<TKey, TValue> {
+export class MongoProvider {
 	public conn: MongoClient;
 
 	public isReady = false;
@@ -28,7 +28,7 @@ export class MongoProvider<TKey, TValue> {
 	public defer: Promise<void>;
 
 	public db: Db;
-	public coll: Collection<{ _id: TKey; value: TValue }>;
+	public coll: Collection<{ _id: any; value: any }>;
 
 	constructor(public options: ProviderOptions) {
 		["dbName", "collectionName"].forEach((prop) => {
@@ -73,35 +73,35 @@ export class MongoProvider<TKey, TValue> {
 		await this.coll.deleteMany({});
 	}
 
-	public async delete(key: TKey): Promise<boolean> {
+	public async delete(key: any): Promise<boolean> {
 		return (await this.coll.deleteOne({ _id: key })).deletedCount > 0;
 	}
 
-	public async entryArray(): Promise<[TKey, TValue][]> {
+	public async entryArray(): Promise<[any, any][]> {
 		return (await this.fetchAll()).map(({ _id, value }) => [_id, value]);
 	}
 
-	public fetch(key: TKey): Promise<TValue> {
+	public fetch(key: any): Promise<any> {
 		return this.coll.findOne({ _id: key });
 	}
 
-	public async has(key: TKey): Promise<boolean> {
+	public async has(key: any): Promise<boolean> {
 		return !isUndefined(await this.coll.findOne({ _id: key }));
 	}
 
-	private fetchAll(): Promise<{ _id: TKey; value: TValue }[]> {
+	private fetchAll(): Promise<{ _id: any; value: any }[]> {
 		return this.coll.find({}).toArray();
 	}
 
-	public async keyArray(): Promise<TKey[]> {
+	public async keyArray(): Promise<any[]> {
 		return (await this.fetchAll()).map(({ _id }) => _id);
 	}
 
-	public async set(key: TKey, value: TValue): Promise<void> {
+	public async set(key: any, value: any): Promise<void> {
 		await this.coll.updateOne({ _id: key }, { $set: { value: value } }, { upsert: true });
 	}
 
-	public async valueArray(): Promise<TValue[]> {
+	public async valueArray(): Promise<any[]> {
 		return (await this.fetchAll()).map(({ value }) => value);
 	}
 }
