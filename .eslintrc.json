@@ -18,7 +18,8 @@
 	},
 	"ignorePatterns": [
 		"./lib/*",
-		"./vscode/*"
+		"./vscode/*",
+		"*.d.ts"
 	],
 	"rules": {
 		"prettier/prettier": [
