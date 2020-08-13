@@ -208,6 +208,14 @@ export class Client<TKey, TValue, TProvider extends BaseProvider = BaseProvider>
 		return this;
 	}
 
+	public async ensure(key: TKey, defaultValue: TValue): Promise<TValue> {
+		if (!(await this.provider.has(key))) {
+			await this.provider.set(key, defaultValue);
+		}
+
+		return this.provider.fetch(key);
+	}
+
 	public get size(): Promise<number> {
 		this.closeCheck();
 		return this.provider.defer.then(() => this.provider.size());
