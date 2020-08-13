@@ -4,7 +4,7 @@
         "module": "CommonJS",
         "moduleResolution": "Node",
         "allowJs": true,
-        "target": "ES2018",
+        "target": "ES2020",
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "pretty": true,
